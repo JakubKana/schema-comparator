@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace DBSchemaComparator.Domain.SQLServer
+namespace DBSchemaComparator.Domain.Models.SQLServer
 {
    public class Table
     {
-
-        public string Name { get; set; }
+        public List<Column> Columns { get; set; }
+        public string TableName { get; set; }
     }
 }

@@ -1,0 +1,17 @@
+﻿{
+  "DatabaseConnections": [
+    {
+      "DbName": "DatabaseComparatorTest1",
+      "IpAddress": "10.18.3.2",
+      "Pass": "CA",
+      "Username": "cisco"
+    },
+    {
+      "DbName": "DatabaseComparatorTest1",
+      "IpAddress": "10.18.3.2",
+      "Pass": "CA",
+      "Username": "cisco"
+    }
+  ]
+
+}

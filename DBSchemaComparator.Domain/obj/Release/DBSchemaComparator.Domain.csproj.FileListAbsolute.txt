@@ -1,0 +1,6 @@
+d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Release\DBSchemaComparator.Domain.dll
+d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Release\DBSchemaComparator.Domain.pdb
+d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Release\NLog.dll
+d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Release\NLog.xml
+d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\obj\Release\DBSchemaComparator.Domain.dll
+d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\obj\Release\DBSchemaComparator.Domain.pdb

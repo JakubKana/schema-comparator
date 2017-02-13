@@ -45,15 +45,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Infrastructure\DatabaseConnection.cs" />
-    <Compile Include="Infrastructure\Settings.cs" />
+    <Compile Include="Database\DatabaseHandler.cs" />
+    <Compile Include="Models\General\DatabaseConnection.cs" />
+    <Compile Include="Models\General\DatabaseConnectionList.cs" />
+    <Compile Include="Models\SQLServer\Column.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SQLServer\Table.cs" />
-    <Compile Include="Test\TestResult.cs" />
-    <Compile Include="Test\TestType.cs" />
+    <Compile Include="Models\SQLServer\Table.cs" />
+    <Compile Include="Models\Test\TestResult.cs" />
+    <Compile Include="Models\Test\TestType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MySQL\" />
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Models\MySQL\" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

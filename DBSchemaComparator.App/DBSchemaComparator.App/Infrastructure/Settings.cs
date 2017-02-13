@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Configuration;
+using System.IO;
+
+using DBSchemaComparator.Domain.Models.General;
+using Newtonsoft.Json;
+
 using NLog;
 
-namespace DBSchemaComparator.Domain.Infrastructure
+
+
+namespace DBSchemaComparator.App.Infrastructure
 {
     public class Settings
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        private static readonly string ConfigPath = ConfigurationManager.AppSettings["ConfigPath"];
+
         private static Settings _instance;
 
-        public List<DatabaseConnection> DatabaseConnections { get; set; }
+        public DatabaseConnectionList DatabaseConnections { get; set; }
 
         public static Settings Instance
         {
@@ -29,9 +36,18 @@ namespace DBSchemaComparator.Domain.Infrastructure
             }
         }
 
-        public Settings()
+        public Settings(string configFilePath)
         {
-            
+            using (StreamReader reader = new StreamReader(configFilePath))
+            {
+                string json = reader.ReadToEnd();
+                DatabaseConnections = JsonConvert.DeserializeObject<DatabaseConnectionList>(json);
+            }
+           
+        }
+
+        private Settings() : this(ConfigPath)
+        {
         }
 
         //public static string GetEntityConnectionString()
