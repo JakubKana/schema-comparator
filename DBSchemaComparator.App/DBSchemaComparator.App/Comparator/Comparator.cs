@@ -23,9 +23,10 @@ namespace DBSchemaComparator.App.Comparator
 
         public bool ConnectToDatabase(string connectionString)
         {
+
+
+            
             return true;
-
-
         }
 
     }
