@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DBSchemaComparator.Domain.Models.General;
+using DBSchemaComparator.Domain.Database;
+using DBSchemaComparator.Domain.Infrastructure;
+
 using NLog;
-using Settings = DBSchemaComparator.App.Infrastructure.Settings;
+
 
 namespace DBSchemaComparator.App
 {
@@ -16,13 +18,17 @@ namespace DBSchemaComparator.App
         static void Main(string[] args)
         {
             _logger.Info("Starting a Schema comparator application.");
-            Settings settings = Settings.Instance;
-            string conn = Settings.GetConnectionString(new DatabaseConnection
-            {
-                DbName = "Name",IpAddress = "123.456.789.456",Pass = "something",Username = "username"
-            });
-            _logger.Debug($"Retrieved connection string {conn}");
+           
+            
+            var databaseHandler = new DatabaseHandler(Settings.GetConnectionString(Settings.Instance.DatabaseConnections.DatabaseConnections.First()), DatabaseType.SqlServer);
+
+            databaseHandler.SelectTablesSchemaInfo();
+            databaseHandler.SelectColumnsSchemaInfo();
+           
             Console.ReadLine();
+
+
+            _logger.Info("Exiting application.");
         }
     }
 }

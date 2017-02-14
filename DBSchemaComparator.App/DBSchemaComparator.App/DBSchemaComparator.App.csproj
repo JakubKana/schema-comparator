@@ -54,7 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Comparator\Comparator.cs" />
-    <Compile Include="Infrastructure\Settings.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -63,17 +62,24 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="config.json" />
+    <None Include="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DBSchemaComparator.Domain\DBSchemaComparator.Domain.csproj">
       <Project>{783f4a61-65ed-4cd2-9205-d556cf573730}</Project>
       <Name>DBSchemaComparator.Domain</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

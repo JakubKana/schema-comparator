@@ -5,3 +5,5 @@ d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Debug\NLog.xml
 d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\obj\Debug\DBSchemaComparator.Domain.csprojResolveAssemblyReference.cache
 d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\obj\Debug\DBSchemaComparator.Domain.dll
 d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\obj\Debug\DBSchemaComparator.Domain.pdb
+D:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Debug\Newtonsoft.Json.dll
+D:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Debug\Newtonsoft.Json.xml

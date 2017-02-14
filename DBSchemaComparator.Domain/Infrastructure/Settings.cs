@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-
 using DBSchemaComparator.Domain.Models.General;
 using Newtonsoft.Json;
-
 using NLog;
 
-
-
-namespace DBSchemaComparator.App.Infrastructure
+namespace DBSchemaComparator.Domain.Infrastructure
 {
+    /// <summary>
+    /// Settings class provides model and methods for loading configuration file from JSON data format.
+    /// </summary>
     public class Settings
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -32,42 +30,29 @@ namespace DBSchemaComparator.App.Infrastructure
                 Logger.Info("Creating settings object");
                 _instance = new Settings();
                 return _instance;
-
             }
         }
 
         public Settings(string configFilePath)
         {
-            using (StreamReader reader = new StreamReader(configFilePath))
+            try
             {
-                string json = reader.ReadToEnd();
-                DatabaseConnections = JsonConvert.DeserializeObject<DatabaseConnectionList>(json);
+                string applicationPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configFilePath);
+                using (StreamReader reader = new StreamReader(applicationPath))
+                {
+                    string json = reader.ReadToEnd();
+                    DatabaseConnections = JsonConvert.DeserializeObject<DatabaseConnectionList>(json);
+                }
             }
-           
+            catch (IOException exception)
+            {
+                Logger.Error(exception, "Unable to load configuration file.");
+            }
         }
 
-        private Settings() : this(ConfigPath)
-        {
-        }
+        private Settings() : this(ConfigPath) { }
 
-        //public static string GetEntityConnectionString()
-        //{
-        //    string connectionString = new EntityConnectionStringBuilder
-        //    {
-        //        Metadata = "res://*/DataModel.MailingWebModel.csdl|res://*/DataModel.MailingWebModel.ssdl|res://*/DataModel.MailingWebModel.msl",
-        //        Provider = "System.Data.SqlClient",
-        //        ProviderConnectionString = new System.Data.SqlClient.SqlConnectionStringBuilder
-        //        {
-        //            InitialCatalog = _instance.DbName,
-        //            DataSource = _instance.IpAddress,
-        //            IntegratedSecurity = false,
-        //            UserID = _instance.DbUser,
-        //            Password = _instance.DbPass,
-        //        }.ConnectionString
-        //    }.ConnectionString;
 
-        //    return connectionString;
-        //}
 
         public static string GetConnectionString(DatabaseConnection connection)
         {
@@ -79,13 +64,13 @@ namespace DBSchemaComparator.App.Infrastructure
                                   $"user ID ={connection.Username}; " +
                                   $"password={connection.Pass};" +
                                   "connection timeout=30");
-                Logger.Trace($"Retrieving connectionString = {connectionString}");
+                Logger.Trace($"Retrieving database connection string = {connectionString}");
                 return connectionString;
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                Logger.Error(ex, "Cannot retrieve connection string.");
-                return String.Empty;
+                Logger.Error(exception, "Cannot retrieve connection string.");
+                return string.Empty;
             }
 
         }
