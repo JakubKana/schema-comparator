@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using DBSchemaComparator.Domain.Models.General;
 using Newtonsoft.Json;
 using NLog;
@@ -37,11 +39,15 @@ namespace DBSchemaComparator.Domain.Infrastructure
         {
             try
             {
+                Logger.Debug($"Loading settings from file {configFilePath}");
                 string applicationPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configFilePath);
                 using (StreamReader reader = new StreamReader(applicationPath))
                 {
                     string json = reader.ReadToEnd();
+                    Logger.Debug($"Config file content:\n {json}");
+                    Logger.Debug($"Deserializing json to object");
                     DatabaseConnections = JsonConvert.DeserializeObject<DatabaseConnectionList>(json);
+                    Logger.Debug($"Deserialized object:\n", DatabaseConnections);
                 }
             }
             catch (IOException exception)
@@ -63,7 +69,7 @@ namespace DBSchemaComparator.Domain.Infrastructure
                                   $"Initial Catalog={connection.DbName}; " +
                                   $"user ID ={connection.Username}; " +
                                   $"password={connection.Pass};" +
-                                  "connection timeout=30");
+                                  $"connection timeout={connection.Timeout}");
                 Logger.Trace($"Retrieving database connection string = {connectionString}");
                 return connectionString;
             }
@@ -75,6 +81,10 @@ namespace DBSchemaComparator.Domain.Infrastructure
 
         }
 
+        public static List<string> GetDatabaseConnectionStrings(DatabaseConnectionList databaseConnection)
+        {
+            return databaseConnection.DatabaseConnections.Select(GetConnectionString).ToList();
+        }
 
     }
 }

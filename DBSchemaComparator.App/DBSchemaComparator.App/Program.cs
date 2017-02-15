@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DBSchemaComparator.Domain.Database;
+using System.Net.Mime;
+using System.Runtime.CompilerServices;
+using DBSchemaComparator.App.Comparator;
 using DBSchemaComparator.Domain.Infrastructure;
 
 using NLog;
@@ -18,14 +17,13 @@ namespace DBSchemaComparator.App
         static void Main(string[] args)
         {
             _logger.Info("Starting a Schema comparator application.");
-           
-            
-            var databaseHandler = new DatabaseHandler(Settings.GetConnectionString(Settings.Instance.DatabaseConnections.DatabaseConnections.First()), DatabaseType.SqlServer);
+            var connectionStrings = Settings.GetDatabaseConnectionStrings(Settings.Instance.DatabaseConnections);
 
-            databaseHandler.SelectTablesSchemaInfo();
-            databaseHandler.SelectColumnsSchemaInfo();
-           
-            Console.ReadLine();
+            var comparator = new ObjectComparator(connectionStrings.ElementAt(0),connectionStrings.ElementAt(1));
+            //var databaseHandler_1 = new DatabaseHandler(connectionStrings.ElementAt(0), DatabaseType.SqlServer);
+            //var databaseHandler_2 = new DatabaseHandler(connectionStrings.ElementAt(1), DatabaseType.SqlServer);
+
+
 
 
             _logger.Info("Exiting application.");

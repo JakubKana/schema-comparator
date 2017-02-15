@@ -4,13 +4,17 @@
       "DbName": "DatabaseComparatorTest1",
       "IpAddress": "10.18.3.2",
       "Pass": "cisco",
-      "Username": "SA"
+      "Username": "SA",
+      "Timeout": 10,
+      "DbType": "SqlServer"
     },
     {
-      "DbName": "DatabaseComparatorTest1",
-      "IpAddress": "10.18.3.2",
+      "DbName": "DatabaseComparatorTest2",
+      "IpAddress": "10.18.3.111",
       "Pass": "cisco",
-      "Username": "SA"
+      "Username": "SA",
+      "Timeout": 10 ,
+      "DbType" : "SqlServer" 
     }
   ]
 

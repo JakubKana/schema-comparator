@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
+using DBSchemaComparator.Domain.Infrastructure;
+using DBSchemaComparator.Domain.Models.SQLServer;
 using NLog;
+using PetaPoco;
 
 namespace DBSchemaComparator.Domain.Database
 {
@@ -10,12 +15,12 @@ namespace DBSchemaComparator.Domain.Database
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public SqlConnection SqlConnection
+        public PetaPoco.Database Database
         {
-            get; private set; 
+            get; private set;
         }
 
-        private DatabaseType _dbType;
+        private DatabaseType DbType { get; set; }
 
 
         public DatabaseHandler(string connectionString, DatabaseType databaseType)
@@ -28,124 +33,92 @@ namespace DBSchemaComparator.Domain.Database
             switch (databaseType)
             {
                 case DatabaseType.SqlServer:
-                    _dbType = databaseType;
-                    SqlConnection = new SqlConnection(connectionString);
+                    DbType = databaseType;
+                    Database = new PetaPoco.Database(connectionString, new SqlServerDatabaseProvider());
                     break;
                 case DatabaseType.MySql:
-                    _dbType = databaseType;
-                    // To-Do
+                    DbType = databaseType;
+                    Database = new PetaPoco.Database(connectionString, new MySqlDatabaseProvider());
                     break;
                 default:
-                    _dbType = databaseType;
-                    SqlConnection = new SqlConnection(connectionString);
+                    DbType = databaseType;
+                    Database = new PetaPoco.Database(connectionString, new SqlServerDatabaseProvider());
                     break;
             }
         }
 
-        public void SelectTablesSchemaInfo(string tableName = null)
-        {
-            Logger.Info($"Querying schema information about tables.");
 
-            var sqlQuery = new StringBuilder();
-            sqlQuery.Append(@"SELECT * FROM [INFORMATION_SCHEMA].[TABLES]");
-            #region DatabaseSelect
+        public IList<Table> SelectTablesSchemaInfo(string tableName)
+        {
+           return SelectTablesInfo(tableName, InformationType.Tables);
+        }
+
+        public IList<Table> SelectTablesInfo(string tableName, InformationType infoType)
+        {
+            Logger.Info($"Selecting basic schema information about tables from database");
+
+            Sql sqlQuery = GetSqlQuery(infoType);
+
             try
             {
-                using (SqlConnection)
+                using (var db = Database)
                 {
-                    SqlCommand sqlCommand = new SqlCommand(sqlQuery.ToString(), SqlConnection);
                     if (!string.IsNullOrWhiteSpace(tableName))
                     {
-                        sqlQuery.Append(" WHERE TABLE_NAME = @TABLE_NAME");
-                        SqlParameter sqlParameter = sqlCommand.CreateParameter();
-                        sqlParameter.ParameterName = "@TABLE_NAME";
-                        sqlParameter.Value = tableName;
-                        sqlCommand.Parameters.AddWithValue("@TABLE_NAME", "%" + tableName + "%");
+                        sqlQuery.Append("WHERE TABLE_NAME = @0", "%" + tableName + "%");
                     }
+                    Logger.Info($"Querying database with {sqlQuery}");
+                    var queryResult = db.Query<Table>(sqlQuery).ToList();
 
-                    SqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                    if (sqlDataReader.HasRows)
-                    {
-                        while (sqlDataReader.Read())
-                        {
-                            Console.WriteLine("{0}\t{1}", sqlDataReader.GetString(2), sqlDataReader.GetString(3));
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found.");
-                    }
-                    sqlDataReader.Close();
+                    return queryResult;
                 }
-
             }
             catch (SqlException exception)
             {
-                Logger.Warn(exception, "Unable to retrieve basic schema information from database.");
+                Logger.Warn(exception, "Unable to retrieve basic tables schema information from database.");
+                return null;
             }
             catch (Exception exception)
             {
                 Logger.Warn(exception);
+                return null;
             }
-            #endregion
-
         }
 
-
-        public void SelectColumnsSchemaInfo(string tableName, InformationType infoType)
+        private static Sql GetSqlQuery(InformationType infoType)
         {
-            Logger.Info($"Selecting basic schema information from database");
-           
-            var sqlQuery = new StringBuilder();
-            sqlQuery.Append(@"SELECT * FROM [INFORMATION_SCHEMA].[COLUMNS]");
-            #region DatabaseSelect
-            try
+            var sqlQuery = Sql.Builder;
+            
+            switch (infoType)
             {
-                using (SqlConnection)
-                {
-                    SqlCommand sqlCommand = new SqlCommand(sqlQuery.ToString(), SqlConnection);
-                    if (!string.IsNullOrWhiteSpace(tableName))
-                    {
-                        sqlQuery.Append(" WHERE TABLE_NAME = @TABLE_NAME");
-                        SqlParameter sqlParameter = sqlCommand.CreateParameter();
-                        sqlParameter.ParameterName = "@TABLE_NAME";
-                        sqlParameter.Value = tableName;
-                        sqlCommand.Parameters.AddWithValue("@TABLE_NAME", "%" + tableName + "%");
-                    }
-
-                    SqlConnection.Open();
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                    if (sqlDataReader.HasRows)
-                    {
-                        while (sqlDataReader.Read())
-                        {
-                            Console.WriteLine("{0}\t{1}", sqlDataReader.GetString(2), sqlDataReader.GetString(3));
-                        }
-                    }
-                    else
-                    {
-                           Console.WriteLine("No rows found.");
-                    }
-                    sqlDataReader.Close();
-                }
-
+                    case InformationType.Tables:
+                    sqlQuery.Append(@"SELECT TABLE_NAME FROM [INFORMATION_SCHEMA].[TABLES]");
+                    break;
+                    case InformationType.Columns:
+                    sqlQuery.Append(@"SELECT TABLE_NAME FROM [INFORMATION_SCHEMA].[COLUMNS]");
+                    break;
             }
-            catch (SqlException exception)
-            {
-                Logger.Warn(exception, "Unable to retrieve basic schema information from database.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Warn(exception);
-            }
-            #endregion
 
+            return sqlQuery;
         }
 
-        public bool IsConnect()
-        {
-            return SqlConnection != null && SqlConnection.State != ConnectionState.Closed;
-        }
+        //public bool IsAvailible()
+        //{
+        //    try
+        //    {
+        //        using (var db = new PetaPoco.Database(Database.ConnectionString)))
+        //        {
+        //            db.Open();
+        //            db.Close();
+        //        }
+        //    }
+        //    catch (SqlException exception)
+        //    {
+        //        Logger.Warn($"Database unavailible {Database.ConnectionString}", exception);
+        //        return false;
+        //    }
+        //    return true;
+
+        //}
     }
 }
