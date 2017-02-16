@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using DBSchemaComparator.Domain.Database;
-using DBSchemaComparator.Domain.Test;
+using DBSchemaComparator.Domain.Models.Test;
 
 namespace DBSchemaComparator.App.Comparator
 {
@@ -14,10 +14,10 @@ namespace DBSchemaComparator.App.Comparator
             get { return DatabaseType; }
             private set { DatabaseType = value; }
         }
-        private DatabaseHandler LeftDatabase { get; set; }
+        public DatabaseHandler LeftDatabase { get; set; }
         public DatabaseHandler RightDatabase { get; set; }
 
-        private List<TestResult> _testResults = new List<TestResult>();
+        public List<TestResult> TestResults = new List<TestResult>();
 
         public ObjectComparator(string connStringLeft, string connStringRight)
         {
@@ -31,25 +31,33 @@ namespace DBSchemaComparator.App.Comparator
             DatabaseType = dbType;
         }
 
-
-
-        public bool ConnectToDatabases(string connStringLeft, string connStringRight)
+        public void ConnectToDatabases(string connStringLeft, string connStringRight)
         {
+            
             LeftDatabase = new DatabaseHandler(ConnStringLeft, DatabaseType.SqlServer);
             RightDatabase = new DatabaseHandler(ConnStringRight, DatabaseType.SqlServer);
+        }
 
-            if (LeftDatabase.IsAvailible() && RightDatabase.IsAvailible())
-            {
-                return true;
-            }
-            return false;
+        public void TestTables()
+        {
+            var leftDatabaseTables = LeftDatabase.GetTablesSchemaInfo();
+            var rightDatabaseTables = RightDatabase.GetTablesSchemaInfo();
+
+
 
         }
 
-        public void testTables()
+
+        public void TestProcedures(List<TestResult> testResults)
         {
             
         }
+        public void TestIntegrityConstraints(List<TestResult> testResults)
+        {
+            
+        }
+
+
 
     }
 }

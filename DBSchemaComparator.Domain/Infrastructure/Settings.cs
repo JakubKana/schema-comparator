@@ -83,7 +83,7 @@ namespace DBSchemaComparator.Domain.Infrastructure
 
         public static List<string> GetDatabaseConnectionStrings(DatabaseConnectionList databaseConnection)
         {
-            return databaseConnection.DatabaseConnections.Select(GetConnectionString).ToList();
+            return databaseConnection.DatabaseConnections.Select(GetConnectionString).Take(3).ToList();
         }
 
     }

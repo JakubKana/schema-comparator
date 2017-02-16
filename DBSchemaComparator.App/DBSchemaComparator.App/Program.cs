@@ -20,11 +20,9 @@ namespace DBSchemaComparator.App
             var connectionStrings = Settings.GetDatabaseConnectionStrings(Settings.Instance.DatabaseConnections);
 
             var comparator = new ObjectComparator(connectionStrings.ElementAt(0),connectionStrings.ElementAt(1));
-            //var databaseHandler_1 = new DatabaseHandler(connectionStrings.ElementAt(0), DatabaseType.SqlServer);
-            //var databaseHandler_2 = new DatabaseHandler(connectionStrings.ElementAt(1), DatabaseType.SqlServer);
 
-
-
+            comparator.TestTables();
+            var indexes = comparator.LeftDatabase.GetIndexesInfo();
 
             _logger.Info("Exiting application.");
         }

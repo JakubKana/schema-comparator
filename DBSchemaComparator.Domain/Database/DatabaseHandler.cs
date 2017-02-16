@@ -22,10 +22,23 @@ namespace DBSchemaComparator.Domain.Database
 
         private DatabaseType DbType { get; set; }
 
-
         public DatabaseHandler(string connectionString, DatabaseType databaseType)
         {
             CreateDatabaseConnection(connectionString, databaseType);
+        }
+
+        public IList<Table> GetTablesSchemaInfo()
+        {
+            var tables = SelectTablesSchemaInfo();
+            var columns = SelectColumnsSchemaInfo();
+            var identity = SelectColumnsWithIdentity();
+            var columnsWithIdentity = JoinIdentityInfoToColumns(columns, identity);
+            return JoinColumnsToTables(tables, columnsWithIdentity);
+        }
+
+        public IList<Index> GetIndexesInfo()
+        {
+            return SelectSchemaInfo<Index>(InformationType.Indexes);
         }
 
         private void CreateDatabaseConnection(string connectionString, DatabaseType databaseType)
@@ -48,12 +61,48 @@ namespace DBSchemaComparator.Domain.Database
         }
 
 
-        public IList<Table> SelectTablesSchemaInfo(string tableName)
+        private IList<Table> SelectTablesSchemaInfo()
         {
-           return SelectTablesInfo(tableName, InformationType.Tables);
+           return SelectSchemaInfo<Table>(InformationType.Tables);
         }
 
-        public IList<Table> SelectTablesInfo(string tableName, InformationType infoType)
+        private IList<Column> SelectColumnsSchemaInfo()
+        {
+            return SelectSchemaInfo<Column>(InformationType.Columns);
+        }
+
+        private IList<IdentityColumn> SelectColumnsWithIdentity()
+        {
+
+            return SelectSchemaInfo<IdentityColumn>(InformationType.IdentityColumns);
+        }
+
+        private static IList<Column> JoinIdentityInfoToColumns(IList<Column> columns, IList<IdentityColumn> identityColumns)
+        {
+            foreach (var ideCol in identityColumns)
+            {
+                foreach (var column in columns)
+                {
+                    if (ideCol.TableName == column.TableName && ideCol.ColumnName == column.ColumnName)
+                    {
+                        column.IsIdentification = true;
+                    }
+                }
+            }
+            return columns;
+        }
+
+        private static IList<Table> JoinColumnsToTables(IList<Table> tables, IList<Column> columns)
+        {
+            foreach (var table in tables)
+            {
+                var columnsOfTable = columns.Where(col => col.TableName == table.TableName);
+                table.Columns = columnsOfTable.ToList();
+            }
+            return tables;
+        }
+
+        private IList<T> SelectSchemaInfo<T>(InformationType infoType)
         {
             Logger.Info($"Selecting basic schema information about tables from database");
 
@@ -63,13 +112,8 @@ namespace DBSchemaComparator.Domain.Database
             {
                 using (var db = Database)
                 {
-                    if (!string.IsNullOrWhiteSpace(tableName))
-                    {
-                        sqlQuery.Append("WHERE TABLE_NAME = @0", "%" + tableName + "%");
-                    }
                     Logger.Info($"Querying database with {sqlQuery}");
-                    var queryResult = db.Query<Table>(sqlQuery).ToList();
-
+                    var queryResult = db.Query<T>(sqlQuery).ToList();
                     return queryResult;
                 }
             }
@@ -87,6 +131,7 @@ namespace DBSchemaComparator.Domain.Database
 
         private static Sql GetSqlQuery(InformationType infoType)
         {
+           
             var sqlQuery = Sql.Builder;
             
             switch (infoType)
@@ -95,10 +140,25 @@ namespace DBSchemaComparator.Domain.Database
                     sqlQuery.Append(@"SELECT TABLE_NAME FROM [INFORMATION_SCHEMA].[TABLES]");
                     break;
                     case InformationType.Columns:
-                    sqlQuery.Append(@"SELECT TABLE_NAME FROM [INFORMATION_SCHEMA].[COLUMNS]");
+                    sqlQuery.Append(@"SELECT TABLE_NAME, COLUMN_NAME, IS_NULLABLE, DATA_TYPE FROM [INFORMATION_SCHEMA].[COLUMNS]");
+                    break;
+                    case InformationType.IdentityColumns:
+                    sqlQuery.Append(@"SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS where COLUMNPROPERTY(object_id(TABLE_SCHEMA+'.'+TABLE_NAME), COLUMN_NAME, 'IsIdentity') = 1");
+                    break;
+                    case InformationType.Indexes:
+                    //U => Only get indexes for User Created Tables
+                    sqlQuery.Append(@"SELECT so.name AS TableName, si.name AS IndexName, si.type_desc AS IndexType, si.is_primary_key AS IsPrimaryKey, si.is_unique as IsUnique, c.name AS ColumnName FROM 
+                                        sys.indexes si
+                                        INNER JOIN sys.objects so ON si.[object_id] = so.[object_id]
+			                            INNER JOIN sys.index_columns ic ON si.object_id = ic.object_id AND ic.index_id = si.index_id
+			                            INNER JOIN sys.columns c ON c.object_id = ic.object_id AND c.column_id = ic.column_id
+                                        WHERE
+			                            so.type = 'U'    
+                                        AND 
+                                        si.name IS NOT NULL");
                     break;
             }
-
+            Logger.Debug($"Returning SQL Query string {sqlQuery} of type {infoType}");
             return sqlQuery;
         }
 
