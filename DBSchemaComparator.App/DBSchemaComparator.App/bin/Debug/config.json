@@ -10,7 +10,7 @@
     },
     {
       "DbName": "DatabaseComparatorTest2",
-      "IpAddress": "10.18.3.111",
+      "IpAddress": "10.18.3.2",
       "Pass": "cisco",
       "Username": "SA",
       "Timeout": 10 ,
