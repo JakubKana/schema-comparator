@@ -104,7 +104,7 @@ namespace DBSchemaComparator.Domain.Database
 
         private IList<T> SelectSchemaInfo<T>(InformationType infoType)
         {
-            Logger.Info($"Selecting basic schema information about tables from database");
+            Logger.Info($"Selecting basic schema information of type: {infoType}");
 
             Sql sqlQuery = GetSqlQuery(infoType);
 
@@ -119,7 +119,7 @@ namespace DBSchemaComparator.Domain.Database
             }
             catch (SqlException exception)
             {
-                Logger.Warn(exception, "Unable to retrieve basic tables schema information from database.");
+                Logger.Warn(exception,$"Unable to retrieve basic schema information of type {infoType} from database.");
                 return null;
             }
             catch (Exception exception)

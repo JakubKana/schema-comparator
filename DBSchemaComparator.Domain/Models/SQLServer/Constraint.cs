@@ -3,7 +3,7 @@
     public class Constraint
     {
         public string ConstraintName { get; set; }
-        public string ConstraintType { get; set; }
+        public ConstraintType ConstraintType { get; set; }
 
         
 

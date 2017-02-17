@@ -5,6 +5,7 @@
         LpresentRmissing,
         LpresentRpresent,
         LmissingRpresent,
-        LmissingRmissing
+        DifferentDataTypes,
+        DifferentConstraint
     }
 }
