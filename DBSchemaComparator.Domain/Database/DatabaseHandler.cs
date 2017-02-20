@@ -27,6 +27,11 @@ namespace DBSchemaComparator.Domain.Database
             CreateDatabaseConnection(connectionString, databaseType);
         }
 
+        public IList<StoredProcedure> GetStoredProceduresInfo()
+        {
+            return SelectSchemaInfo<StoredProcedure>(InformationType.StoredProcedure);
+        }
+
         public IList<Table> GetTablesSchemaInfo()
         {
             var tables = SelectTablesSchemaInfo();
@@ -60,6 +65,8 @@ namespace DBSchemaComparator.Domain.Database
             }
         }
 
+
+        
 
         private IList<Table> SelectTablesSchemaInfo()
         {
@@ -157,6 +164,12 @@ namespace DBSchemaComparator.Domain.Database
                                         AND 
                                         si.name IS NOT NULL");
                     break;
+                    case InformationType.StoredProcedure:
+                    sqlQuery.Append(@"SELECT sp.ROUTINE_NAME as PROCEDURE_NAME, sp.ROUTINE_DEFINITION as PROCEDURE_BODY FROM [INFORMATION_SCHEMA].[ROUTINES] sp where routine_type = 'PROCEDURE'");
+                    break;
+                    case InformationType.Function:
+                    sqlQuery.Append(@"SELECT sp.ROUTINE_NAME as FUNCTION_NAME, sp.ROUTINE_DEFINITION as FUNCTION_BODY FROM [INFORMATION_SCHEMA].[ROUTINES] sp where routine_type = 'FUNCTION'");
+                    break;
             }
             Logger.Debug($"Returning SQL Query string {sqlQuery} of type {infoType}");
             return sqlQuery;
@@ -178,7 +191,7 @@ namespace DBSchemaComparator.Domain.Database
         //        return false;
         //    }
         //    return true;
-
         //}
+
     }
 }

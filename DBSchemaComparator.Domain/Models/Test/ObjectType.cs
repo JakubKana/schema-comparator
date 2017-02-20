@@ -2,6 +2,6 @@
 {
     public enum ObjectType
     {
-        Table, Column, StoredProcedure, Index, ForeignKey, Check
+        Table, Column, StoredProcedure, Index, ForeignKey, Check, DataType, IsNullable, IsIdentification
     }
 }

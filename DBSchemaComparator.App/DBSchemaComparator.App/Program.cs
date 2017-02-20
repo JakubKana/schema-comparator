@@ -21,9 +21,8 @@ namespace DBSchemaComparator.App
 
             var comparator = new ObjectComparator(connectionStrings.ElementAt(0),connectionStrings.ElementAt(1));
 
-            
-            var indexes = comparator.LeftDatabase.GetIndexesInfo();
-            
+        
+         
             _logger.Info("Exiting application.");
         }
     }

@@ -6,5 +6,6 @@
         public string TestedObjectName { get; set; }
         public ErrorTypes ErrorType { get; set; }
         public string Description { get; set; }
+       
     }
 }

@@ -5,7 +5,7 @@
         LpresentRmissing,
         LpresentRpresent,
         LmissingRpresent,
-        DifferentDataTypes,
-        DifferentConstraint
+        NotMatch,
+        IsMatch
     }
 }
