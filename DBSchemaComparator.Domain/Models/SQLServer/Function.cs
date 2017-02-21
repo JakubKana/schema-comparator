@@ -2,6 +2,7 @@
 
 namespace DBSchemaComparator.Domain.Models.SQLServer
 {
+    [TableName("ROUTINES")]
     public class Function
     {
         [Column("FUNCTION_NAME")]

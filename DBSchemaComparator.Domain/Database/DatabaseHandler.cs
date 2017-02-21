@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DBSchemaComparator.Domain.Infrastructure;
@@ -44,6 +45,11 @@ namespace DBSchemaComparator.Domain.Database
         public IList<Index> GetIndexesInfo()
         {
             return SelectSchemaInfo<Index>(InformationType.Indexes);
+        }
+
+        public IList<Function> GetFunctionsInfo()
+        {
+            return SelectSchemaInfo<Function>(InformationType.Function);
         }
 
         private void CreateDatabaseConnection(string connectionString, DatabaseType databaseType)
@@ -193,5 +199,6 @@ namespace DBSchemaComparator.Domain.Database
         //    return true;
         //}
 
+        
     }
 }

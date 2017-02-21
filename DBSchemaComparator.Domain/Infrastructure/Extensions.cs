@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using NLog;
 
 namespace DBSchemaComparator.Domain.Infrastructure
 {
    public static class Extensions
     {
-        
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         public static IEnumerable<T> DepthFirstTraversal<T>(T start,Func<T, IEnumerable<T>> getNeighbors)
         {
             var visited = new HashSet<T>();
@@ -29,6 +31,25 @@ namespace DBSchemaComparator.Domain.Infrastructure
                 }
             }
         }
-    
+
+        public static IEnumerable<T> RemoveDuplicity<T>(IEnumerable<T> list)
+        {
+            Logger.Info("Removing duplicities from the list.");
+            return list.Distinct();
+        }
+
+        public static string Normalize(string text)
+        {
+            Logger.Info("Running Normalize method.");
+            Logger.Debug($"Normalizing text:\n {text}");
+            string pattern = @"(\s+)";
+
+            var normalizedText = Regex.Replace(text, pattern, " ");
+
+            Logger.Debug($"Normalized text:\n {normalizedText}");
+            return normalizedText;
+        }
+
+
     }
 }
