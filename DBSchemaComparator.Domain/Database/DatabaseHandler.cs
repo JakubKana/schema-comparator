@@ -28,10 +28,7 @@ namespace DBSchemaComparator.Domain.Database
             CreateDatabaseConnection(connectionString, databaseType);
         }
 
-        public IList<StoredProcedure> GetStoredProceduresInfo()
-        {
-            return SelectSchemaInfo<StoredProcedure>(InformationType.StoredProcedure);
-        }
+      
 
         public IList<Table> GetTablesSchemaInfo()
         {
@@ -42,6 +39,11 @@ namespace DBSchemaComparator.Domain.Database
             return JoinColumnsToTables(tables, columnsWithIdentity);
         }
 
+        public IList<StoredProcedure> GetStoredProceduresInfo()
+        {
+            return SelectSchemaInfo<StoredProcedure>(InformationType.StoredProcedure);
+        }
+
         public IList<Index> GetIndexesInfo()
         {
             return SelectSchemaInfo<Index>(InformationType.Indexes);
@@ -50,6 +52,11 @@ namespace DBSchemaComparator.Domain.Database
         public IList<Function> GetFunctionsInfo()
         {
             return SelectSchemaInfo<Function>(InformationType.Function);
+        }
+
+        public IList<View> GetViewsInfo()
+        {
+            return SelectSchemaInfo<View>(InformationType.View);
         }
 
         private void CreateDatabaseConnection(string connectionString, DatabaseType databaseType)
@@ -70,9 +77,6 @@ namespace DBSchemaComparator.Domain.Database
                     break;
             }
         }
-
-
-        
 
         private IList<Table> SelectTablesSchemaInfo()
         {
@@ -137,7 +141,7 @@ namespace DBSchemaComparator.Domain.Database
             }
             catch (Exception exception)
             {
-                Logger.Warn(exception);
+                Logger.Warn(exception, "Unexpected error.");
                 return null;
             }
         }
@@ -146,7 +150,6 @@ namespace DBSchemaComparator.Domain.Database
         {
            
             var sqlQuery = Sql.Builder;
-            
             switch (infoType)
             {
                     case InformationType.Tables:
@@ -176,8 +179,13 @@ namespace DBSchemaComparator.Domain.Database
                     case InformationType.Function:
                     sqlQuery.Append(@"SELECT sp.ROUTINE_NAME as FUNCTION_NAME, sp.ROUTINE_DEFINITION as FUNCTION_BODY FROM [INFORMATION_SCHEMA].[ROUTINES] sp where routine_type = 'FUNCTION'");
                     break;
+                    case InformationType.View:
+                    sqlQuery.Append(@"SELECT TABLE_NAME as VIEW_NAME, VIEW_DEFINITION as VIEW_BODY FROM INFORMATION_SCHEMA.VIEWS");
+                    break;
             }
+
             Logger.Debug($"Returning SQL Query string {sqlQuery} of type {infoType}");
+
             return sqlQuery;
         }
 

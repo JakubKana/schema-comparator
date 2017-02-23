@@ -2,12 +2,12 @@
 
 namespace DBSchemaComparator.Domain.Models.SQLServer
 {
-    [TableName("ROUTINES")]
-    public class Function : IProcedure
+    [TableName("VIEWS")]
+    public class View : IProcedure
     {
-        [Column("FUNCTION_NAME")]
+        [Column("VIEW_NAME")]
         public string Name { get; set; }
-        [Column("FUNCTION_BODY")]
+        [Column("VIEW_BODY")]
         public string Body { get; set; }
     }
 }

@@ -69,7 +69,9 @@
     <Compile Include="Models\PetaPoco.cs" />
     <Compile Include="Models\SQLServer\Column.cs" />
     <Compile Include="Models\SQLServer\Index.cs" />
+    <Compile Include="Models\SQLServer\IProcedure.cs" />
     <Compile Include="Models\SQLServer\StoredProcedure.cs" />
+    <Compile Include="Models\SQLServer\View.cs" />
     <Compile Include="Models\Test\ErrorTypes.cs" />
     <Compile Include="Models\Test\ObjectType.cs" />
     <Compile Include="Models\Test\TestNodes.cs" />

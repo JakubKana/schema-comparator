@@ -17,7 +17,9 @@
         ColumnsTests,
         StoredProceduresTests,
         FunctionsTests,
-        IndexTests
-
+        IndexTests,
+        ViewsTests,
+        View,
+        IntegrityConstraintsTests
     }
 }

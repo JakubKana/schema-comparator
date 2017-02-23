@@ -21,7 +21,7 @@ namespace DBSchemaComparator.App
 
             var comparator = new ObjectComparator(connectionStrings.ElementAt(0),connectionStrings.ElementAt(1));
 
-        
+            
          
             _logger.Info("Exiting application.");
         }

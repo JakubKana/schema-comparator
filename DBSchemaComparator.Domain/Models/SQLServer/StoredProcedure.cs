@@ -3,7 +3,7 @@
 namespace DBSchemaComparator.Domain.Models.SQLServer
 { 
     [TableName("ROUTINES")]
-    public class StoredProcedure
+    public class StoredProcedure : IProcedure
     {
         [Column("PROCEDURE_NAME")]
         public string Name { get; set; }

@@ -7,6 +7,7 @@ namespace DBSchemaComparator.Domain.Database
         IdentityColumns,
         Indexes,
         StoredProcedure,
-        Function
+        Function,
+        View
     }
 }

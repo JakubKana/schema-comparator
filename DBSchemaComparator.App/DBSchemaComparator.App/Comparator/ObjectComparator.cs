@@ -26,8 +26,6 @@ namespace DBSchemaComparator.App.Comparator
             private set { DatabaseType = value; }
         }
 
-       
-
         public DatabaseHandler LeftDatabase { get; set; }
         public DatabaseHandler RightDatabase { get; set; }
 
@@ -58,11 +56,13 @@ namespace DBSchemaComparator.App.Comparator
             LeftDatabase = new DatabaseHandler(ConnStringLeft, DatabaseType.SqlServer);
             RightDatabase = new DatabaseHandler(ConnStringRight, DatabaseType.SqlServer);
 
+            
+
+
             //Test Tables
             var tablesTestNode = TestTables();
             mainTestNode.Nodes.Add(tablesTestNode);
            
-
             //Test StoredProcedures
             var spTestNode = TestProcedures();
             mainTestNode.Nodes.Add(spTestNode);
@@ -71,13 +71,89 @@ namespace DBSchemaComparator.App.Comparator
             var functionsTestNode = TestFunctions();
             mainTestNode.Nodes.Add(functionsTestNode);
 
+            // Test Indexes
             var indexesTestNode = TestIndexes();
-            
             mainTestNode.Nodes.Add(indexesTestNode);
+
+            // Test Views
+            var viewsTestNode = TestViews();
+            mainTestNode.Nodes.Add(viewsTestNode);
+
+            // Test Integrity Constraints
+            var integrityConstraintsNode = TestIntegrityConstraints();
+            mainTestNode.Nodes.Add(integrityConstraintsNode);
 
             //List of all nodes within a Tree Structure
             var listofnodes = Extensions.DepthFirstTraversal(mainTestNode, r => r.Nodes).ToList();
-            
+        }
+
+        private TestNodes TestViews()
+        {
+            Logger.Info("Begin TestViews");
+            var viewsTestNode = CreateTestNode(null, ObjectType.ViewsTests, "Set of tests for views");
+
+            var leftDbViews = LeftDatabase.GetViewsInfo();
+            var rightDbViews = RightDatabase.GetViewsInfo();
+
+            foreach (var leftDbView in leftDbViews)
+            {
+                TestLeftDbViews(viewsTestNode, rightDbViews, leftDbView);
+            }
+            foreach (var rightDbView in rightDbViews)
+            {
+                TestRightDbViews(viewsTestNode, leftDbViews, rightDbView);
+            }
+
+            Logger.Info("End TestViews method.");
+            return viewsTestNode;
+        }
+
+        private void TestRightDbViews(TestNodes viewsTestNode, IList<View> leftDbViews, View rightDbView)
+        {
+            var leftViews = leftDbViews.FirstOrDefault(r => string.Equals(r.Name, rightDbView.Name, StringComparison.CurrentCultureIgnoreCase));
+
+            if (leftViews == null)
+            {
+                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View: {rightDbView.Name}");
+
+                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.View, $"Testing View L: missing R: {rightDbView.Name}", testNode.Results);
+
+                viewsTestNode.Nodes.Add(testNode);
+            }
+            else
+            {
+                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View {rightDbView.Name}");
+
+                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.View, $"Testing View L: {leftViews.Name} R: {rightDbView.Name}", testNode.Results);
+                var testProceduresBodyNode = TestViewBody(leftViews, rightDbView);
+
+                testNode.Nodes.Add(testProceduresBodyNode);
+                viewsTestNode.Nodes.Add(testNode);
+            }
+        }
+
+        private void TestLeftDbViews(TestNodes viewsTestNode, IList<View> rightDbViews, View leftDbView)
+        {
+            var rightViews = rightDbViews.FirstOrDefault(r => string.Equals(r.Name, leftDbView.Name, StringComparison.CurrentCultureIgnoreCase));
+
+            if (rightViews == null)
+            {
+                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View: {leftDbView.Name}");
+
+                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.View, $"Testing View L: {leftDbView.Name} R: missing", testNode.Results);
+
+                viewsTestNode.Nodes.Add(testNode);
+            }
+            else
+            {
+                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View: {leftDbView.Name}");
+
+                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.View, $"Testing View L: {leftDbView.Name} R: {rightViews.Name}", testNode.Results);
+                var testFunctionBodyNode = TestViewBody(leftDbView, rightViews);
+
+                testNode.Nodes.Add(testFunctionBodyNode);
+                viewsTestNode.Nodes.Add(testNode);
+            }
         }
 
         private TestNodes TestFunctions()
@@ -109,7 +185,7 @@ namespace DBSchemaComparator.App.Comparator
 
             if (leftFunction == null)
             {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for SP: {rightFunction.Name}");
+                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for Function: {rightFunction.Name}");
 
                 AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Function, $"Testing Function L: missing R: {rightFunction.Name}", testNode.Results);
 
@@ -161,6 +237,25 @@ namespace DBSchemaComparator.App.Comparator
             else
             {
                 AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.Function, $"Testing body of SP L: {leftFunctions.Name} R: {rightFunctions.Name}", bodyTest.Results);
+            }
+            return bodyTest;
+
+        }
+
+        private TestNodes TestViewBody(View leftView, View rightView)
+        {
+            var bodyTest = CreateTestNode(new List<TestResult>(), ObjectType.View, "Test for View Body");
+            var normalizedLeft = Extensions.Normalize(leftView.Body).Trim();
+            var normalizedRight = Extensions.Normalize(rightView.Body).Trim();
+            Logger.Info($"Testing views bodies L: {leftView.Body} R: {rightView.Body}");
+
+            if (normalizedLeft == normalizedRight)
+            {
+                AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.View, $"Testing body of SP L: {leftView.Name} R: {rightView.Name}", bodyTest.Results);
+            }
+            else
+            {
+                AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.View, $"Testing body of SP L: {leftView.Name} R: {rightView.Name}", bodyTest.Results);
             }
             return bodyTest;
 
@@ -339,7 +434,6 @@ namespace DBSchemaComparator.App.Comparator
                 }
         }
 
-
         public TestNodes TestProcedures()
         {
             Logger.Info("Begin TestProcedures method.");
@@ -432,12 +526,13 @@ namespace DBSchemaComparator.App.Comparator
             var leftDatabaseIndexes = LeftDatabase.GetIndexesInfo().ToList();
             var rightDatabaseIndexes = RightDatabase.GetIndexesInfo().ToList();
 
-
             foreach (var leftDatabaseIndex in leftDatabaseIndexes)
             {
                 var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
                     $"Index Name {leftDatabaseIndex.IndexName} applied on {leftDatabaseIndex.TableName}.{leftDatabaseIndex.ColumnName}");
-                var rigthIndex = rightDatabaseIndexes.FirstOrDefault(r => string.Equals(r.IndexName, leftDatabaseIndex.IndexName, StringComparison.CurrentCultureIgnoreCase));
+                var rigthIndex = rightDatabaseIndexes.FirstOrDefault(r => 
+                string.Equals(r.IndexName, leftDatabaseIndex.IndexName, StringComparison.CurrentCultureIgnoreCase) &&
+                string.Equals(r.TableName, leftDatabaseIndex.TableName, StringComparison.CurrentCultureIgnoreCase));
                 if (rigthIndex == null)
                 {
                     AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Index, $"Indexes L: {leftDatabaseIndex.IndexName} R: misssing", indexNode.Results);
@@ -453,7 +548,9 @@ namespace DBSchemaComparator.App.Comparator
             {
                 var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
                    $"Index Name {rightDatabaseIndex.IndexName} applied on {rightDatabaseIndex.TableName}.{rightDatabaseIndex.ColumnName}");
-                var leftIndex = leftDatabaseIndexes.FirstOrDefault(l => string.Equals(l.IndexName, rightDatabaseIndex.IndexName, StringComparison.CurrentCultureIgnoreCase));
+                var leftIndex = leftDatabaseIndexes.FirstOrDefault(l => 
+                string.Equals(l.IndexName, rightDatabaseIndex.IndexName, StringComparison.CurrentCultureIgnoreCase) &&
+                string.Equals(l.TableName, rightDatabaseIndex.TableName, StringComparison.CurrentCultureIgnoreCase));
                 if (leftIndex == null)
                 {
                     AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Index, $"Indexes L: missing R: {rightDatabaseIndex.IndexName}", indexNode.Results);
@@ -470,9 +567,16 @@ namespace DBSchemaComparator.App.Comparator
             return indexesTestsNode;
         }
 
-        public void TestIntegrityConstraints()
+        public TestNodes TestIntegrityConstraints()
         {
+            Logger.Info("Begin TestIntegrityConstraints method");
+            var integrityConstraintsTestNode = CreateTestNode(null, ObjectType.IntegrityConstraintsTests, "Set of tests for integrity constraints");
 
+
+
+
+            Logger.Info("End TestIntegrityConstraints method");
+            return integrityConstraintsTestNode;
         }
 
         private static TestNodes CreateTestNode(List<TestResult> testResults, ObjectType testType, string description)
@@ -490,14 +594,15 @@ namespace DBSchemaComparator.App.Comparator
 
         private void AddTestResult(string description, ErrorTypes errorType, ObjectType objType, string testedObjName, List<TestResult> testResults)
         {
-            var matchingvalues = testResults.FirstOrDefault(test =>
+            var matchingvalues = testResults.Exists(test =>
             test.ErrorType == errorType &&
             test.TestedObjectName == testedObjName &&
-            test.ObjectType == objType);
+            test.ObjectType == objType && 
+            test.Description == description);
 
-            if (matchingvalues != null) return;
+            if (matchingvalues) return;
 
-            Logger.Info($"Adding TestResult for {objType} of name {testedObjName}");
+            Logger.Info($"Adding TestResult for {objType} of name {testedObjName} with description: {description}");
 
             TestResult testResult = new TestResult
             {
