@@ -13,3 +13,4 @@ d:\GitRepository\schema-comparator\DBSchemaComparator.App\DBSchemaComparator.App
 D:\GitRepository\schema-comparator\DBSchemaComparator.App\DBSchemaComparator.App\bin\Debug\Newtonsoft.Json.dll
 D:\GitRepository\schema-comparator\DBSchemaComparator.App\DBSchemaComparator.App\bin\Debug\Newtonsoft.Json.xml
 D:\GitRepository\schema-comparator\DBSchemaComparator.App\DBSchemaComparator.App\bin\Debug\config.json
+D:\GitRepository\schema-comparator\DBSchemaComparator.App\DBSchemaComparator.App\bin\Debug\Create.sql

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DBSchemaComparator.App.Comparator
@@ -10,18 +11,12 @@ namespace DBSchemaComparator.App.Comparator
     {
 
 
-
-
-
-
         public static string[] GetMSScriptArray(string script)
         {
-            var parsed = script.Split(Convert.ToChar("GO"));
+            var parsed = Regex.Split(script, "GO\n");
 
             return parsed;
         }
-
-
 
     }
 }

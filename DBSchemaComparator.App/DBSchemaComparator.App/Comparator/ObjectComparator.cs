@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Text.RegularExpressions;
 using DBSchemaComparator.Domain.Database;
 using DBSchemaComparator.Domain.Infrastructure;
@@ -56,8 +57,11 @@ namespace DBSchemaComparator.App.Comparator
             LeftDatabase = new DatabaseHandler(ConnStringLeft, DatabaseType.SqlServer);
             RightDatabase = new DatabaseHandler(ConnStringRight, DatabaseType.SqlServer);
 
-            
+           
+            var scriptFromFile = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Create.sql"));
 
+            var parsedScript = ScriptParser.GetMSScriptArray(scriptFromFile);
+            LeftDatabase.ExecuteTransactionScript(parsedScript);
 
             //Test Tables
             var tablesTestNode = TestTables();

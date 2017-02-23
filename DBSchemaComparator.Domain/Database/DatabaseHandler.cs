@@ -28,7 +28,32 @@ namespace DBSchemaComparator.Domain.Database
             CreateDatabaseConnection(connectionString, databaseType);
         }
 
-      
+        public bool ExecuteTransactionScript(string[] scriptArray)
+        {
+            try
+            {
+                Logger.Info("Executing transaction script.");
+                Database.BeginTransaction();
+               
+                foreach (var s in scriptArray)
+                {
+                  Logger.Debug("Executing command", s);
+
+                  var result = Database.Execute(s);
+                }
+
+                Logger.Info("Transaction Successful.");
+                Database.CompleteTransaction();
+
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Logger.Info(exception, "Aborting transaction.");
+                Database.AbortTransaction();
+                return false;
+            }
+        }
 
         public IList<Table> GetTablesSchemaInfo()
         {
@@ -188,6 +213,8 @@ namespace DBSchemaComparator.Domain.Database
 
             return sqlQuery;
         }
+
+
 
         //public bool IsAvailible()
         //{
