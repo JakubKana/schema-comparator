@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net.Mime;
-using System.Runtime.CompilerServices;
+﻿using System.Linq;
 using DBSchemaComparator.App.Comparator;
 using DBSchemaComparator.Domain.Infrastructure;
 
@@ -20,7 +17,7 @@ namespace DBSchemaComparator.App
             var connectionStrings = Settings.GetDatabaseConnectionStrings(Settings.Instance.DatabaseConnections);
 
             var comparator = new ObjectComparator(connectionStrings.ElementAt(0),connectionStrings.ElementAt(1));
-
+            comparator.CompareDatabases();
             
          
             _logger.Info("Exiting application.");

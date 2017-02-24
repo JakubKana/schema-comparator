@@ -20,6 +20,7 @@
         IndexTests,
         ViewsTests,
         View,
-        IntegrityConstraintsTests
+        IntegrityConstraintsTests,
+        Script
     }
 }

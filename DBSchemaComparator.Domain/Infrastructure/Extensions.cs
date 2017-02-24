@@ -35,7 +35,9 @@ namespace DBSchemaComparator.Domain.Infrastructure
         public static IEnumerable<T> RemoveDuplicity<T>(IEnumerable<T> list)
         {
             Logger.Info("Removing duplicities from the list.");
-            return list.Distinct();
+            var distinctList = list.Distinct();
+            Logger.Debug("Returning distinct list", distinctList.ToList());
+            return distinctList;
         }
 
         public static string Normalize(string text)
@@ -50,6 +52,14 @@ namespace DBSchemaComparator.Domain.Infrastructure
             return normalizedText;
         }
 
+        public static string NormalizeParameters(string text)
+        {
+            Logger.Info("Running replace");
+            Logger.Debug($"Replacing @ within string: {text}");
+            var normalizeText = text.Replace("@", "@@");
+            Logger.Debug($"Returning normalized string: {normalizeText}");
+            return normalizeText;
+        }
 
     }
 }

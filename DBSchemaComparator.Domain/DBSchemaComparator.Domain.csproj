@@ -40,8 +40,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,7 +55,6 @@
     <Compile Include="Database\DatabaseHandler.cs" />
     <Compile Include="Database\DatabaseType.cs" />
     <Compile Include="Infrastructure\Extensions.cs" />
-    <Compile Include="Models\SQLServer\Constraint.cs" />
     <Compile Include="Models\SQLServer\ConstraintType.cs" />
     <Compile Include="Models\SQLServer\Function.cs" />
     <Compile Include="Models\SQLServer\IdentityColumn.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Models\SQLServer\Column.cs" />
     <Compile Include="Models\SQLServer\Index.cs" />
     <Compile Include="Models\SQLServer\IProcedure.cs" />
+    <Compile Include="Models\SQLServer\PrimaryKey.cs" />
     <Compile Include="Models\SQLServer\StoredProcedure.cs" />
     <Compile Include="Models\SQLServer\View.cs" />
     <Compile Include="Models\Test\ErrorTypes.cs" />

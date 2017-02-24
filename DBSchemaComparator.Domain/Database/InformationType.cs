@@ -8,6 +8,8 @@ namespace DBSchemaComparator.Domain.Database
         Indexes,
         StoredProcedure,
         Function,
-        View
+        View,
+        Checks,
+        PrimaryKeys
     }
 }

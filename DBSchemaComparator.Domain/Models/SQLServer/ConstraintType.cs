@@ -1,7 +1,8 @@
 ﻿namespace DBSchemaComparator.Domain.Models.SQLServer
 {
-   public enum ConstraintType
+   public interface IConstraint
     {
-        Check, Fk, Pk
+        string ConstraintName { get; set; }
+        string ConstraintTable { get; set; }
     }
 }

@@ -11,11 +11,30 @@ namespace DBSchemaComparator.App.Comparator
     {
 
 
-        public static string[] GetMSScriptArray(string script)
+        public static string[] GetMsScriptArray(string script)
         {
-            var parsed = Regex.Split(script, "GO\n");
+        
+           
 
-            return parsed;
+            //Split by GO statement
+            var parsed = Regex.Split(script, "GO\n");
+            //Remove comments
+            Predicate<string> filter = FindComments;
+
+            var results = Array.FindAll(parsed, filter);
+            var remains = parsed.Except(results).ToArray();
+            if (remains.Last() == string.Empty)
+            {
+                remains = remains.Take(remains.Length - 1).ToArray();
+            }
+            
+            return remains;
+        }
+
+        private static bool FindComments(string obj)
+        {
+            var result = Regex.IsMatch(obj, "^(\n)*/\\*\\*\\*\\*\\*\\*");
+            return result;
         }
 
     }

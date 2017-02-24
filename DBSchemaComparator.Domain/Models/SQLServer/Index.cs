@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using PetaPoco;
+﻿using PetaPoco;
 
 namespace DBSchemaComparator.Domain.Models.SQLServer
 {

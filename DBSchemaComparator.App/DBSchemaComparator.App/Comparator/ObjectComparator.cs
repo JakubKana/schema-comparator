@@ -36,7 +36,7 @@ namespace DBSchemaComparator.App.Comparator
         {
             ConnStringLeft = connStringLeft;
             ConnStringRight = connStringRight;
-            ConnectToDatabases(ConnStringLeft, ConnStringRight);
+          
         }
 
         public ObjectComparator(string connStringLeft, string connStringRight, DatabaseType dbType) : this(connStringLeft, connStringRight)
@@ -44,12 +44,17 @@ namespace DBSchemaComparator.App.Comparator
             DatabaseType = dbType;
         }
 
-        public void ConnectToDatabases(string connStringLeft, string connStringRight)
+        public void CompareDatabases()
+        {
+            ConnectToDatabases(ConnStringLeft, ConnStringRight);
+        }
+
+        private void ConnectToDatabases(string connStringLeft, string connStringRight)
         {
             var mainTestNode = new TestNodes
             {
                 Nodes = new List<TestNodes>(),
-                Results = null,
+                Results = new List<TestResult>(),
                 Description = "Root node",
                 NodeType = ObjectType.Root
             };
@@ -60,33 +65,48 @@ namespace DBSchemaComparator.App.Comparator
            
             var scriptFromFile = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Create.sql"));
 
-            var parsedScript = ScriptParser.GetMSScriptArray(scriptFromFile);
-            LeftDatabase.ExecuteTransactionScript(parsedScript);
+            var parsedScript = ScriptParser.GetMsScriptArray(scriptFromFile);
 
-            //Test Tables
-            var tablesTestNode = TestTables();
-            mainTestNode.Nodes.Add(tablesTestNode);
+            //var leftDbCreated = LeftDatabase.ExecuteTransactionScript(parsedScript);
+            //var rightDbCreated = RightDatabase.ExecuteTransactionScript(parsedScript);
+
+            //if (!leftDbCreated)
+            //{
+            //    AddTestResult("Creation of Left Database objects failed",ErrorTypes.CreationScriptFailed, ObjectType.Script, "Create Script",mainTestNode.Results);
+            //}
+
+            //if (!rightDbCreated)
+            //{
+            //    AddTestResult("Creation of Right Database objects failed", ErrorTypes.CreationScriptFailed, ObjectType.Script, "Create Script", mainTestNode.Results);
+            //}
+
+            //if (leftDbCreated && rightDbCreated)
+            //{
+                //Test Tables
+                var tablesTestNode = TestTables();
+                mainTestNode.Nodes.Add(tablesTestNode);
+
+                //Test StoredProcedures
+                var spTestNode = TestProcedures();
+                mainTestNode.Nodes.Add(spTestNode);
+
+                //Test Functions
+                var functionsTestNode = TestFunctions();
+                mainTestNode.Nodes.Add(functionsTestNode);
+
+                // Test Indexes
+                var indexesTestNode = TestIndexes();
+                mainTestNode.Nodes.Add(indexesTestNode);
+
+                // Test Views
+                var viewsTestNode = TestViews();
+                mainTestNode.Nodes.Add(viewsTestNode);
+
+                // Test Integrity Constraints
+                var integrityConstraintsNode = TestIntegrityConstraints();
+                mainTestNode.Nodes.Add(integrityConstraintsNode);
+          //  }
            
-            //Test StoredProcedures
-            var spTestNode = TestProcedures();
-            mainTestNode.Nodes.Add(spTestNode);
-
-            //Test Functions
-            var functionsTestNode = TestFunctions();
-            mainTestNode.Nodes.Add(functionsTestNode);
-
-            // Test Indexes
-            var indexesTestNode = TestIndexes();
-            mainTestNode.Nodes.Add(indexesTestNode);
-
-            // Test Views
-            var viewsTestNode = TestViews();
-            mainTestNode.Nodes.Add(viewsTestNode);
-
-            // Test Integrity Constraints
-            var integrityConstraintsNode = TestIntegrityConstraints();
-            mainTestNode.Nodes.Add(integrityConstraintsNode);
-
             //List of all nodes within a Tree Structure
             var listofnodes = Extensions.DepthFirstTraversal(mainTestNode, r => r.Nodes).ToList();
         }
@@ -335,7 +355,6 @@ namespace DBSchemaComparator.App.Comparator
             }
         }
 
-
         private TestNodes TestColumns(Table leftTable, Table rightTable)
         {
             Logger.Info($"Start testing columns for tables L:{leftTable.TableName} R:{rightTable.TableName}");
@@ -571,11 +590,13 @@ namespace DBSchemaComparator.App.Comparator
             return indexesTestsNode;
         }
 
-        public TestNodes TestIntegrityConstraints()
+        private TestNodes TestIntegrityConstraints()
         {
             Logger.Info("Begin TestIntegrityConstraints method");
             var integrityConstraintsTestNode = CreateTestNode(null, ObjectType.IntegrityConstraintsTests, "Set of tests for integrity constraints");
 
+            var leftDbPk = LeftDatabase.GetPrimaryKeysInfo();
+            var rightDbPk = RightDatabase.GetPrimaryKeysInfo();
 
 
 
