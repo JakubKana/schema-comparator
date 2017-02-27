@@ -4,5 +4,6 @@
     {
         string ConstraintName { get; set; }
         string ConstraintTable { get; set; }
+       string ColumnApplied { get; set; }
     }
 }

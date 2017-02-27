@@ -82,6 +82,7 @@ namespace DBSchemaComparator.App.Comparator
 
             //if (leftDbCreated && rightDbCreated)
             //{
+
                 //Test Tables
                 var tablesTestNode = TestTables();
                 mainTestNode.Nodes.Add(tablesTestNode);
@@ -293,15 +294,21 @@ namespace DBSchemaComparator.App.Comparator
 
             var leftDatabaseTables = LeftDatabase.GetTablesSchemaInfo().ToList();
             var rightDatabaseTables = RightDatabase.GetTablesSchemaInfo().ToList();
-          
-            foreach (var leftDatabaseTable in leftDatabaseTables)
-            {
-                LeftDatabaseTests(tablesTestsNode, rightDatabaseTables, leftDatabaseTable);
-            }
-            foreach (var rightDatabaseTable in rightDatabaseTables)
-            {
-                RightDatabaseTests(tablesTestsNode, leftDatabaseTables, rightDatabaseTable);
-            }
+
+            
+
+            leftDatabaseTables.ForEach(leftTable => LeftDatabaseTests(tablesTestsNode,rightDatabaseTables,leftTable));
+            //foreach (var leftDatabaseTable in leftDatabaseTables)
+            //{
+            //    LeftDatabaseTests(tablesTestsNode, rightDatabaseTables, leftDatabaseTable);
+            //}
+
+            rightDatabaseTables.ForEach(rightTable => RightDatabaseTests(tablesTestsNode, leftDatabaseTables, rightTable));
+
+            //foreach (var rightDatabaseTable in rightDatabaseTables)
+            //{
+            //    RightDatabaseTests(tablesTestsNode, leftDatabaseTables, rightDatabaseTable);
+            //}
             Logger.Info($"End TestTables method.");
             return tablesTestsNode;
         }
@@ -595,10 +602,72 @@ namespace DBSchemaComparator.App.Comparator
             Logger.Info("Begin TestIntegrityConstraints method");
             var integrityConstraintsTestNode = CreateTestNode(null, ObjectType.IntegrityConstraintsTests, "Set of tests for integrity constraints");
 
+            var primaryKeys = CreateTestNode(new List<TestResult>(), ObjectType.PrimaryKeysTests, "Set of tests for primary keys.");
+            var foreignKeys = CreateTestNode(new List<TestResult>(), ObjectType.ForeignKeysTests, "Set of tests for foreign keys.");
+            var checkConstraints = CreateTestNode(new List<TestResult>(), ObjectType.CheckTests, "Set of tests for check constraints");
+            
+            // Primary Keys
             var leftDbPk = LeftDatabase.GetPrimaryKeysInfo();
             var rightDbPk = RightDatabase.GetPrimaryKeysInfo();
 
+            foreach (var leftPrimaryKey in leftDbPk)
+            {
+                var pkNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
+                   $"PrimaryKey Name {leftPrimaryKey.ConstraintName} applied on {leftPrimaryKey.ConstraintTable}.{leftPrimaryKey.ColumnApplied}");
+                var rightPrimaryKey = rightDbPk.FirstOrDefault(r =>
+                string.Equals(r.ConstraintName, leftPrimaryKey.ConstraintName, StringComparison.CurrentCultureIgnoreCase));
 
+                    if (rightPrimaryKey == null)
+                    {
+                        AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.PrimaryKey, $"Primary Keys L: {leftPrimaryKey.ConstraintName} R: misssing", primaryKeys.Results);
+                    }
+                    else
+                    {
+                        var testColumnApplied = string.Equals(leftPrimaryKey.ColumnApplied,
+                            rightPrimaryKey.ColumnApplied, StringComparison.CurrentCultureIgnoreCase);
+                        var testTableApplied = string.Equals(leftPrimaryKey.ConstraintTable,
+                            rightPrimaryKey.ConstraintTable, StringComparison.CurrentCultureIgnoreCase);
+
+                        if (testColumnApplied && testTableApplied)
+                        {
+                            AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.PrimaryKey, $"Primary Keys L: {leftPrimaryKey.ConstraintName} R: {rightPrimaryKey.ConstraintName} matches.", primaryKeys.Results);
+                        }
+
+                        if (!testColumnApplied)
+                        {
+                            AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey, $"Primary Keys Columns Applied on L: {leftPrimaryKey.ConstraintName} on Column: {leftPrimaryKey.ColumnApplied}  \nR: {rightPrimaryKey.ConstraintName} on Column: {rightPrimaryKey.ColumnApplied}", primaryKeys.Results);
+                        }
+
+                        if (!testTableApplied)
+                        {
+                            AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey, $"Primary Keys applied on Tables L: {leftPrimaryKey.ConstraintName} on Table: {leftPrimaryKey.ConstraintTable} \nR: {rightPrimaryKey.ConstraintName} on Table: {rightPrimaryKey.ConstraintTable}", primaryKeys.Results);
+                        }
+                }
+                    primaryKeys.Nodes.Add(pkNode);
+            }
+
+            // Foreign Keys
+            var leftDbFk = LeftDatabase.GetForeignKeysInfo();
+            var rightDbFk = RightDatabase.GetForeignKeysInfo();
+            // Check Constraints
+            var leftDbChk = LeftDatabase.GetCheckConstraintsInfo();
+            var rightDbChk = RightDatabase.GetCheckConstraintsInfo();
+
+
+
+            
+
+
+
+
+
+
+
+
+
+            integrityConstraintsTestNode.Nodes.Add(primaryKeys);
+            integrityConstraintsTestNode.Nodes.Add(foreignKeys);
+            integrityConstraintsTestNode.Nodes.Add(checkConstraints);
 
             Logger.Info("End TestIntegrityConstraints method");
             return integrityConstraintsTestNode;

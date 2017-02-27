@@ -21,6 +21,11 @@
         ViewsTests,
         View,
         IntegrityConstraintsTests,
-        Script
+        Script,
+        PrimaryKeysTests,
+        PrimaryKey,
+        
+        CheckTests,
+        ForeignKeysTests
     }
 }

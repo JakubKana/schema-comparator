@@ -10,6 +10,7 @@ namespace DBSchemaComparator.Domain.Database
         Function,
         View,
         Checks,
-        PrimaryKeys
+        PrimaryKeys,
+        ForeignKeys
     }
 }

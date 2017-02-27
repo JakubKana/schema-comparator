@@ -36,7 +36,7 @@ namespace DBSchemaComparator.Domain.Infrastructure
         {
             Logger.Info("Removing duplicities from the list.");
             var distinctList = list.Distinct();
-            Logger.Debug("Returning distinct list", distinctList.ToList());
+            Logger.Debug("Returning distinct list", distinctList.ToString());
             return distinctList;
         }
 
