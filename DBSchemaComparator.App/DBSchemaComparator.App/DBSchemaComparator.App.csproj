@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Comparator\ObjectComparator.cs" />
     <Compile Include="Comparator\ScriptParser.cs" />
+    <Compile Include="Comparator\Xml.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

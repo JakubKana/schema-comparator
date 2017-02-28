@@ -5,11 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using DBSchemaComparator.Domain.Database;
-using DBSchemaComparator.Domain.Infrastructure;
 using DBSchemaComparator.Domain.Models.SQLServer;
 using DBSchemaComparator.Domain.Models.Test;
 using NLog;
+using Extensions = DBSchemaComparator.Domain.Infrastructure.Extensions;
 
 namespace DBSchemaComparator.App.Comparator
 {
@@ -61,13 +62,13 @@ namespace DBSchemaComparator.App.Comparator
             LeftDatabase = new DatabaseHandler(ConnStringLeft, DatabaseType.SqlServer);
             RightDatabase = new DatabaseHandler(ConnStringRight, DatabaseType.SqlServer);
 
-           
             var scriptFromFile = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Create.sql"));
 
             var parsedScript = ScriptParser.GetMsScriptArray(scriptFromFile);
 
             var leftDbCreated = LeftDatabase.ExecuteTransactionScript(parsedScript);
             var rightDbCreated = RightDatabase.ExecuteTransactionScript(parsedScript);
+
 
             //if (!leftDbCreated)
             //{
@@ -84,10 +85,17 @@ namespace DBSchemaComparator.App.Comparator
                 AddTestResult("Deploying of Left Database objects success", 
                     ErrorTypes.CreationScriptSuccess, 
                     ObjectType.Script, 
-                    LeftDatabase.Database.ConnectionString, mainTestNode.Results);
-                AddTestResult("Deploying of Right Database objects success", ErrorTypes.CreationScriptSuccess, ObjectType.Script, LeftDatabase.Database.ConnectionString, mainTestNode.Results);
-            //Test Tables
-            var tablesTestNode = TestTables();
+                    LeftDatabase.Database.ConnectionString, 
+                    mainTestNode.Results);
+
+                AddTestResult("Deploying of Right Database objects success", 
+                    ErrorTypes.CreationScriptSuccess, 
+                    ObjectType.Script, 
+                    LeftDatabase.Database.ConnectionString, 
+                    mainTestNode.Results);
+
+                //Test Tables
+                var tablesTestNode = TestTables();
                 mainTestNode.Nodes.Add(tablesTestNode);
 
                 //Test StoredProcedures
@@ -109,8 +117,13 @@ namespace DBSchemaComparator.App.Comparator
                 // Test Integrity Constraints
                 var integrityConstraintsNode = TestIntegrityConstraints();
                 mainTestNode.Nodes.Add(integrityConstraintsNode);
-          //  }
-           
+            //}
+
+            Xml serializeXml = new Xml();
+            string xml = serializeXml.GetXml(mainTestNode);
+
+            XDocument xmlDoc = serializeXml.GetXDocument(mainTestNode);
+            
             //List of all nodes within a Tree Structure
             var listofnodes = Extensions.DepthFirstTraversal(mainTestNode, r => r.Nodes).ToList();
         }
@@ -278,6 +291,8 @@ namespace DBSchemaComparator.App.Comparator
 
             var leftDatabaseTables = LeftDatabase.GetTablesSchemaInfo().ToList();
             var rightDatabaseTables = RightDatabase.GetTablesSchemaInfo().ToList();
+
+            var distinctLeft = leftDatabaseTables.Except(rightDatabaseTables).ToList();
 
             leftDatabaseTables.ForEach(leftTable => LeftDatabaseTests(tablesTestsNode,rightDatabaseTables,leftTable));
             rightDatabaseTables.ForEach(rightTable => RightDatabaseTests(tablesTestsNode, leftDatabaseTables, rightTable));

@@ -197,7 +197,7 @@ namespace DBSchemaComparator.Domain.Database
             switch (infoType)
             {
                 case InformationType.Tables:
-                    sqlQuery.Append(@"SELECT TABLE_NAME FROM [INFORMATION_SCHEMA].[TABLES]");
+                    sqlQuery.Append(@"SELECT TABLE_NAME FROM [INFORMATION_SCHEMA].[TABLES] WHERE TABLE_TYPE = 'BASE TABLE';");
                     break;
                 case InformationType.Columns:
                     sqlQuery.Append(@"SELECT TABLE_NAME, COLUMN_NAME, IS_NULLABLE, DATA_TYPE FROM [INFORMATION_SCHEMA].[COLUMNS]");
