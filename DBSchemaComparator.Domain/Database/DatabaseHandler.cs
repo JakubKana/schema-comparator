@@ -37,13 +37,15 @@ namespace DBSchemaComparator.Domain.Database
                 Logger.Info("Executing transaction script.");
                 Database.BeginTransaction();
 
-                //var script = "--------------------something------------------\ncreate procedure[dbo].[Companies_contact_by_Company_ID] @@Company_ID int as select * from Companies_contact_view where Company_ID = @@Company_ID";
+                //var script = "\ncreate procedure[dbo].[Companies_contact_by_Company_ID] @@Company_ID int as --------------------something------------------ select * from Companies_contact_view where Company_ID = @@Company_ID";
                 // var result = Database.Execute(script);
 
                 foreach (var s in scriptArray)
                 {
-                   Logger.Debug("Executing command", s);
-                   var result = Database.Execute(Extensions.NormalizeParameters(Extensions.Normalize(s)));
+                    Logger.Debug("Executing command", s);
+                    var script =
+                        Extensions.RemoveBeginingNewLine(Extensions.NormalizeParameters(s));
+                    var result = Database.Execute(script);
                 }
                 Logger.Info("Transaction Successful.");
                 Database.CompleteTransaction();
@@ -237,7 +239,7 @@ namespace DBSchemaComparator.Domain.Database
                     sqlQuery.Append(@"SELECT Col.Column_Name AS COLUMN_NAME, Tab.TABLE_NAME as TABLE_NAME, Col.CONSTRAINT_NAME as CONSTRAINT_NAME from 
                                         INFORMATION_SCHEMA.TABLE_CONSTRAINTS Tab, 
                                         INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE Col 
-                                    WHERE 
+                                        WHERE 
                                         Col.Constraint_Name = Tab.Constraint_Name
                                         AND Col.Table_Name = Tab.Table_Name
                                         AND Constraint_Type = 'PRIMARY KEY'

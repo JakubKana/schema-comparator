@@ -7,6 +7,7 @@
         LmissingRpresent,
         NotMatch,
         IsMatch,
-        CreationScriptFailed
+        CreationScriptFailed,
+        CreationScriptSuccess
     }
 }

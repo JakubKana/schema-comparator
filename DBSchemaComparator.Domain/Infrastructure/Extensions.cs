@@ -52,6 +52,17 @@ namespace DBSchemaComparator.Domain.Infrastructure
             return normalizedText;
         }
 
+        public static string RemoveBeginingNewLine(string text)
+        {
+            Logger.Info("Running RemoveBeginingNewLine method.");
+            Logger.Debug($"Normalizing text:\n {text}");
+            string pattern = @"(^\n+)";
+
+            var normalizedText = Regex.Replace(text, pattern, "");
+
+            Logger.Debug($"Normalized text:\n {normalizedText}");
+            return normalizedText;
+        }
         public static string NormalizeParameters(string text)
         {
             Logger.Info("Running replace");

@@ -51,8 +51,7 @@ namespace DBSchemaComparator.App.Comparator
 
         private void ConnectToDatabases(string connStringLeft, string connStringRight)
         {
-            var mainTestNode = new TestNodes
-            {
+            var mainTestNode = new TestNodes {
                 Nodes = new List<TestNodes>(),
                 Results = new List<TestResult>(),
                 Description = "Root node",
@@ -67,8 +66,8 @@ namespace DBSchemaComparator.App.Comparator
 
             var parsedScript = ScriptParser.GetMsScriptArray(scriptFromFile);
 
-            //var leftDbCreated = LeftDatabase.ExecuteTransactionScript(parsedScript);
-            //var rightDbCreated = RightDatabase.ExecuteTransactionScript(parsedScript);
+            var leftDbCreated = LeftDatabase.ExecuteTransactionScript(parsedScript);
+            var rightDbCreated = RightDatabase.ExecuteTransactionScript(parsedScript);
 
             //if (!leftDbCreated)
             //{
@@ -82,9 +81,13 @@ namespace DBSchemaComparator.App.Comparator
 
             //if (leftDbCreated && rightDbCreated)
             //{
-
-                //Test Tables
-                var tablesTestNode = TestTables();
+                AddTestResult("Deploying of Left Database objects success", 
+                    ErrorTypes.CreationScriptSuccess, 
+                    ObjectType.Script, 
+                    LeftDatabase.Database.ConnectionString, mainTestNode.Results);
+                AddTestResult("Deploying of Right Database objects success", ErrorTypes.CreationScriptSuccess, ObjectType.Script, LeftDatabase.Database.ConnectionString, mainTestNode.Results);
+            //Test Tables
+            var tablesTestNode = TestTables();
                 mainTestNode.Nodes.Add(tablesTestNode);
 
                 //Test StoredProcedures
@@ -117,17 +120,11 @@ namespace DBSchemaComparator.App.Comparator
             Logger.Info("Begin TestViews");
             var viewsTestNode = CreateTestNode(null, ObjectType.ViewsTests, "Set of tests for views");
 
-            var leftDbViews = LeftDatabase.GetViewsInfo();
-            var rightDbViews = RightDatabase.GetViewsInfo();
+            var leftDbViews = LeftDatabase.GetViewsInfo().ToList();
+            var rightDbViews = RightDatabase.GetViewsInfo().ToList();
 
-            foreach (var leftDbView in leftDbViews)
-            {
-                TestLeftDbViews(viewsTestNode, rightDbViews, leftDbView);
-            }
-            foreach (var rightDbView in rightDbViews)
-            {
-                TestRightDbViews(viewsTestNode, leftDbViews, rightDbView);
-            }
+            leftDbViews.ForEach(leftDbView => TestLeftDbViews(viewsTestNode, rightDbViews, leftDbView));
+            rightDbViews.ForEach(rightDbView => TestRightDbViews(viewsTestNode, leftDbViews, rightDbView));
 
             Logger.Info("End TestViews method.");
             return viewsTestNode;
@@ -141,8 +138,7 @@ namespace DBSchemaComparator.App.Comparator
             {
                 var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View: {rightDbView.Name}");
 
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.View, $"Testing View L: missing R: {rightDbView.Name}", testNode.Results);
-
+                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.View, $"Testing View L: missing R: {rightDbView.Name}", testNode.Results);
                 viewsTestNode.Nodes.Add(testNode);
             }
             else
@@ -166,7 +162,6 @@ namespace DBSchemaComparator.App.Comparator
                 var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View: {leftDbView.Name}");
 
                 AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.View, $"Testing View L: {leftDbView.Name} R: missing", testNode.Results);
-
                 viewsTestNode.Nodes.Add(testNode);
             }
             else
@@ -190,15 +185,8 @@ namespace DBSchemaComparator.App.Comparator
             var leftDbFunctions = LeftDatabase.GetFunctionsInfo().ToList();
             var rightDbFunctions = RightDatabase.GetFunctionsInfo().ToList();
 
-            foreach (var leftFunctions in leftDbFunctions)
-            {
-                TestLeftDbFunctions(functionsTestNode, rightDbFunctions, leftFunctions);
-            }
-
-            foreach (var rightFunction in rightDbFunctions)
-            {
-                TestRightDbFunctions(functionsTestNode, leftDbFunctions, rightFunction);
-            }
+            leftDbFunctions.ForEach(leftFunctions => TestLeftDbFunctions(functionsTestNode, rightDbFunctions, leftFunctions));
+            rightDbFunctions.ForEach(rightFunctions => TestRightDbFunctions(functionsTestNode, leftDbFunctions, rightFunctions));
 
             Logger.Info("End TestFunctions method.");
             return functionsTestNode;
@@ -211,9 +199,7 @@ namespace DBSchemaComparator.App.Comparator
             if (leftFunction == null)
             {
                 var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for Function: {rightFunction.Name}");
-
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Function, $"Testing Function L: missing R: {rightFunction.Name}", testNode.Results);
-
+                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Function, $"Testing Function L: missing R: {rightFunction.Name}", testNode.Results);
                 functionsTestNode.Nodes.Add(testNode);
             }
             else
@@ -233,9 +219,7 @@ namespace DBSchemaComparator.App.Comparator
             if (rightFunctions == null)
             {
                 var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for Function: {leftFunctions.Name}");
-
                 AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Function, $"Testing Functions L: {leftFunctions.Name} R: missing", testNode.Results);
-
                 functionsTestNode.Nodes.Add(testNode);
             }
             else
@@ -295,20 +279,9 @@ namespace DBSchemaComparator.App.Comparator
             var leftDatabaseTables = LeftDatabase.GetTablesSchemaInfo().ToList();
             var rightDatabaseTables = RightDatabase.GetTablesSchemaInfo().ToList();
 
-            
-
             leftDatabaseTables.ForEach(leftTable => LeftDatabaseTests(tablesTestsNode,rightDatabaseTables,leftTable));
-            //foreach (var leftDatabaseTable in leftDatabaseTables)
-            //{
-            //    LeftDatabaseTests(tablesTestsNode, rightDatabaseTables, leftDatabaseTable);
-            //}
-
             rightDatabaseTables.ForEach(rightTable => RightDatabaseTests(tablesTestsNode, leftDatabaseTables, rightTable));
 
-            //foreach (var rightDatabaseTable in rightDatabaseTables)
-            //{
-            //    RightDatabaseTests(tablesTestsNode, leftDatabaseTables, rightDatabaseTable);
-            //}
             Logger.Info($"End TestTables method.");
             return tablesTestsNode;
         }
@@ -332,7 +305,6 @@ namespace DBSchemaComparator.App.Comparator
                 testNode.Nodes.Add(testColumnsNode);
                 
                 //Append testNode
-               
                 tablesTestsNode.Nodes.Add(testNode);
             }
         }
@@ -367,52 +339,57 @@ namespace DBSchemaComparator.App.Comparator
             Logger.Info($"Start testing columns for tables L:{leftTable.TableName} R:{rightTable.TableName}");
             var testColumnsNode = CreateTestNode(new List<TestResult>(), ObjectType.ColumnsTests, "Set of tests for Columns"); 
 
-            foreach (var leftTableColumn in leftTable.Columns)
-            {
-                var columnNode = CreateTestNode(new List<TestResult>(), ObjectType.Column,
-                    $"Column {leftTableColumn.TableName}.{leftTableColumn.ColumnName}");
-                var rightTableColumn = rightTable.Columns.FirstOrDefault(r => r.ColumnName == leftTableColumn.ColumnName);
-                if (rightTableColumn == null)
-                {
-                    AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Column, $"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: misssing", columnNode.Results);
-                }
-                else
-                {
-                    AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Column, $"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", columnNode.Results);
-                    //Check column DataTypes
-                    CheckColumnType(leftTableColumn, rightTableColumn, columnNode.Results);
-                    //Check column IsNullable
-                    CheckColumnIsNullable(leftTableColumn, rightTableColumn, columnNode.Results);
-                    //Check Identity settings
-                    CheckColumnIdentity(leftTableColumn, rightTableColumn, columnNode.Results);
-                }
-                testColumnsNode.Nodes.Add(columnNode);
-            }
-            foreach (var rightTableColumn in rightTable.Columns)
-            {
-                var columnNode = CreateTestNode(new List<TestResult>(), ObjectType.Column,
-                  $"Column {rightTableColumn.TableName}.{rightTableColumn.ColumnName}");
-
-                var leftTableColumn = leftTable.Columns.FirstOrDefault(l => l.ColumnName == rightTableColumn.ColumnName);
-                if (leftTableColumn == null)
-                {
-                    AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Column, $"Columns L: missing R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", columnNode.Results);
-                }
-                else
-                {
-                    AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Column, $"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", columnNode.Results);
-                    //Check Columns
-                    CheckColumnType(leftTableColumn, rightTableColumn, columnNode.Results);
-                    //Check column IsNullable
-                    CheckColumnIsNullable(leftTableColumn, rightTableColumn, columnNode.Results);
-                    //Check Identity settings
-                    CheckColumnIdentity(leftTableColumn, rightTableColumn, columnNode.Results);
-
-                }
-                testColumnsNode.Nodes.Add(columnNode);
-            }
+            leftTable.Columns.ForEach(leftTableColumn => TestLeftDbColumns(rightTable, testColumnsNode, leftTableColumn));
+            rightTable.Columns.ForEach(rightTableColumn => TestRightDbColumns(leftTable, testColumnsNode, rightTableColumn));
+            
             Logger.Info($"Returning TestNodes for testing columns.");
             return testColumnsNode;
+        }
+
+        private void TestRightDbColumns(Table leftTable, TestNodes testColumnsNode, Column rightTableColumn)
+        {
+            var columnNode = CreateTestNode(new List<TestResult>(), ObjectType.Column,
+              $"Column {rightTableColumn.TableName}.{rightTableColumn.ColumnName}");
+
+            var leftTableColumn = leftTable.Columns.FirstOrDefault(l => l.ColumnName == rightTableColumn.ColumnName);
+            if (leftTableColumn == null)
+            {
+                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Column, $"Columns L: missing R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", columnNode.Results);
+            }
+            else
+            {
+                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Column, $"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", columnNode.Results);
+                //Check Columns
+                CheckColumnType(leftTableColumn, rightTableColumn, columnNode.Results);
+                //Check column IsNullable
+                CheckColumnIsNullable(leftTableColumn, rightTableColumn, columnNode.Results);
+                //Check Identity settings
+                CheckColumnIdentity(leftTableColumn, rightTableColumn, columnNode.Results);
+
+            }
+            testColumnsNode.Nodes.Add(columnNode);
+        }
+
+        private void TestLeftDbColumns(Table rightTable, TestNodes testColumnsNode, Column leftTableColumn)
+        {
+            var columnNode = CreateTestNode(new List<TestResult>(), ObjectType.Column,
+                $"Column {leftTableColumn.TableName}.{leftTableColumn.ColumnName}");
+            var rightTableColumn = rightTable.Columns.FirstOrDefault(r => r.ColumnName == leftTableColumn.ColumnName);
+            if (rightTableColumn == null)
+            {
+                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Column, $"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: misssing", columnNode.Results);
+            }
+            else
+            {
+                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Column, $"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", columnNode.Results);
+                //Check column DataTypes
+                CheckColumnType(leftTableColumn, rightTableColumn, columnNode.Results);
+                //Check column IsNullable
+                CheckColumnIsNullable(leftTableColumn, rightTableColumn, columnNode.Results);
+                //Check Identity settings
+                CheckColumnIdentity(leftTableColumn, rightTableColumn, columnNode.Results);
+            }
+            testColumnsNode.Nodes.Add(columnNode);
         }
 
         private void CheckColumnIdentity(Column leftTableColumn, Column rightTableColumn, List<TestResult> testResults)
@@ -495,7 +472,7 @@ namespace DBSchemaComparator.App.Comparator
             {
                 var testNode = CreateTestNode(new List<TestResult>(), ObjectType.StoredProcedure, $"Test for SP: {rightSp.Name}");
 
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.StoredProcedure, $"Testing Stored Procedure L: missing R: {rightSp.Name}", testNode.Results);
+                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.StoredProcedure, $"Testing Stored Procedure L: missing R: {rightSp.Name}", testNode.Results);
 
                 proceduresTestsNode.Nodes.Add(testNode);
             }
@@ -583,7 +560,7 @@ namespace DBSchemaComparator.App.Comparator
                 string.Equals(l.TableName, rightDatabaseIndex.TableName, StringComparison.CurrentCultureIgnoreCase));
                 if (leftIndex == null)
                 {
-                    AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Index, $"Indexes L: missing R: {rightDatabaseIndex.IndexName}", indexNode.Results);
+                    AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Index, $"Indexes L: missing R: {rightDatabaseIndex.IndexName}", indexNode.Results);
                 }
                 else
                 {
@@ -602,75 +579,318 @@ namespace DBSchemaComparator.App.Comparator
             Logger.Info("Begin TestIntegrityConstraints method");
             var integrityConstraintsTestNode = CreateTestNode(null, ObjectType.IntegrityConstraintsTests, "Set of tests for integrity constraints");
 
-            var primaryKeys = CreateTestNode(new List<TestResult>(), ObjectType.PrimaryKeysTests, "Set of tests for primary keys.");
-            var foreignKeys = CreateTestNode(new List<TestResult>(), ObjectType.ForeignKeysTests, "Set of tests for foreign keys.");
-            var checkConstraints = CreateTestNode(new List<TestResult>(), ObjectType.CheckTests, "Set of tests for check constraints");
+            var primaryKeys = CreateTestNode(null, ObjectType.PrimaryKeysTests, "Set of tests for primary keys.");
+            var foreignKeys = CreateTestNode(null, ObjectType.ForeignKeysTests, "Set of tests for foreign keys.");
+            var checkConstraints = CreateTestNode(null, ObjectType.CheckTests, "Set of tests for check constraints");
             
             // Primary Keys
-            var leftDbPk = LeftDatabase.GetPrimaryKeysInfo();
-            var rightDbPk = RightDatabase.GetPrimaryKeysInfo();
+            var leftDbPk = LeftDatabase.GetPrimaryKeysInfo().ToList();
+            var rightDbPk = RightDatabase.GetPrimaryKeysInfo().ToList();
 
-            foreach (var leftPrimaryKey in leftDbPk)
-            {
-                var pkNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
-                   $"PrimaryKey Name {leftPrimaryKey.ConstraintName} applied on {leftPrimaryKey.ConstraintTable}.{leftPrimaryKey.ColumnApplied}");
-                var rightPrimaryKey = rightDbPk.FirstOrDefault(r =>
-                string.Equals(r.ConstraintName, leftPrimaryKey.ConstraintName, StringComparison.CurrentCultureIgnoreCase));
-
-                    if (rightPrimaryKey == null)
-                    {
-                        AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.PrimaryKey, $"Primary Keys L: {leftPrimaryKey.ConstraintName} R: misssing", primaryKeys.Results);
-                    }
-                    else
-                    {
-                        var testColumnApplied = string.Equals(leftPrimaryKey.ColumnApplied,
-                            rightPrimaryKey.ColumnApplied, StringComparison.CurrentCultureIgnoreCase);
-                        var testTableApplied = string.Equals(leftPrimaryKey.ConstraintTable,
-                            rightPrimaryKey.ConstraintTable, StringComparison.CurrentCultureIgnoreCase);
-
-                        if (testColumnApplied && testTableApplied)
-                        {
-                            AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.PrimaryKey, $"Primary Keys L: {leftPrimaryKey.ConstraintName} R: {rightPrimaryKey.ConstraintName} matches.", primaryKeys.Results);
-                        }
-
-                        if (!testColumnApplied)
-                        {
-                            AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey, $"Primary Keys Columns Applied on L: {leftPrimaryKey.ConstraintName} on Column: {leftPrimaryKey.ColumnApplied}  \nR: {rightPrimaryKey.ConstraintName} on Column: {rightPrimaryKey.ColumnApplied}", primaryKeys.Results);
-                        }
-
-                        if (!testTableApplied)
-                        {
-                            AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey, $"Primary Keys applied on Tables L: {leftPrimaryKey.ConstraintName} on Table: {leftPrimaryKey.ConstraintTable} \nR: {rightPrimaryKey.ConstraintName} on Table: {rightPrimaryKey.ConstraintTable}", primaryKeys.Results);
-                        }
-                }
-                    primaryKeys.Nodes.Add(pkNode);
-            }
-
+            leftDbPk.ForEach(leftPkKey => TestLeftDbPrimaryKey(primaryKeys,rightDbPk,leftPkKey));
+            rightDbPk.ForEach(rightPkKey => TestRightDbPrimaryKey(primaryKeys, leftDbPk, rightPkKey));
+           
             // Foreign Keys
-            var leftDbFk = LeftDatabase.GetForeignKeysInfo();
-            var rightDbFk = RightDatabase.GetForeignKeysInfo();
-            // Check Constraints
-            var leftDbChk = LeftDatabase.GetCheckConstraintsInfo();
-            var rightDbChk = RightDatabase.GetCheckConstraintsInfo();
+            var leftDbFk = LeftDatabase.GetForeignKeysInfo().ToList();
+            var rightDbFk = RightDatabase.GetForeignKeysInfo().ToList();
 
-
-
+            leftDbFk.ForEach(leftFk => TestLeftDbForeignKeys(foreignKeys, rightDbFk, leftFk));
+            rightDbFk.ForEach(rightFk => TestRigthDbForeignKeys(foreignKeys, rightDbFk, rightFk));
             
+            // Check Constraints
+            var leftDbChk = LeftDatabase.GetCheckConstraintsInfo().ToList();
+            var rightDbChk = RightDatabase.GetCheckConstraintsInfo().ToList();
 
+            leftDbChk.ForEach(leftCheck => TestLeftDbChecks(checkConstraints, rightDbChk, leftCheck));
+            rightDbChk.ForEach(rightCheck => TestRightDbCheck(checkConstraints, leftDbChk, rightCheck));
 
-
-
-
-
-
-
-
+          
             integrityConstraintsTestNode.Nodes.Add(primaryKeys);
             integrityConstraintsTestNode.Nodes.Add(foreignKeys);
             integrityConstraintsTestNode.Nodes.Add(checkConstraints);
 
             Logger.Info("End TestIntegrityConstraints method");
             return integrityConstraintsTestNode;
+        }
+
+        private void TestRigthDbForeignKeys(TestNodes foreignKeys, List<ForeignKey> rightDbFk, ForeignKey rightFk)
+        {
+            var leftFk = rightDbFk.FirstOrDefault(l => string.Equals(l.ConstraintName, rightFk.ConstraintName, StringComparison.CurrentCultureIgnoreCase) &&
+                                                        string.Equals(l.ConstraintTable, rightFk.ConstraintTable, StringComparison.CurrentCultureIgnoreCase));
+            var testFkNode = CreateTestNode(new List<TestResult>(), ObjectType.ForeignKey, $"Test for Foreign Key Constraint: {rightFk.ConstraintName} within table: {rightFk.ConstraintTable} on column: {rightFk.ColumnApplied}");
+
+            if (leftFk == null)
+            {
+                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.ForeignKey, $"Testing Foreign Key Constraint L: missing R: {rightFk.ConstraintName}.", testFkNode.Results);
+            }
+            else
+            {
+                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.ForeignKey, $"Testing Foreign Key Constraint L: {leftFk.ConstraintName} within Table: {leftFk.ConstraintTable} " +
+                                                                                          $"\nR: {rightFk.ConstraintName} within Table: {rightFk.ConstraintTable}", testFkNode.Results);
+                ForeignKeysSubtests(rightFk, leftFk, testFkNode);
+
+            }
+            foreignKeys.Nodes.Add(testFkNode);
+        }
+
+        private void ForeignKeysSubtests(ForeignKey rightFk, ForeignKey leftFk, TestNodes testFkNode)
+        {
+            var testColumnApplied = string.Equals(leftFk.ColumnApplied, rightFk.ColumnApplied, StringComparison.CurrentCultureIgnoreCase);
+
+            var testReferencedTable = string.Equals(leftFk.ReferencedTable, rightFk.ReferencedTable, StringComparison.CurrentCultureIgnoreCase);
+
+            var testReferencedColumn = string.Equals(leftFk.ReferencedColumn, rightFk.ReferencedColumn, StringComparison.CurrentCultureIgnoreCase);
+
+            if (testColumnApplied)
+            {
+                AddTestResult("SUCCESS",
+                    ErrorTypes.IsMatch,
+                    ObjectType.ForeignKey,
+                    $"Applied Column L: {leftFk.ColumnApplied} \nR: {leftFk.ColumnApplied} matches.",
+                    testFkNode.Results);
+            }
+            else
+            {
+                AddTestResult("ERROR",
+                    ErrorTypes.NotMatch,
+                    ObjectType.ForeignKey,
+                    $"Applied Column L: {leftFk.ColumnApplied} R: {rightFk.ColumnApplied} missmatch.",
+                    testFkNode.Results);
+            }
+
+            if (testReferencedTable)
+            {
+                AddTestResult("SUCCESS",
+                    ErrorTypes.IsMatch,
+                    ObjectType.ForeignKey,
+                    $"Referenced Table Body L: {leftFk.ReferencedTable} \nR: {rightFk.ReferencedTable} matches.",
+                    testFkNode.Results);
+            }
+            else
+            {
+                AddTestResult("ERROR",
+                    ErrorTypes.NotMatch,
+                    ObjectType.ForeignKey,
+                    $"Referenced Table L: {leftFk.ReferencedTable} \nR: {rightFk.ReferencedTable} missmatch.",
+                    testFkNode.Results);
+            }
+
+            if (testReferencedColumn)
+            {
+                AddTestResult("SUCCESS",
+                    ErrorTypes.IsMatch,
+                    ObjectType.ForeignKey,
+                    $"Referenced Column L: {leftFk.ReferencedColumn} \nR: {rightFk.ReferencedColumn} matches.",
+                    testFkNode.Results);
+            }
+            else
+            {
+                AddTestResult("ERROR",
+                    ErrorTypes.NotMatch,
+                    ObjectType.ForeignKey,
+                    $"Referenced Column L: {leftFk.ReferencedColumn} \n R: {rightFk.ReferencedColumn} missmatch.",
+                    testFkNode.Results);
+            }
+        }
+
+        private void TestLeftDbForeignKeys(TestNodes foreignKeys, List<ForeignKey> rightDbFk, ForeignKey leftFk)
+        {
+            var rightFk = rightDbFk.FirstOrDefault(r => string.Equals(r.ConstraintName, leftFk.ConstraintName, StringComparison.CurrentCultureIgnoreCase) &&
+                                                        string.Equals(r.ConstraintTable, leftFk.ConstraintTable, StringComparison.CurrentCultureIgnoreCase));
+
+            var testFkNode = CreateTestNode(new List<TestResult>(), ObjectType.ForeignKey, $"Test for Foreign Key Constraint: {leftFk.ConstraintName} within table: {leftFk.ConstraintTable}.{leftFk.ColumnApplied}");
+
+            if (rightFk == null)
+            {
+                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.ForeignKey, $"Testing Foreign Key Constraint L: {leftFk.ConstraintName} R: missing", testFkNode.Results);
+            }
+            else
+            {
+                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.ForeignKey, $"Testing Foreign Key Constraint L: {leftFk.ConstraintName} within Table: {leftFk.ConstraintTable} " +
+                                                                                        $"\nR: {rightFk.ConstraintName} within Table: {rightFk.ConstraintTable}", testFkNode.Results);
+                ForeignKeysSubtests(rightFk, leftFk, testFkNode);
+               
+            }
+            foreignKeys.Nodes.Add(testFkNode);
+        }
+
+        private void TestRightDbCheck(TestNodes checkConstraints, List<CheckConstraint> leftDbChk, CheckConstraint rightCheck)
+        {
+            var leftCheck = leftDbChk.FirstOrDefault(l => string.Equals(l.ConstraintName, rightCheck.ConstraintName, StringComparison.CurrentCultureIgnoreCase) &&
+           string.Equals(l.ConstraintTable, rightCheck.ConstraintTable, StringComparison.CurrentCultureIgnoreCase));
+
+            var testCheckNode = CreateTestNode(new List<TestResult>(), ObjectType.Check, $"Test for Check Constraint: {rightCheck.ConstraintName} within table: {rightCheck.ConstraintTable}");
+            if (leftCheck == null)
+            {
+                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Check, $"Testing Check Constraint L: missing R: {rightCheck.ConstraintName}", testCheckNode.Results);
+            }
+            else
+            {
+                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Check, $"Testing Check Constraint L: {leftCheck.ConstraintName} within Table: {leftCheck.ConstraintTable} \nR: {leftCheck.ConstraintName} within Table: {leftCheck.ConstraintTable}",
+                    testCheckNode.Results);
+
+                var testCheckBody = string.Equals(rightCheck.ConstraintBody, leftCheck.ConstraintBody, StringComparison.CurrentCultureIgnoreCase);
+                var testColumnApplied = string.Equals(rightCheck.ColumnApplied, leftCheck.ColumnApplied, StringComparison.CurrentCultureIgnoreCase);
+
+                if (testCheckBody && testColumnApplied)
+                {
+                    AddTestResult("SUCCESS",
+                        ErrorTypes.IsMatch,
+                        ObjectType.Check,
+                        $"Column and Body L: {leftCheck.ConstraintName} \nR: {leftCheck.ConstraintName} matches", testCheckNode.Results);
+                }
+
+                if (!testCheckBody)
+                {
+                    AddTestResult("ERROR",
+                        ErrorTypes.NotMatch,
+                        ObjectType.Check,
+                        $"Testing Check Body L: {leftCheck.ConstraintName} with body {leftCheck.ConstraintBody} " +
+                        $"\nR: {leftCheck.ConstraintName} with body {leftCheck.ColumnApplied}", testCheckNode.Results);
+                }
+                if (!testColumnApplied)
+                {
+                    AddTestResult("ERROR",
+                        ErrorTypes.NotMatch,
+                        ObjectType.Check,
+                        $"Testing Applied Column L: {leftCheck.ConstraintName} on column {leftCheck.ColumnApplied} " +
+                        $"\nR: {leftCheck.ConstraintName} on column {leftCheck.ColumnApplied}", testCheckNode.Results);
+                }
+            }
+            checkConstraints.Nodes.Add(testCheckNode);
+        }
+
+        private void TestLeftDbChecks(TestNodes checkConstraints, List<CheckConstraint> rightDbChk, CheckConstraint leftCheck)
+        {
+            var rightCheck = rightDbChk.FirstOrDefault(r => string.Equals(r.ConstraintName, leftCheck.ConstraintName, StringComparison.CurrentCultureIgnoreCase) &&
+            string.Equals(r.ConstraintTable, leftCheck.ConstraintTable, StringComparison.CurrentCultureIgnoreCase));
+            var testCheckNode = CreateTestNode(new List<TestResult>(), ObjectType.Check, $"Test for Check Constraint: {leftCheck.ConstraintName} within table: {leftCheck.ConstraintTable}");
+            if (rightCheck == null)
+            {
+                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Check, $"Testing Check Constraint L: {leftCheck.ConstraintName} R: missing", testCheckNode.Results);
+            }
+            else
+            {
+                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Check, $"Testing Check Constraint L: {leftCheck.ConstraintName} within Table: {leftCheck.ConstraintTable} \nR: {rightCheck.ConstraintName} within Table: {rightCheck.ConstraintTable}",
+                    testCheckNode.Results);
+                var testCheckBody = string.Equals(leftCheck.ConstraintBody, rightCheck.ConstraintBody, StringComparison.CurrentCultureIgnoreCase);
+                var testColumnApplied = string.Equals(leftCheck.ColumnApplied, rightCheck.ColumnApplied, StringComparison.CurrentCultureIgnoreCase);
+
+                if (testCheckBody && testColumnApplied)
+                {
+                    AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.Check, $"Column and Body L: {leftCheck.ConstraintName} \nR: {rightCheck.ConstraintName} matches", testCheckNode.Results);
+                }
+
+                if (!testCheckBody)
+                {
+                    AddTestResult("ERROR",
+                        ErrorTypes.NotMatch,
+                        ObjectType.Check,
+                        $"Testing Check Body L: {leftCheck.ConstraintName} with body {leftCheck.ConstraintBody} \nR: {rightCheck.ConstraintName} with body {rightCheck.ColumnApplied}", testCheckNode.Results);
+                }
+                if (!testColumnApplied)
+                {
+                    AddTestResult("ERROR",
+                        ErrorTypes.NotMatch,
+                        ObjectType.Check,
+                        $"Testing Applied Column L: {leftCheck.ConstraintName} on column {leftCheck.ColumnApplied} \nR: {rightCheck.ConstraintName} on column {rightCheck.ColumnApplied}", testCheckNode.Results);
+                }
+            }
+            checkConstraints.Nodes.Add(testCheckNode);
+        }
+
+        private void TestRightDbPrimaryKey(TestNodes primaryKeys, IList<PrimaryKey> leftDbPk, PrimaryKey rightPkKey)
+        {
+            var pkNode = CreateTestNode(new List<TestResult>(), ObjectType.PrimaryKeysTests, $"Primary Key R: {rightPkKey.ConstraintName} applied on {rightPkKey.ConstraintTable}.{rightPkKey.ColumnApplied}");
+            var leftPrimaryKey = leftDbPk.FirstOrDefault(l =>
+           string.Equals(l.ConstraintName, rightPkKey.ConstraintName, StringComparison.CurrentCultureIgnoreCase) &&
+           string.Equals(l.ConstraintTable, rightPkKey.ConstraintTable, StringComparison.CurrentCultureIgnoreCase));
+
+            if (leftPrimaryKey == null)
+            {
+                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.PrimaryKey,
+                    $"Primary Keys L: misssing R: {rightPkKey.ConstraintName}", pkNode.Results);
+            }
+            else
+            {
+                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.PrimaryKey,
+                          $"Primary Keys L: {leftPrimaryKey.ConstraintName} R: {rightPkKey.ConstraintName} present on both sides.",
+                          pkNode.Results);
+
+                var testColumnApplied = string.Equals(leftPrimaryKey.ColumnApplied,
+                    rightPkKey.ColumnApplied, StringComparison.CurrentCultureIgnoreCase);
+
+                var testTableApplied = string.Equals(leftPrimaryKey.ConstraintTable,
+                    rightPkKey.ConstraintTable, StringComparison.CurrentCultureIgnoreCase);
+
+                if (testColumnApplied && testTableApplied)
+                {
+                    AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.PrimaryKey,
+                        $"Primary Keys L: {leftPrimaryKey.ConstraintName} R: {rightPkKey.ConstraintName} matches.",
+                        pkNode.Results);
+                }
+                if (!testColumnApplied)
+                {
+                    AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey,
+                        $"Primary Keys Columns Applied on L: {leftPrimaryKey.ConstraintName} on Column: {leftPrimaryKey.ColumnApplied}  \nR: {rightPkKey.ConstraintName} on Column: {rightPkKey.ColumnApplied}",
+                        pkNode.Results);
+                }
+                if (!testTableApplied)
+                {
+                    AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey,
+                        $"Primary Keys applied on Tables L: {leftPrimaryKey.ConstraintName} on Table: {leftPrimaryKey.ConstraintTable} \nR: {rightPkKey.ConstraintName} on Table: {rightPkKey.ConstraintTable}",
+                        pkNode.Results);
+                }
+            }
+            primaryKeys.Nodes.Add(pkNode);
+        }
+
+        private void TestLeftDbPrimaryKey(TestNodes primaryKeys, IList<PrimaryKey> rightDbPk, PrimaryKey leftPkKey)
+        {
+            var pkNode = CreateTestNode(new List<TestResult>(), ObjectType.PrimaryKey,
+               $"PrimaryKey Name {leftPkKey.ConstraintName} applied on {leftPkKey.ConstraintTable}.{leftPkKey.ColumnApplied}");
+            var rightPrimaryKey = rightDbPk.FirstOrDefault(r =>
+            string.Equals(r.ConstraintName, leftPkKey.ConstraintName, StringComparison.CurrentCultureIgnoreCase) &&
+           string.Equals(r.ConstraintTable, leftPkKey.ConstraintTable, StringComparison.CurrentCultureIgnoreCase));
+
+            if (rightPrimaryKey == null)
+            {
+                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.PrimaryKey, $"Primary Keys L: {leftPkKey.ConstraintName} R: misssing", pkNode.Results);
+            }
+            else
+            {
+                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.PrimaryKey,
+                       $"Primary Keys L: {leftPkKey.ConstraintName} R: {rightPrimaryKey.ConstraintName} present on both sides.",
+                       pkNode.Results);
+
+                var testColumnApplied = string.Equals(leftPkKey.ColumnApplied,
+                    rightPrimaryKey.ColumnApplied, StringComparison.CurrentCultureIgnoreCase);
+
+                var testTableApplied = string.Equals(leftPkKey.ConstraintTable,
+                    rightPrimaryKey.ConstraintTable, StringComparison.CurrentCultureIgnoreCase);
+
+                if (testColumnApplied && testTableApplied)
+                {
+                    AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.PrimaryKey,
+                        $"Primary Keys L: {leftPkKey.ConstraintName} R: {rightPrimaryKey.ConstraintName} matches.",
+                        pkNode.Results);
+                }
+
+                if (!testColumnApplied)
+                {
+                    AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey,
+                        $"Primary Keys Columns Applied on L: {leftPkKey.ConstraintName} on Column: {leftPkKey.ColumnApplied}  \nR: {rightPrimaryKey.ConstraintName} on Column: {rightPrimaryKey.ColumnApplied}",
+                        pkNode.Results);
+                }
+
+                if (!testTableApplied)
+                {
+                    AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey,
+                        $"Primary Keys applied on Tables L: {leftPkKey.ConstraintName} on Table: {leftPkKey.ConstraintTable} \nR: {rightPrimaryKey.ConstraintName} on Table: {rightPrimaryKey.ConstraintTable}",
+                        pkNode.Results);
+                }
+            }
+            primaryKeys.Nodes.Add(pkNode);
         }
 
         private static TestNodes CreateTestNode(List<TestResult> testResults, ObjectType testType, string description)
