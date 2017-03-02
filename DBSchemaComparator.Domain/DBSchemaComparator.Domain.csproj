@@ -76,6 +76,7 @@
     <Compile Include="Models\SQLServer\PrimaryKey.cs" />
     <Compile Include="Models\SQLServer\StoredProcedure.cs" />
     <Compile Include="Models\SQLServer\View.cs" />
+    <Compile Include="Models\Test\ResultLevel.cs" />
     <Compile Include="Models\Test\ErrorTypes.cs" />
     <Compile Include="Models\Test\ObjectType.cs" />
     <Compile Include="Models\Test\TestNodes.cs" />

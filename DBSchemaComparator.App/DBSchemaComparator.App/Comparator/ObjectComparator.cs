@@ -37,7 +37,6 @@ namespace DBSchemaComparator.App.Comparator
         {
             ConnStringLeft = connStringLeft;
             ConnStringRight = connStringRight;
-          
         }
 
         public ObjectComparator(string connStringLeft, string connStringRight, DatabaseType dbType) : this(connStringLeft, connStringRight)
@@ -52,37 +51,35 @@ namespace DBSchemaComparator.App.Comparator
 
         private void ConnectToDatabases(string connStringLeft, string connStringRight)
         {
-            var mainTestNode = new TestNodes {
-                Nodes = new List<TestNodes>(),
-                Results = new List<TestResult>(),
-                Description = "Root node",
-                NodeType = ObjectType.Root
-            };
+            var mainTestNode = CreateTestNode(new List<TestResult>(), ObjectType.Root, "Root node");
 
             LeftDatabase = new DatabaseHandler(ConnStringLeft, DatabaseType.SqlServer);
             RightDatabase = new DatabaseHandler(ConnStringRight, DatabaseType.SqlServer);
 
-            var scriptFromFile = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Create.sql"));
+            //var scriptFromFile = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Create.sql"));
 
-            var parsedScript = ScriptParser.GetMsScriptArray(scriptFromFile);
+            //var parsedScript = ScriptParser.GetMsScriptArray(scriptFromFile);
 
-            var leftDbCreated = LeftDatabase.ExecuteTransactionScript(parsedScript);
-            var rightDbCreated = RightDatabase.ExecuteTransactionScript(parsedScript);
+            //var leftDbCreated = LeftDatabase.ExecuteTransactionScript(parsedScript);
+            //var rightDbCreated = RightDatabase.ExecuteTransactionScript(parsedScript);
 
 
             //if (!leftDbCreated)
             //{
             //    AddTestResult("Creation of Left Database objects failed",ErrorTypes.CreationScriptFailed, ObjectType.Script, "Create Script",mainTestNode.Results);
+                  
             //}
 
             //if (!rightDbCreated)
             //{
             //    AddTestResult("Creation of Right Database objects failed", ErrorTypes.CreationScriptFailed, ObjectType.Script, "Create Script", mainTestNode.Results);
+              
             //}
 
             //if (leftDbCreated && rightDbCreated)
             //{
-                AddTestResult("Deploying of Left Database objects success", 
+            
+            AddTestResult("Deploying of Left Database objects success", 
                     ErrorTypes.CreationScriptSuccess, 
                     ObjectType.Script, 
                     LeftDatabase.Database.ConnectionString, 
@@ -128,6 +125,7 @@ namespace DBSchemaComparator.App.Comparator
             var listofnodes = Extensions.DepthFirstTraversal(mainTestNode, r => r.Nodes).ToList();
         }
 
+        #region TestViews Methods
         private TestNodes TestViews()
         {
             Logger.Info("Begin TestViews");
@@ -188,7 +186,27 @@ namespace DBSchemaComparator.App.Comparator
                 viewsTestNode.Nodes.Add(testNode);
             }
         }
+        private TestNodes TestViewBody(View leftView, View rightView)
+        {
+            var bodyTest = CreateTestNode(new List<TestResult>(), ObjectType.View, "Test for View Body");
+            var normalizedLeft = Extensions.Normalize(leftView.Body).Trim();
+            var normalizedRight = Extensions.Normalize(rightView.Body).Trim();
+            Logger.Info($"Testing views bodies L: {leftView.Body} R: {rightView.Body}");
 
+            if (normalizedLeft == normalizedRight)
+            {
+                AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.View, $"Testing body of SP L: {leftView.Name} R: {rightView.Name}", bodyTest.Results);
+            }
+            else
+            {
+                AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.View, $"Testing body of SP L: {leftView.Name} R: {rightView.Name}", bodyTest.Results);
+            }
+            return bodyTest;
+
+        }
+        #endregion
+
+        #region TestFunctions Methods
         private TestNodes TestFunctions()
         {
             Logger.Info("Begin TestFunctions method.");
@@ -263,25 +281,9 @@ namespace DBSchemaComparator.App.Comparator
             return bodyTest;
 
         }
+        #endregion
 
-        private TestNodes TestViewBody(View leftView, View rightView)
-        {
-            var bodyTest = CreateTestNode(new List<TestResult>(), ObjectType.View, "Test for View Body");
-            var normalizedLeft = Extensions.Normalize(leftView.Body).Trim();
-            var normalizedRight = Extensions.Normalize(rightView.Body).Trim();
-            Logger.Info($"Testing views bodies L: {leftView.Body} R: {rightView.Body}");
-
-            if (normalizedLeft == normalizedRight)
-            {
-                AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.View, $"Testing body of SP L: {leftView.Name} R: {rightView.Name}", bodyTest.Results);
-            }
-            else
-            {
-                AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.View, $"Testing body of SP L: {leftView.Name} R: {rightView.Name}", bodyTest.Results);
-            }
-            return bodyTest;
-
-        }
+        #region TestTables Methods
 
         public TestNodes TestTables()
         {
@@ -292,13 +294,40 @@ namespace DBSchemaComparator.App.Comparator
             var leftDatabaseTables = LeftDatabase.GetTablesSchemaInfo().ToList();
             var rightDatabaseTables = RightDatabase.GetTablesSchemaInfo().ToList();
 
-            var distinctLeft = leftDatabaseTables.Except(rightDatabaseTables).ToList();
+            //Tables only in the left database
+            var uniqueLeft = leftDatabaseTables.Where(p => rightDatabaseTables.All(p2 => !string.Equals(p2.TableName,p.TableName, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            uniqueLeft.ForEach(l => AddRightMissingTableNode(tablesTestsNode, l));
 
-            leftDatabaseTables.ForEach(leftTable => LeftDatabaseTests(tablesTestsNode,rightDatabaseTables,leftTable));
-            rightDatabaseTables.ForEach(rightTable => RightDatabaseTests(tablesTestsNode, leftDatabaseTables, rightTable));
+            //Tables only in the right database
+            var uniqueRight = rightDatabaseTables.Where(p => leftDatabaseTables.All(p2 => !string.Equals(p2.TableName, p.TableName, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            uniqueRight.ForEach(r => AddLeftMissingTableNode(tablesTestsNode, r));
+
+            var unionListLeftTables = leftDatabaseTables.Where(x => rightDatabaseTables.Any(y => string.Equals(y.TableName, x.TableName, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            var unionListRightTables = rightDatabaseTables.Where(x => leftDatabaseTables.Any(y => string.Equals(y.TableName, x.TableName, StringComparison.CurrentCultureIgnoreCase))).ToList();
+
+            if (unionListRightTables.Any())
+            TestMatchedTables(unionListLeftTables, unionListRightTables, tablesTestsNode);
+
+           // leftDatabaseTables.ForEach(leftTable => LeftDatabaseTests(tablesTestsNode, rightDatabaseTables,leftTable));
+           // rightDatabaseTables.ForEach(rightTable => RightDatabaseTests(tablesTestsNode, leftDatabaseTables, rightTable));
 
             Logger.Info($"End TestTables method.");
             return tablesTestsNode;
+        }
+
+        private void TestMatchedTables(List<Table> leftTableList, List<Table> rightTableList, TestNodes tablesTestsNode)
+        {
+            foreach (var leftTbl in leftTableList)
+            {
+                var rightTable = rightTableList.First(x => string.Equals(x.TableName, leftTbl.TableName, StringComparison.CurrentCultureIgnoreCase));
+                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {leftTbl.TableName}");
+                AddTestResult($"Testing table L: {leftTbl.TableName} R: {rightTable.TableName}", ErrorTypes.LpresentRpresent, ObjectType.Table, $"Reference table {leftTbl.TableName}" , testNode.Results);
+                //Test Columns
+                var testColumnsNode = TestColumns(leftTbl, rightTable);
+                testNode.Nodes.Add(testColumnsNode);
+                //Append testNode
+                tablesTestsNode.Nodes.Add(testNode);
+            }
         }
 
         private void RightDatabaseTests(TestNodes tablesTestsNode, List<Table> leftDatabaseTables, Table rightDatabaseTable)
@@ -307,9 +336,7 @@ namespace DBSchemaComparator.App.Comparator
             var leftTable = leftDatabaseTables.FirstOrDefault(l => l.TableName.ToLower() == rightTableName);
             if (leftTable == null)
             {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {rightDatabaseTable.TableName}");
-                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Table, $"Testing table L: missing R: {rightDatabaseTable.TableName}", testNode.Results);
-                tablesTestsNode.Nodes.Add(testNode);
+                AddLeftMissingTableNode(tablesTestsNode, rightDatabaseTable);
             }
             else
             {
@@ -331,9 +358,7 @@ namespace DBSchemaComparator.App.Comparator
 
             if (rightTable == null)
             {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {leftDatabaseTable.TableName}");
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Table, $"Testing table L: {leftDatabaseTable.TableName} R: missing", testNode.Results);
-                tablesTestsNode.Nodes.Add(testNode);
+                AddRightMissingTableNode(tablesTestsNode, leftDatabaseTable);
             }
             else
             {
@@ -347,6 +372,19 @@ namespace DBSchemaComparator.App.Comparator
                 //Append testNode
                 tablesTestsNode.Nodes.Add(testNode);
             }
+        }
+
+        private void AddRightMissingTableNode(TestNodes tablesTestsNode, Table leftDatabaseTable)
+        {
+            var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {leftDatabaseTable.TableName}");
+            AddTestResult($"Testing table L: {leftDatabaseTable.TableName} R: missing", ErrorTypes.LpresentRmissing, ObjectType.Table, leftDatabaseTable.TableName, testNode.Results);
+            tablesTestsNode.Nodes.Add(testNode);
+        }
+        private void AddLeftMissingTableNode(TestNodes tablesTestsNode, Table rightDatabaseTable)
+        {
+            var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {rightDatabaseTable.TableName}");
+            AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Table, $"Testing table L: missing R: {rightDatabaseTable.TableName}", testNode.Results);
+            tablesTestsNode.Nodes.Add(testNode);
         }
 
         private TestNodes TestColumns(Table leftTable, Table rightTable)
@@ -369,11 +407,11 @@ namespace DBSchemaComparator.App.Comparator
             var leftTableColumn = leftTable.Columns.FirstOrDefault(l => l.ColumnName == rightTableColumn.ColumnName);
             if (leftTableColumn == null)
             {
-                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Column, $"Columns L: missing R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", columnNode.Results);
+                AddTestResult($"Columns L: missing R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", ErrorTypes.LmissingRpresent, ObjectType.Column, rightTableColumn.TableName , columnNode.Results);
             }
             else
             {
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Column, $"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", columnNode.Results);
+                AddTestResult($"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", ErrorTypes.LpresentRpresent, ObjectType.Column, leftTableColumn.ColumnName , columnNode.Results);
                 //Check Columns
                 CheckColumnType(leftTableColumn, rightTableColumn, columnNode.Results);
                 //Check column IsNullable
@@ -392,11 +430,11 @@ namespace DBSchemaComparator.App.Comparator
             var rightTableColumn = rightTable.Columns.FirstOrDefault(r => r.ColumnName == leftTableColumn.ColumnName);
             if (rightTableColumn == null)
             {
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Column, $"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: misssing", columnNode.Results);
+                AddTestResult($"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: misssing", ErrorTypes.LpresentRmissing, ObjectType.Column, leftTableColumn.ColumnName, columnNode.Results);
             }
             else
             {
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Column, $"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", columnNode.Results);
+                AddTestResult($"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", ErrorTypes.LpresentRpresent, ObjectType.Column, leftTableColumn.ColumnName , columnNode.Results);
                 //Check column DataTypes
                 CheckColumnType(leftTableColumn, rightTableColumn, columnNode.Results);
                 //Check column IsNullable
@@ -411,17 +449,19 @@ namespace DBSchemaComparator.App.Comparator
         {
             if (leftTableColumn.IsIdentification == rightTableColumn.IsIdentification)
             {
-                AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.IsIdentification,
-                  $"Identification setting for tested columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName}.{leftTableColumn.IsIdentification} " +
-                  $"R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}.{rightTableColumn.IsIdentification}",
-                  testResults);
+                AddTestResult($"Identification setting for tested columns L: {leftTableColumn.ColumnName}.{leftTableColumn.IsIdentification} R: {rightTableColumn.ColumnName}.{rightTableColumn.IsIdentification}", 
+                    ErrorTypes.IsMatch, 
+                    ObjectType.IsIdentification,
+                    $"L: {leftTableColumn.IsIdentification}. R: {rightTableColumn.IsIdentification}", 
+                    testResults);
             }
             else
             {
-                AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.IsIdentification,
-                 $"Identification setting for tested columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName}.{leftTableColumn.IsIdentification} " +
-                 $"R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}.{rightTableColumn.IsIdentification}",
-                 testResults);
+                AddTestResult($"Identification setting for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.IsIdentification} R: {rightTableColumn.ColumnName} = {rightTableColumn.IsIdentification}", 
+                    ErrorTypes.NotMatch, 
+                    ObjectType.IsIdentification,
+                    $"L: {leftTableColumn.IsIdentification} R: {rightTableColumn.IsIdentification}", 
+                    testResults);
             }
             
         }
@@ -430,17 +470,19 @@ namespace DBSchemaComparator.App.Comparator
         {
             if (leftTableColumn.IsNullable == rightTableColumn.IsNullable)
             {
-                AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.IsNullable,
-                    $"IsNullable setting for tested columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName}.{leftTableColumn.IsNullable} " +
-                    $"R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}.{rightTableColumn.IsNullable}",
+                AddTestResult($"IsNullable setting for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.IsNullable} R: {rightTableColumn.ColumnName} = {rightTableColumn.IsNullable}", 
+                    ErrorTypes.IsMatch, 
+                    ObjectType.IsNullable,
+                    $"L: {leftTableColumn.IsNullable} R: {rightTableColumn.IsNullable}",
                     testResults);
             }
             else
             {
-                AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.IsNullable,
-    $"IsNullable setting for tested columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName}.{leftTableColumn.IsNullable} " +
-    $"R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}.{rightTableColumn.IsNullable}",
-    testResults);
+                AddTestResult($"IsNullable setting for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.IsNullable} R: {rightTableColumn.ColumnName} = {rightTableColumn.IsNullable}", 
+                    ErrorTypes.NotMatch, 
+                    ObjectType.IsNullable,
+                    $"L: {leftTableColumn.IsNullable} R: {rightTableColumn.IsNullable}",
+                    testResults);
             }
 
         }
@@ -448,14 +490,23 @@ namespace DBSchemaComparator.App.Comparator
         private void CheckColumnType(Column leftTableColumn, Column rightTableColumn, List<TestResult> testResults)
         {
                 if (leftTableColumn.DataType == rightTableColumn.DataType) {
-                    AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.DataType, $"DataTypes of tested columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName}.{leftTableColumn.DataType} " +
-                                                                                      $"R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}.{rightTableColumn.DataType}",testResults);
+                    AddTestResult($"DataTypes of tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.DataType} R: {rightTableColumn.ColumnName} = {rightTableColumn.DataType}", 
+                        ErrorTypes.IsMatch, 
+                        ObjectType.DataType, 
+                        $"L: {leftTableColumn.DataType} R: {rightTableColumn.DataType}"
+                        ,testResults);
                 } else {
-                    AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.DataType, $"DataTypes of tested columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName}.{leftTableColumn.DataType} " +
-                                                                                     $"R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}.{rightTableColumn.DataType}", testResults);
+                    AddTestResult($"DataTypes of tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.DataType} R: {rightTableColumn.ColumnName} = {rightTableColumn.DataType}", 
+                        ErrorTypes.NotMatch, 
+                        ObjectType.DataType, 
+                        $"L: {leftTableColumn.DataType} R: {rightTableColumn.DataType}", 
+                        testResults);
                 }
         }
 
+        #endregion
+
+        #region TestTables Methods
         public TestNodes TestProcedures()
         {
             Logger.Info("Begin TestProcedures method.");
@@ -541,6 +592,9 @@ namespace DBSchemaComparator.App.Comparator
             return bodyTest;
         }
 
+        #endregion
+
+        #region TestIndexes Methods
         public TestNodes TestIndexes()
         {
             Logger.Info("Begin TestIndexes method.");
@@ -589,6 +643,10 @@ namespace DBSchemaComparator.App.Comparator
             return indexesTestsNode;
         }
 
+        #endregion
+
+
+        #region TestIntegrityConstraints Methods
         private TestNodes TestIntegrityConstraints()
         {
             Logger.Info("Begin TestIntegrityConstraints method");
@@ -908,6 +966,8 @@ namespace DBSchemaComparator.App.Comparator
             primaryKeys.Nodes.Add(pkNode);
         }
 
+        #endregion
+
         private static TestNodes CreateTestNode(List<TestResult> testResults, ObjectType testType, string description)
         {
             var node = new TestNodes
@@ -919,7 +979,18 @@ namespace DBSchemaComparator.App.Comparator
             };
             return node;
         }
-
+        private static TestNodes CreateTestNode(List<TestResult> testResults, ObjectType testType, string description, ResultLevel resultLevel)
+        {
+            var node = new TestNodes
+            {
+                Nodes = new List<TestNodes>(),
+                Results = testResults,
+                Description = description,
+                NodeType = testType,
+                ResultLevel = resultLevel
+            };
+            return node;
+        }
 
         private void AddTestResult(string description, ErrorTypes errorType, ObjectType objType, string testedObjName, List<TestResult> testResults)
         {
