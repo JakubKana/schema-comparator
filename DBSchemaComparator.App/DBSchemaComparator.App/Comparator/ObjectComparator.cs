@@ -57,25 +57,19 @@ namespace DBSchemaComparator.App.Comparator
             RightDatabase = new DatabaseHandler(ConnStringRight, DatabaseType.SqlServer);
 
             //var scriptFromFile = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Create.sql"));
-
             //var parsedScript = ScriptParser.GetMsScriptArray(scriptFromFile);
-
             //var leftDbCreated = LeftDatabase.ExecuteTransactionScript(parsedScript);
             //var rightDbCreated = RightDatabase.ExecuteTransactionScript(parsedScript);
-
 
             //if (!leftDbCreated)
             //{
             //    AddTestResult("Creation of Left Database objects failed",ErrorTypes.CreationScriptFailed, ObjectType.Script, "Create Script",mainTestNode.Results);
-                  
             //}
 
             //if (!rightDbCreated)
             //{
             //    AddTestResult("Creation of Right Database objects failed", ErrorTypes.CreationScriptFailed, ObjectType.Script, "Create Script", mainTestNode.Results);
-              
             //}
-
             //if (leftDbCreated && rightDbCreated)
             //{
             
@@ -134,16 +128,13 @@ namespace DBSchemaComparator.App.Comparator
             var leftDbViews = LeftDatabase.GetViewsInfo().ToList();
             var rightDbViews = RightDatabase.GetViewsInfo().ToList();
 
-            leftDbViews.ForEach(leftDbView => TestLeftDbViews(viewsTestNode, rightDbViews, leftDbView));
-            rightDbViews.ForEach(rightDbView => TestRightDbViews(viewsTestNode, leftDbViews, rightDbView));
-
             //Functions only in the left database
             var uniqueLeft = leftDbViews.Where(p => rightDbViews.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
-            uniqueLeft.ForEach(l => AddRightMissingFunctionNode(viewsTestNode, l));
+            uniqueLeft.ForEach(l => AddRightMissingViewNode(viewsTestNode, l));
 
             //Functions only in the right database
             var uniqueRight = rightDbViews.Where(p => leftDbViews.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
-            uniqueRight.ForEach(r => AddLeftMissingFunctionNode(viewsTestNode, r));
+            uniqueRight.ForEach(r => AddLeftMissingViewNode(viewsTestNode, r));
 
             var unionListLeftViews = leftDbViews.Where(x => rightDbViews.Any(y => string.Equals(y.Name, x.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
             var unionListRightViews = rightDbViews.Where(x => leftDbViews.Any(y => string.Equals(y.Name, x.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
@@ -158,9 +149,47 @@ namespace DBSchemaComparator.App.Comparator
             return viewsTestNode;
         }
 
-        private void TestMatchedViews(List<View> unionListLeftViews, List<View> unionListRightViews, TestNodes viewsTestNode)
+        private void AddLeftMissingViewNode(TestNodes viewsTestNode, View view)
         {
+            var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View: {view.Name}");
 
+            AddTestResult($"Testing View L: missing R: {view.Name}", ErrorTypes.LmissingRpresent, ObjectType.View, view.Name, testNode.Results);
+
+            SetResultLevel(testNode);
+            viewsTestNode.Nodes.Add(testNode);
+        }
+
+        private void AddRightMissingViewNode(TestNodes viewsTestNode, View view)
+        {
+            var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View: {view.Name}");
+
+            AddTestResult($"Testing View L: {view.Name} R: missing", ErrorTypes.LpresentRmissing, ObjectType.View,view.Name , testNode.Results);
+         
+            SetResultLevel(testNode);
+
+            viewsTestNode.Nodes.Add(testNode);
+
+        }
+
+        private void TestMatchedViews(List<View> leftViewsList, List<View> rightViewsList, TestNodes viewsTestNode)
+        {
+            foreach (var leftView in leftViewsList)
+            {
+                var rightView = rightViewsList.First(x => string.Equals(x.Name, leftView.Name, StringComparison.CurrentCultureIgnoreCase));
+                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View {rightView.Name}");
+
+                AddTestResult($"Testing View L: {leftView.Name} R: {rightView.Name}", ErrorTypes.LpresentRpresent, ObjectType.View, leftView.Name , testNode.Results);
+
+                var testProceduresBodyNode = TestViewBody(leftView, rightView);
+                testNode.Nodes.Add(testProceduresBodyNode);
+
+                SetResultLevel(testNode);
+
+                viewsTestNode.Nodes.Add(testNode);
+
+
+              
+            }
 
         }
 
