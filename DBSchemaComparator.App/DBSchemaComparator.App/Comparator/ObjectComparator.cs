@@ -137,8 +137,31 @@ namespace DBSchemaComparator.App.Comparator
             leftDbViews.ForEach(leftDbView => TestLeftDbViews(viewsTestNode, rightDbViews, leftDbView));
             rightDbViews.ForEach(rightDbView => TestRightDbViews(viewsTestNode, leftDbViews, rightDbView));
 
+            //Functions only in the left database
+            var uniqueLeft = leftDbViews.Where(p => rightDbViews.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            uniqueLeft.ForEach(l => AddRightMissingFunctionNode(viewsTestNode, l));
+
+            //Functions only in the right database
+            var uniqueRight = rightDbViews.Where(p => leftDbViews.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            uniqueRight.ForEach(r => AddLeftMissingFunctionNode(viewsTestNode, r));
+
+            var unionListLeftViews = leftDbViews.Where(x => rightDbViews.Any(y => string.Equals(y.Name, x.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            var unionListRightViews = rightDbViews.Where(x => leftDbViews.Any(y => string.Equals(y.Name, x.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+
+            if (unionListRightViews.Any())
+                TestMatchedViews(unionListLeftViews, unionListRightViews, viewsTestNode);
+
+            SetResultLevel(viewsTestNode);
+
             Logger.Info("End TestViews method.");
+
             return viewsTestNode;
+        }
+
+        private void TestMatchedViews(List<View> unionListLeftViews, List<View> unionListRightViews, TestNodes viewsTestNode)
+        {
+
+
         }
 
         private void TestRightDbViews(TestNodes viewsTestNode, IList<View> leftDbViews, View rightDbView)
@@ -188,19 +211,15 @@ namespace DBSchemaComparator.App.Comparator
         }
         private TestNodes TestViewBody(View leftView, View rightView)
         {
-            var bodyTest = CreateTestNode(new List<TestResult>(), ObjectType.View, "Test for View Body");
+            var bodyTest = CreateTestNode(new List<TestResult>(), ObjectType.View, "Test for View content");
             var normalizedLeft = Extensions.Normalize(leftView.Body).Trim();
             var normalizedRight = Extensions.Normalize(rightView.Body).Trim();
-            Logger.Info($"Testing views bodies L: {leftView.Body} R: {rightView.Body}");
+            Logger.Info($"Testing content of views L: {leftView.Body} R: {rightView.Body}");
 
-            if (normalizedLeft == normalizedRight)
-            {
-                AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.View, $"Testing body of SP L: {leftView.Name} R: {rightView.Name}", bodyTest.Results);
-            }
-            else
-            {
-                AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.View, $"Testing body of SP L: {leftView.Name} R: {rightView.Name}", bodyTest.Results);
-            }
+            AddTestResult(
+                $"Testing content of view L: {leftView.Name}\n{leftView.Body} \nR: {rightView.Name}\n{rightView.Body}",
+                normalizedLeft == normalizedRight ? ErrorTypes.IsMatch : ErrorTypes.NotMatch, ObjectType.View,
+                leftView.Name, bodyTest.Results);
             return bodyTest;
 
         }
@@ -216,68 +235,87 @@ namespace DBSchemaComparator.App.Comparator
             var leftDbFunctions = LeftDatabase.GetFunctionsInfo().ToList();
             var rightDbFunctions = RightDatabase.GetFunctionsInfo().ToList();
 
-            leftDbFunctions.ForEach(leftFunctions => TestLeftDbFunctions(functionsTestNode, rightDbFunctions, leftFunctions));
-            rightDbFunctions.ForEach(rightFunctions => TestRightDbFunctions(functionsTestNode, leftDbFunctions, rightFunctions));
+            //Functions only in the left database
+            var uniqueLeft = leftDbFunctions.Where(p => rightDbFunctions.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            uniqueLeft.ForEach(l => AddRightMissingFunctionNode(functionsTestNode, l));
+
+            //Functions only in the right database
+            var uniqueRight = rightDbFunctions.Where(p => leftDbFunctions.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            uniqueRight.ForEach(r => AddLeftMissingFunctionNode(functionsTestNode, r));
+
+            var unionListLeftFunctions = leftDbFunctions.Where(x => rightDbFunctions.Any(y => string.Equals(y.Name, x.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            var unionListRightFunctions = rightDbFunctions.Where(x => leftDbFunctions.Any(y => string.Equals(y.Name, x.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+
+            if (unionListRightFunctions.Any())
+                TestMatchedFunctions(unionListLeftFunctions, unionListRightFunctions, functionsTestNode);
+
+            SetResultLevel(functionsTestNode);
 
             Logger.Info("End TestFunctions method.");
+
             return functionsTestNode;
         }
 
-        private void TestRightDbFunctions(TestNodes functionsTestNode, List<Function> leftDbFunctions, Function rightFunction)
+        private void TestMatchedFunctions(List<Function> leftFuncionsList, List<Function> rightFunctionsList,
+            TestNodes functionsTestNode)
         {
-            var leftFunction = leftDbFunctions.FirstOrDefault(r => string.Equals(r.Name, rightFunction.Name, StringComparison.CurrentCultureIgnoreCase));
+            foreach (var leftFn in leftFuncionsList)
+            {
+                var rightFn = rightFunctionsList.First(x => string.Equals(x.Name, leftFn.Name, StringComparison.CurrentCultureIgnoreCase));
 
-            if (leftFunction == null)
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for Function: {rightFunction.Name}");
-                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Function, $"Testing Function L: missing R: {rightFunction.Name}", testNode.Results);
-                functionsTestNode.Nodes.Add(testNode);
-            }
-            else
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for Function {rightFunction.Name}");
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Function, $"Testing Function L: {leftFunction.Name} R: {rightFunction.Name}", testNode.Results);
-                var testProceduresBodyNode = TestFunctionBody(leftFunction, rightFunction);
-                testNode.Nodes.Add(testProceduresBodyNode);
+                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for Function {rightFn.Name}");
+
+                AddTestResult($"Testing Function L: {leftFn.Name} R: {rightFn.Name}", ErrorTypes.LpresentRpresent, ObjectType.Function, $"Reference object {leftFn.Name}", testNode.Results);
+
+                var testFunctionsBodyNode = TestFunctionBody(leftFn, rightFn);
+
+                testNode.Nodes.Add(testFunctionsBodyNode);
+
+                SetResultLevel(testNode);
+
                 functionsTestNode.Nodes.Add(testNode);
             }
         }
 
-        private void TestLeftDbFunctions(TestNodes functionsTestNode, List<Function> rightDbFunctions, Function leftFunctions)
+        private void AddLeftMissingFunctionNode(TestNodes functionsTestNode, Function function)
         {
-            var rightFunctions = rightDbFunctions.FirstOrDefault(r => string.Equals(r.Name, leftFunctions.Name, StringComparison.CurrentCultureIgnoreCase));
+            var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for Function: {function.Name}");
 
-            if (rightFunctions == null)
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for Function: {leftFunctions.Name}");
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Function, $"Testing Functions L: {leftFunctions.Name} R: missing", testNode.Results);
-                functionsTestNode.Nodes.Add(testNode);
-            }
-            else
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for Function: {leftFunctions.Name}");
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Function, $"Testing Functions L: {leftFunctions.Name} R: {rightFunctions.Name}", testNode.Results);
-                var testFunctionBodyNode = TestFunctionBody(leftFunctions, rightFunctions);
-                testNode.Nodes.Add(testFunctionBodyNode);
-                functionsTestNode.Nodes.Add(testNode);
-            }
+            AddTestResult($"Testing Function L: missing R: {function.Name}", ErrorTypes.LmissingRpresent, ObjectType.Function, function.Name, testNode.Results);
+
+            SetResultLevel(testNode);
+
+            functionsTestNode.Nodes.Add(testNode);
         }
 
-        private TestNodes TestFunctionBody(Function leftFunctions, Function rightFunctions)
+        private void AddRightMissingFunctionNode(TestNodes functionsTestNode, Function function)
         {
-            var bodyTest = CreateTestNode(new List<TestResult>(), ObjectType.Function, "Test for Function Body");
-            var normalizedLeft = Extensions.Normalize(leftFunctions.Body).Trim();
-            var normalizedRight = Extensions.Normalize(rightFunctions.Body).Trim();
-            Logger.Info($"Testing functions bodies L: {leftFunctions.Body} R: {rightFunctions.Body}");
+            var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Function, $"Test for Function: {function.Name}");
 
-            if (normalizedLeft == normalizedRight)
-            {
-                AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.Function, $"Testing body of SP L: {leftFunctions.Name} R: {rightFunctions.Name}", bodyTest.Results);
-            }
-            else
-            {
-                AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.Function, $"Testing body of SP L: {leftFunctions.Name} R: {rightFunctions.Name}", bodyTest.Results);
-            }
+            AddTestResult($"Testing Functions L: {function.Name} R: missing", ErrorTypes.LpresentRmissing, ObjectType.Function, function.Name , testNode.Results);
+
+            SetResultLevel(testNode);
+
+            functionsTestNode.Nodes.Add(testNode);
+        }
+
+        private TestNodes TestFunctionBody(Function leftFunction, Function rightFunction)
+        {
+            var bodyTest = CreateTestNode(new List<TestResult>(), ObjectType.Function, "Test for Function Content");
+
+            var normalizedLeft = Extensions.Normalize(leftFunction.Body).Trim();
+            var normalizedRight = Extensions.Normalize(rightFunction.Body).Trim();
+
+            Logger.Info($"Testing functions content L: {leftFunction.Name} R: {rightFunction.Name}");
+
+            Logger.Debug($"Testing functions content L: {leftFunction.Body} R: {rightFunction.Body}");
+
+            AddTestResult($"Testing content of functions L: {leftFunction.Name}\n{leftFunction.Body} \nR: {rightFunction.Name}\n{rightFunction.Body}",
+                normalizedLeft == normalizedRight ? ErrorTypes.IsMatch : ErrorTypes.NotMatch, ObjectType.Function,
+                leftFunction.Name, bodyTest.Results);
+
+            SetResultLevel(bodyTest);
+
             return bodyTest;
 
         }
@@ -308,8 +346,7 @@ namespace DBSchemaComparator.App.Comparator
             if (unionListRightTables.Any())
             TestMatchedTables(unionListLeftTables, unionListRightTables, tablesTestsNode);
 
-           // leftDatabaseTables.ForEach(leftTable => LeftDatabaseTests(tablesTestsNode, rightDatabaseTables,leftTable));
-           // rightDatabaseTables.ForEach(rightTable => RightDatabaseTests(tablesTestsNode, leftDatabaseTables, rightTable));
+            SetResultLevel(tablesTestsNode);
 
             Logger.Info($"End TestTables method.");
             return tablesTestsNode;
@@ -325,77 +362,88 @@ namespace DBSchemaComparator.App.Comparator
                 //Test Columns
                 var testColumnsNode = TestColumns(leftTbl, rightTable);
                 testNode.Nodes.Add(testColumnsNode);
+
+
+                SetResultLevel(testNode);
                 //Append testNode
                 tablesTestsNode.Nodes.Add(testNode);
             }
+
         }
 
-        private void RightDatabaseTests(TestNodes tablesTestsNode, List<Table> leftDatabaseTables, Table rightDatabaseTable)
-        {
-            var rightTableName = rightDatabaseTable.TableName.ToLower();
-            var leftTable = leftDatabaseTables.FirstOrDefault(l => l.TableName.ToLower() == rightTableName);
-            if (leftTable == null)
-            {
-                AddLeftMissingTableNode(tablesTestsNode, rightDatabaseTable);
-            }
-            else
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {rightDatabaseTable.TableName}");
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Table, $"Testing table L: {leftTable.TableName} R: {rightDatabaseTable.TableName}", testNode.Results);
-                //Test Columns
-                var testColumnsNode = TestColumns(leftTable, rightDatabaseTable);
-                testNode.Nodes.Add(testColumnsNode);
+        //private void RightDatabaseTests(TestNodes tablesTestsNode, List<Table> leftDatabaseTables, Table rightDatabaseTable)
+        //{
+        //    var rightTableName = rightDatabaseTable.TableName.ToLower();
+        //    var leftTable = leftDatabaseTables.FirstOrDefault(l => l.TableName.ToLower() == rightTableName);
+        //    if (leftTable == null)
+        //    {
+        //        AddLeftMissingTableNode(tablesTestsNode, rightDatabaseTable);
+        //    }
+        //    else
+        //    {
+        //        var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {rightDatabaseTable.TableName}");
+        //        AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Table, $"Testing table L: {leftTable.TableName} R: {rightDatabaseTable.TableName}", testNode.Results);
+        //        //Test Columns
+        //        var testColumnsNode = TestColumns(leftTable, rightDatabaseTable);
+        //        testNode.Nodes.Add(testColumnsNode);
                 
-                //Append testNode
-                tablesTestsNode.Nodes.Add(testNode);
-            }
-        }
+        //        //Append testNode
+        //        tablesTestsNode.Nodes.Add(testNode);
+        //    }
+        //}
 
-        private void LeftDatabaseTests(TestNodes tablesTestsNode, List<Table> rightDatabaseTables, Table leftDatabaseTable)
-        {
-            var leftTableName = leftDatabaseTable.TableName.ToLower();
-            var rightTable = rightDatabaseTables.FirstOrDefault(r => r.TableName.ToLower() == leftTableName);
+        //private void LeftDatabaseTests(TestNodes tablesTestsNode, List<Table> rightDatabaseTables, Table leftDatabaseTable)
+        //{
+        //    var leftTableName = leftDatabaseTable.TableName.ToLower();
+        //    var rightTable = rightDatabaseTables.FirstOrDefault(r => r.TableName.ToLower() == leftTableName);
 
-            if (rightTable == null)
-            {
-                AddRightMissingTableNode(tablesTestsNode, leftDatabaseTable);
-            }
-            else
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {leftDatabaseTable.TableName}");
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Table, $"Testing table L: {leftDatabaseTable.TableName} R: {rightTable.TableName}", testNode.Results);
+        //    if (rightTable == null)
+        //    {
+        //        AddRightMissingTableNode(tablesTestsNode, leftDatabaseTable);
+        //    }
+        //    else
+        //    {
+        //        var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {leftDatabaseTable.TableName}");
+        //        AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Table, $"Testing table L: {leftDatabaseTable.TableName} R: {rightTable.TableName}", testNode.Results);
 
-                //Test Columns
-                var testColumnsNode = TestColumns(leftDatabaseTable, rightTable);
-                testNode.Nodes.Add(testColumnsNode);
+        //        //Test Columns
+        //        var testColumnsNode = TestColumns(leftDatabaseTable, rightTable);
+        //        testNode.Nodes.Add(testColumnsNode);
            
-                //Append testNode
-                tablesTestsNode.Nodes.Add(testNode);
-            }
-        }
+        //        //Append testNode
+        //        tablesTestsNode.Nodes.Add(testNode);
+        //    }
+        //}
 
         private void AddRightMissingTableNode(TestNodes tablesTestsNode, Table leftDatabaseTable)
         {
             var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {leftDatabaseTable.TableName}");
             AddTestResult($"Testing table L: {leftDatabaseTable.TableName} R: missing", ErrorTypes.LpresentRmissing, ObjectType.Table, leftDatabaseTable.TableName, testNode.Results);
+
+            SetResultLevel(testNode);
             tablesTestsNode.Nodes.Add(testNode);
         }
+
         private void AddLeftMissingTableNode(TestNodes tablesTestsNode, Table rightDatabaseTable)
         {
             var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {rightDatabaseTable.TableName}");
             AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Table, $"Testing table L: missing R: {rightDatabaseTable.TableName}", testNode.Results);
+            SetResultLevel(testNode);
             tablesTestsNode.Nodes.Add(testNode);
         }
 
         private TestNodes TestColumns(Table leftTable, Table rightTable)
         {
             Logger.Info($"Start testing columns for tables L:{leftTable.TableName} R:{rightTable.TableName}");
-            var testColumnsNode = CreateTestNode(new List<TestResult>(), ObjectType.ColumnsTests, "Set of tests for Columns"); 
+            var testColumnsNode = CreateTestNode(null, ObjectType.ColumnsTests, "Set of tests for Columns"); 
 
             leftTable.Columns.ForEach(leftTableColumn => TestLeftDbColumns(rightTable, testColumnsNode, leftTableColumn));
             rightTable.Columns.ForEach(rightTableColumn => TestRightDbColumns(leftTable, testColumnsNode, rightTableColumn));
             
             Logger.Info($"Returning TestNodes for testing columns.");
+
+            SetResultLevel(testColumnsNode);
+
             return testColumnsNode;
         }
 
@@ -407,11 +455,11 @@ namespace DBSchemaComparator.App.Comparator
             var leftTableColumn = leftTable.Columns.FirstOrDefault(l => l.ColumnName == rightTableColumn.ColumnName);
             if (leftTableColumn == null)
             {
-                AddTestResult($"Columns L: missing R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", ErrorTypes.LmissingRpresent, ObjectType.Column, rightTableColumn.TableName , columnNode.Results);
+                AddTestResult($"Columns L: missing R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", ErrorTypes.LmissingRpresent, ObjectType.Column, rightTableColumn.TableName, columnNode.Results);
             }
             else
             {
-                AddTestResult($"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", ErrorTypes.LpresentRpresent, ObjectType.Column, leftTableColumn.ColumnName , columnNode.Results);
+                AddTestResult($"Columns L: {leftTableColumn.TableName}.{leftTableColumn.ColumnName} R: {rightTableColumn.TableName}.{rightTableColumn.ColumnName}", ErrorTypes.LpresentRpresent, ObjectType.Column, leftTableColumn.ColumnName, columnNode.Results);
                 //Check Columns
                 CheckColumnType(leftTableColumn, rightTableColumn, columnNode.Results);
                 //Check column IsNullable
@@ -420,6 +468,9 @@ namespace DBSchemaComparator.App.Comparator
                 CheckColumnIdentity(leftTableColumn, rightTableColumn, columnNode.Results);
 
             }
+
+            SetResultLevel(columnNode);
+
             testColumnsNode.Nodes.Add(columnNode);
         }
 
@@ -442,6 +493,8 @@ namespace DBSchemaComparator.App.Comparator
                 //Check Identity settings
                 CheckColumnIdentity(leftTableColumn, rightTableColumn, columnNode.Results);
             }
+            SetResultLevel(columnNode);
+
             testColumnsNode.Nodes.Add(columnNode);
         }
 
@@ -449,7 +502,7 @@ namespace DBSchemaComparator.App.Comparator
         {
             if (leftTableColumn.IsIdentification == rightTableColumn.IsIdentification)
             {
-                AddTestResult($"Identification setting for tested columns L: {leftTableColumn.ColumnName}.{leftTableColumn.IsIdentification} R: {rightTableColumn.ColumnName}.{rightTableColumn.IsIdentification}", 
+                AddTestResult($"Identification setting for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.IsIdentification} R: {rightTableColumn.ColumnName} = {rightTableColumn.IsIdentification}", 
                     ErrorTypes.IsMatch, 
                     ObjectType.IsIdentification,
                     $"L: {leftTableColumn.IsIdentification}. R: {rightTableColumn.IsIdentification}", 
@@ -506,89 +559,77 @@ namespace DBSchemaComparator.App.Comparator
 
         #endregion
 
-        #region TestTables Methods
+        #region TestProcedures Methods
         public TestNodes TestProcedures()
         {
             Logger.Info("Begin TestProcedures method.");
+
             var proceduresTestsNode = CreateTestNode(null, ObjectType.StoredProceduresTests, "Set of tests for stored procedures");
 
             var leftDatabaseSp = LeftDatabase.GetStoredProceduresInfo().ToList();
             var rightDatabaseSp = RightDatabase.GetStoredProceduresInfo().ToList();
 
-            foreach (var leftSp in leftDatabaseSp)
-            {
-                TestLeftDbProcedures(proceduresTestsNode, rightDatabaseSp, leftSp);
-            }
+            //Procedures only in the left database
+            var uniqueLeft = leftDatabaseSp.Where(p => rightDatabaseSp.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            uniqueLeft.ForEach(l => AddRightMissingProcedureNode(proceduresTestsNode, l));
 
-            foreach (var rightSp in rightDatabaseSp)
-            {
-                TestRightDbProcedures(proceduresTestsNode, leftDatabaseSp, rightSp);
-            }
+            //Procedures only in the right database
+            var uniqueRight = rightDatabaseSp.Where(p => leftDatabaseSp.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            uniqueRight.ForEach(r => AddLeftMissingProcedureNode(proceduresTestsNode, r));
+
+            var unionListLeftProcedures = leftDatabaseSp.Where(x => rightDatabaseSp.Any(y => string.Equals(y.Name, x.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            var unionListRightProcedures = rightDatabaseSp.Where(x => leftDatabaseSp.Any(y => string.Equals(y.Name, x.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
+
+            if (unionListRightProcedures.Any())
+                TestMatchedProcedures(unionListLeftProcedures, unionListRightProcedures, proceduresTestsNode);
 
             Logger.Info($"End TestProcedures method.");
+
+            SetResultLevel(proceduresTestsNode);
 
             return proceduresTestsNode;
         }
 
-        private void TestRightDbProcedures(TestNodes proceduresTestsNode, IEnumerable<StoredProcedure> leftDatabaseSp, StoredProcedure rightSp)
+        private void TestMatchedProcedures(List<StoredProcedure> leftProceduresList, List<StoredProcedure> rightProceduresList, TestNodes proceduresTestsNode)
         {
-            var leftSp = leftDatabaseSp.FirstOrDefault(r => r.Name.ToLower() == rightSp.Name.ToLower());
-
-            if (leftSp == null)
+            foreach (var leftSp in leftProceduresList)
             {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.StoredProcedure, $"Test for SP: {rightSp.Name}");
-
-                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.StoredProcedure, $"Testing Stored Procedure L: missing R: {rightSp.Name}", testNode.Results);
-
-                proceduresTestsNode.Nodes.Add(testNode);
-            }
-            else
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.StoredProcedure, $"Test for SP {rightSp.Name}");
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.StoredProcedure, $"Testing Stored Procedure L: {leftSp.Name} R: {rightSp.Name}", testNode.Results);
+                var rightSp = rightProceduresList.First(x => string.Equals(x.Name, leftSp.Name, StringComparison.CurrentCultureIgnoreCase));
+                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.StoredProcedure, $"Test for SP {leftSp.Name}");
+                AddTestResult($"Testing Stored Procedure L: {leftSp.Name} R: {rightSp.Name}", ErrorTypes.LpresentRpresent, ObjectType.StoredProcedure, $"Reference object {leftSp.Name}", testNode.Results);
                 var testProceduresBodyNode = TestProceduresBody(leftSp, rightSp);
                 testNode.Nodes.Add(testProceduresBodyNode);
+                SetResultLevel(testNode);
                 proceduresTestsNode.Nodes.Add(testNode);
             }
         }
 
-        private void TestLeftDbProcedures(TestNodes proceduresTestsNode, IEnumerable<StoredProcedure> rightDatabaseSp, StoredProcedure leftSp)
+        private void AddLeftMissingProcedureNode(TestNodes proceduresTestsNode, StoredProcedure storedProcedure)
         {
-            var rightSp = rightDatabaseSp.FirstOrDefault(r => r.Name.ToLower() == leftSp.Name.ToLower());
+            var testNode = CreateTestNode(new List<TestResult>(), ObjectType.StoredProcedure, $"Test for SP: {storedProcedure.Name}");
+            AddTestResult($"Testing Stored Procedure L: missing R: {storedProcedure.Name}", ErrorTypes.LmissingRpresent, ObjectType.StoredProcedure, storedProcedure.Name, testNode.Results);
+            SetResultLevel(testNode);
+            proceduresTestsNode.Nodes.Add(testNode);
+        }
 
-            if (rightSp == null)
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.StoredProcedure, $"Test for SP: {leftSp.Name}");
-
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.StoredProcedure, $"Testing Stored Procedure L: {leftSp.Name} R: missing", testNode.Results);
-
-                proceduresTestsNode.Nodes.Add(testNode);
-            }
-            else
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.StoredProcedure, $"Test for SP: {leftSp.Name}");
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.StoredProcedure, $"Testing Stored Procedure L: {leftSp.Name} R: {rightSp.Name}", testNode.Results);
-                var testProceduresBodyNode = TestProceduresBody(leftSp, rightSp);
-                testNode.Nodes.Add(testProceduresBodyNode);
-                proceduresTestsNode.Nodes.Add(testNode);
-            }
+        private void AddRightMissingProcedureNode(TestNodes proceduresTestsNode, StoredProcedure storedProcedure)
+        {
+            var testNode = CreateTestNode(new List<TestResult>(), ObjectType.StoredProcedure, $"Test for SP: {storedProcedure.Name}");
+            AddTestResult($"Testing Stored Procedure L: {storedProcedure.Name} R: missing", ErrorTypes.LpresentRmissing, ObjectType.StoredProcedure, storedProcedure.Name, testNode.Results);
+            SetResultLevel(testNode);
+            proceduresTestsNode.Nodes.Add(testNode);
         }
 
         private TestNodes TestProceduresBody(StoredProcedure leftSp, StoredProcedure rightSp)
         {
-            var bodyTest = CreateTestNode(new List<TestResult>(), ObjectType.StoredProcedure, "Test for Stored Procedure Body");
+            var bodyTest = CreateTestNode(new List<TestResult>(), ObjectType.StoredProcedure, "Test for SP Content");
             var normalizedLeft = Extensions.Normalize(leftSp.Body).Trim();
             var normalizedRight = Extensions.Normalize(rightSp.Body).Trim();
-            Logger.Info($"Testing stored procedures bodies L: {leftSp.Body} R: {rightSp.Body}");
-
-            if (normalizedLeft == normalizedRight)
-            {
-                AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.StoredProcedure, $"Testing body of SP L: {leftSp.Name} R: {rightSp.Name}", bodyTest.Results);
-            }
-            else
-            {
-                AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.StoredProcedure, $"Testing body of SP L: {leftSp.Name} R: {rightSp.Name}", bodyTest.Results);
-            }
+            Logger.Info($"Testing stored procedures content L: {leftSp.Body} R: {rightSp.Body}");
+            AddTestResult($"Testing content of SP L: {leftSp.Name}\n{leftSp.Body} \nR: {rightSp.Name}\n{rightSp.Body}",
+                normalizedLeft == normalizedRight ? ErrorTypes.IsMatch : ErrorTypes.NotMatch, ObjectType.StoredProcedure,
+                leftSp.Name, bodyTest.Results);
+            SetResultLevel(bodyTest);
             return bodyTest;
         }
 
@@ -644,7 +685,6 @@ namespace DBSchemaComparator.App.Comparator
         }
 
         #endregion
-
 
         #region TestIntegrityConstraints Methods
         private TestNodes TestIntegrityConstraints()
@@ -979,6 +1019,7 @@ namespace DBSchemaComparator.App.Comparator
             };
             return node;
         }
+
         private static TestNodes CreateTestNode(List<TestResult> testResults, ObjectType testType, string description, ResultLevel resultLevel)
         {
             var node = new TestNodes
@@ -990,6 +1031,29 @@ namespace DBSchemaComparator.App.Comparator
                 ResultLevel = resultLevel
             };
             return node;
+        }
+
+        private static void SetResultLevel(TestNodes testNode)
+        {
+           
+            ResultLevel resultLevel = ResultLevel.None;
+
+            if(testNode.Nodes.Any()) { 
+                 var resultList = Extensions.DepthFirstTraversal(testNode, col => col.Nodes).ToList();
+                resultLevel = resultList.Any(r => r.ResultLevel == ResultLevel.Error) ? ResultLevel.Error : ResultLevel.Success;
+            }
+            if (testNode.Results != null && testNode.Results.Any() && resultLevel != ResultLevel.Error) { 
+                var columnNodeResults = testNode.Results.Any(
+                                        r =>
+                                        r.ErrorType != ErrorTypes.LpresentRpresent &&
+                                        r.ErrorType != ErrorTypes.IsMatch &&
+                                        r.ErrorType != ErrorTypes.CreationScriptSuccess);
+
+                resultLevel = columnNodeResults ? ResultLevel.Error : ResultLevel.Success;
+            }
+            Logger.Debug($"Setting result level to {resultLevel}",testNode);
+            testNode.ResultLevel = resultLevel;
+
         }
 
         private void AddTestResult(string description, ErrorTypes errorType, ObjectType objType, string testedObjName, List<TestResult> testResults)
