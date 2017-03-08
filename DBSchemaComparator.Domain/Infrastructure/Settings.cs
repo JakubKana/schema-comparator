@@ -59,7 +59,7 @@ namespace DBSchemaComparator.Domain.Infrastructure
         private Settings() : this(ConfigPath) { }
 
 
-
+     
         public static string GetConnectionString(DatabaseConnection connection)
         {
             try

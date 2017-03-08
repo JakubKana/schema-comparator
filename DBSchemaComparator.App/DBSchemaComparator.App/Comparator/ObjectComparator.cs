@@ -186,58 +186,9 @@ namespace DBSchemaComparator.App.Comparator
                 SetResultLevel(testNode);
 
                 viewsTestNode.Nodes.Add(testNode);
-
-
-              
-            }
-
-        }
-
-        private void TestRightDbViews(TestNodes viewsTestNode, IList<View> leftDbViews, View rightDbView)
-        {
-            var leftViews = leftDbViews.FirstOrDefault(r => string.Equals(r.Name, rightDbView.Name, StringComparison.CurrentCultureIgnoreCase));
-
-            if (leftViews == null)
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View: {rightDbView.Name}");
-
-                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.View, $"Testing View L: missing R: {rightDbView.Name}", testNode.Results);
-                viewsTestNode.Nodes.Add(testNode);
-            }
-            else
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View {rightDbView.Name}");
-
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.View, $"Testing View L: {leftViews.Name} R: {rightDbView.Name}", testNode.Results);
-                var testProceduresBodyNode = TestViewBody(leftViews, rightDbView);
-
-                testNode.Nodes.Add(testProceduresBodyNode);
-                viewsTestNode.Nodes.Add(testNode);
             }
         }
-
-        private void TestLeftDbViews(TestNodes viewsTestNode, IList<View> rightDbViews, View leftDbView)
-        {
-            var rightViews = rightDbViews.FirstOrDefault(r => string.Equals(r.Name, leftDbView.Name, StringComparison.CurrentCultureIgnoreCase));
-
-            if (rightViews == null)
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View: {leftDbView.Name}");
-
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.View, $"Testing View L: {leftDbView.Name} R: missing", testNode.Results);
-                viewsTestNode.Nodes.Add(testNode);
-            }
-            else
-            {
-                var testNode = CreateTestNode(new List<TestResult>(), ObjectType.View, $"Test for View: {leftDbView.Name}");
-
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.View, $"Testing View L: {leftDbView.Name} R: {rightViews.Name}", testNode.Results);
-                var testFunctionBodyNode = TestViewBody(leftDbView, rightViews);
-
-                testNode.Nodes.Add(testFunctionBodyNode);
-                viewsTestNode.Nodes.Add(testNode);
-            }
-        }
+     
         private TestNodes TestViewBody(View leftView, View rightView)
         {
             var bodyTest = CreateTestNode(new List<TestResult>(), ObjectType.View, "Test for View content");
@@ -387,62 +338,18 @@ namespace DBSchemaComparator.App.Comparator
             {
                 var rightTable = rightTableList.First(x => string.Equals(x.TableName, leftTbl.TableName, StringComparison.CurrentCultureIgnoreCase));
                 var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {leftTbl.TableName}");
+
                 AddTestResult($"Testing table L: {leftTbl.TableName} R: {rightTable.TableName}", ErrorTypes.LpresentRpresent, ObjectType.Table, $"Reference table {leftTbl.TableName}" , testNode.Results);
+                
                 //Test Columns
                 var testColumnsNode = TestColumns(leftTbl, rightTable);
                 testNode.Nodes.Add(testColumnsNode);
-
 
                 SetResultLevel(testNode);
                 //Append testNode
                 tablesTestsNode.Nodes.Add(testNode);
             }
-
         }
-
-        //private void RightDatabaseTests(TestNodes tablesTestsNode, List<Table> leftDatabaseTables, Table rightDatabaseTable)
-        //{
-        //    var rightTableName = rightDatabaseTable.TableName.ToLower();
-        //    var leftTable = leftDatabaseTables.FirstOrDefault(l => l.TableName.ToLower() == rightTableName);
-        //    if (leftTable == null)
-        //    {
-        //        AddLeftMissingTableNode(tablesTestsNode, rightDatabaseTable);
-        //    }
-        //    else
-        //    {
-        //        var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {rightDatabaseTable.TableName}");
-        //        AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Table, $"Testing table L: {leftTable.TableName} R: {rightDatabaseTable.TableName}", testNode.Results);
-        //        //Test Columns
-        //        var testColumnsNode = TestColumns(leftTable, rightDatabaseTable);
-        //        testNode.Nodes.Add(testColumnsNode);
-                
-        //        //Append testNode
-        //        tablesTestsNode.Nodes.Add(testNode);
-        //    }
-        //}
-
-        //private void LeftDatabaseTests(TestNodes tablesTestsNode, List<Table> rightDatabaseTables, Table leftDatabaseTable)
-        //{
-        //    var leftTableName = leftDatabaseTable.TableName.ToLower();
-        //    var rightTable = rightDatabaseTables.FirstOrDefault(r => r.TableName.ToLower() == leftTableName);
-
-        //    if (rightTable == null)
-        //    {
-        //        AddRightMissingTableNode(tablesTestsNode, leftDatabaseTable);
-        //    }
-        //    else
-        //    {
-        //        var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {leftDatabaseTable.TableName}");
-        //        AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Table, $"Testing table L: {leftDatabaseTable.TableName} R: {rightTable.TableName}", testNode.Results);
-
-        //        //Test Columns
-        //        var testColumnsNode = TestColumns(leftDatabaseTable, rightTable);
-        //        testNode.Nodes.Add(testColumnsNode);
-           
-        //        //Append testNode
-        //        tablesTestsNode.Nodes.Add(testNode);
-        //    }
-        //}
 
         private void AddRightMissingTableNode(TestNodes tablesTestsNode, Table leftDatabaseTable)
         {
@@ -456,7 +363,8 @@ namespace DBSchemaComparator.App.Comparator
         private void AddLeftMissingTableNode(TestNodes tablesTestsNode, Table rightDatabaseTable)
         {
             var testNode = CreateTestNode(new List<TestResult>(), ObjectType.Table, $"Test for Table {rightDatabaseTable.TableName}");
-            AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Table, $"Testing table L: missing R: {rightDatabaseTable.TableName}", testNode.Results);
+            AddTestResult($"Testing table L: missing R: {rightDatabaseTable.TableName}", ErrorTypes.LmissingRpresent, ObjectType.Table, rightDatabaseTable.TableName , testNode.Results);
+
             SetResultLevel(testNode);
             tablesTestsNode.Nodes.Add(testNode);
         }
@@ -470,9 +378,7 @@ namespace DBSchemaComparator.App.Comparator
             rightTable.Columns.ForEach(rightTableColumn => TestRightDbColumns(leftTable, testColumnsNode, rightTableColumn));
             
             Logger.Info($"Returning TestNodes for testing columns.");
-
             SetResultLevel(testColumnsNode);
-
             return testColumnsNode;
         }
 
@@ -669,48 +575,123 @@ namespace DBSchemaComparator.App.Comparator
         {
             Logger.Info("Begin TestIndexes method.");
             var indexesTestsNode = CreateTestNode(null, ObjectType.IndexTests, "Set of tests for indexes");
+
             var leftDatabaseIndexes = LeftDatabase.GetIndexesInfo().ToList();
             var rightDatabaseIndexes = RightDatabase.GetIndexesInfo().ToList();
 
-            foreach (var leftDatabaseIndex in leftDatabaseIndexes)
-            {
-                var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
-                    $"Index Name {leftDatabaseIndex.IndexName} applied on {leftDatabaseIndex.TableName}.{leftDatabaseIndex.ColumnName}");
-                var rigthIndex = rightDatabaseIndexes.FirstOrDefault(r => 
-                string.Equals(r.IndexName, leftDatabaseIndex.IndexName, StringComparison.CurrentCultureIgnoreCase) &&
-                string.Equals(r.TableName, leftDatabaseIndex.TableName, StringComparison.CurrentCultureIgnoreCase));
-                if (rigthIndex == null)
-                {
-                    AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Index, $"Indexes L: {leftDatabaseIndex.IndexName} R: misssing", indexNode.Results);
-                }
-                else
-                {
-                    AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Index, $"Indexes L: {leftDatabaseIndex.IndexName} R: {rigthIndex.IndexName}", indexNode.Results);
-                }
-                indexesTestsNode.Nodes.Add(indexNode);
-            }
+            //Tables only in the left database
+            var uniqueLeft = leftDatabaseIndexes.Where(p => rightDatabaseIndexes.All(p2 => !string.Equals(p2.IndexName, p.IndexName, StringComparison.CurrentCultureIgnoreCase) && !string.Equals(p2.TableName, p.TableName, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            uniqueLeft.ForEach(l => AddRightMissingIndexNode(indexesTestsNode, l));
 
-            foreach (var rightDatabaseIndex in rightDatabaseIndexes)
-            {
-                var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
-                   $"Index Name {rightDatabaseIndex.IndexName} applied on {rightDatabaseIndex.TableName}.{rightDatabaseIndex.ColumnName}");
-                var leftIndex = leftDatabaseIndexes.FirstOrDefault(l => 
-                string.Equals(l.IndexName, rightDatabaseIndex.IndexName, StringComparison.CurrentCultureIgnoreCase) &&
-                string.Equals(l.TableName, rightDatabaseIndex.TableName, StringComparison.CurrentCultureIgnoreCase));
-                if (leftIndex == null)
-                {
-                    AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Index, $"Indexes L: missing R: {rightDatabaseIndex.IndexName}", indexNode.Results);
-                }
-                else
-                {
-                    AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Index, $"Indexes L: {leftIndex.IndexName} R: {rightDatabaseIndex.IndexName}", indexNode.Results);
-                }
-                indexesTestsNode.Nodes.Add(indexNode);
-            }
+            //Tables only in the right database
+            var uniqueRight = rightDatabaseIndexes.Where(p => leftDatabaseIndexes.All(p2 => !string.Equals(p2.IndexName, p.IndexName, StringComparison.CurrentCultureIgnoreCase) && !string.Equals(p2.TableName,p.TableName, StringComparison.CurrentCultureIgnoreCase))).ToList();
+            uniqueRight.ForEach(r => AddLeftMissingIndexNode(indexesTestsNode, r));
+
+            var unionListLeftIndexes = leftDatabaseIndexes.Where(x => rightDatabaseIndexes.Any(y => string.Equals(y.IndexName, x.IndexName, StringComparison.CurrentCultureIgnoreCase) && string.Equals(y.TableName,x.TableName,StringComparison.CurrentCultureIgnoreCase))).ToList();
+            var unionListRightIndexes = rightDatabaseIndexes.Where(x => leftDatabaseIndexes.Any(y => string.Equals(y.IndexName, x.IndexName, StringComparison.CurrentCultureIgnoreCase) && string.Equals(y.TableName, x.TableName, StringComparison.CurrentCultureIgnoreCase))).ToList();
+
+            if (unionListRightIndexes.Any())
+                TestMatchedIndexes(unionListLeftIndexes, unionListRightIndexes, indexesTestsNode);
+
+            SetResultLevel(indexesTestsNode);
+
+
+
+
+            //foreach (var leftDatabaseIndex in leftDatabaseIndexes)
+            //{
+            //    var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
+            //        $"Index Name {leftDatabaseIndex.IndexName} applied on {leftDatabaseIndex.TableName}.{leftDatabaseIndex.ColumnName}");
+            //    var rigthIndex = rightDatabaseIndexes.FirstOrDefault(r => 
+            //    string.Equals(r.IndexName, leftDatabaseIndex.IndexName, StringComparison.CurrentCultureIgnoreCase) &&
+            //    string.Equals(r.TableName, leftDatabaseIndex.TableName, StringComparison.CurrentCultureIgnoreCase));
+            //    if (rigthIndex == null)
+            //    {
+            //        AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Index, $"Indexes L: {leftDatabaseIndex.IndexName} R: misssing", indexNode.Results);
+            //    }
+            //    else
+            //    {
+            //        AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Index, $"Indexes L: {leftDatabaseIndex.IndexName} R: {rigthIndex.IndexName}", indexNode.Results);
+            //    }
+            //    indexesTestsNode.Nodes.Add(indexNode);
+            //}
+
+            //foreach (var rightDatabaseIndex in rightDatabaseIndexes)
+            //{
+            //    var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
+            //       $"Index Name {rightDatabaseIndex.IndexName} applied on {rightDatabaseIndex.TableName}.{rightDatabaseIndex.ColumnName}");
+            //    var leftIndex = leftDatabaseIndexes.FirstOrDefault(l => 
+            //    string.Equals(l.IndexName, rightDatabaseIndex.IndexName, StringComparison.CurrentCultureIgnoreCase) &&
+            //    string.Equals(l.TableName, rightDatabaseIndex.TableName, StringComparison.CurrentCultureIgnoreCase));
+            //    if (leftIndex == null)
+            //    {
+            //        AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Index, $"Indexes L: missing R: {rightDatabaseIndex.IndexName}", indexNode.Results);
+            //    }
+            //    else
+            //    {
+            //        AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Index, $"Indexes L: {leftIndex.IndexName} R: {rightDatabaseIndex.IndexName}", indexNode.Results);
+            //    }
+            //    indexesTestsNode.Nodes.Add(indexNode);
+            //}
             
             Logger.Info("End TestTables method.");
 
             return indexesTestsNode;
+        }
+
+        private void TestMatchedIndexes(List<Index> leftIndexesList, List<Index> rightIndexesList, TestNodes indexesTestsNode)
+        {
+
+            foreach (var leftIndex in leftIndexesList)
+            {
+                Logger.Info($"Testing index {leftIndex.TableName}");    
+
+                var rigthIndex = rightIndexesList.First(r => 
+                string.Equals(r.IndexName, leftIndex.IndexName, StringComparison.CurrentCultureIgnoreCase) &&
+                string.Equals(r.TableName, leftIndex.TableName, StringComparison.CurrentCultureIgnoreCase));
+
+                var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
+                   $"Index Name {leftIndex.IndexName} applied on {leftIndex.TableName}.{leftIndex.ColumnName}");
+
+                AddTestResult($"Indexes L: {leftIndex.IndexName} R: {rigthIndex.IndexName}", ErrorTypes.LpresentRpresent, ObjectType.Index, leftIndex.IndexName, indexNode.Results);
+
+                //Test Indexes
+                //  var testIndexNode = TestIndex(leftIndex, rigthIndex);
+                //  indexNode.Nodes.Add(testIndexNode);
+
+                SetResultLevel(indexNode);
+                indexesTestsNode.Nodes.Add(indexNode);
+            }
+
+        }
+
+        //private TestNodes TestIndex(Index leftIndex, Index rigthIndex)
+        //{
+                
+          
+
+        //}
+
+        private void AddLeftMissingIndexNode(TestNodes indexesTestsNode, Index index)
+        {
+            var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index, $"Index Name {index.IndexName} applied on {index.TableName}.{index.ColumnName}");
+
+            AddTestResult($"Indexes L: missing R: {index.IndexName}", ErrorTypes.LpresentRmissing, ObjectType.Index, index.IndexName, indexNode.Results);
+
+            SetResultLevel(indexNode);
+
+            indexesTestsNode.Nodes.Add(indexNode);
+        }
+
+        private void AddRightMissingIndexNode(TestNodes indexesTestsNode, Index index)
+        {
+            var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index, $"Index Name {index.IndexName} applied on {index.TableName}.{index.ColumnName}");
+           
+            AddTestResult($"Indexes L: {index.IndexName} R: misssing", ErrorTypes.LpresentRmissing, ObjectType.Index, index.IndexName, indexNode.Results);
+
+            SetResultLevel(indexNode);
+
+            indexesTestsNode.Nodes.Add(indexNode);
         }
 
         #endregion
