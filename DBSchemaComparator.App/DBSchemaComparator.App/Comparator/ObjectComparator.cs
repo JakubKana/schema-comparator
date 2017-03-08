@@ -85,6 +85,8 @@ namespace DBSchemaComparator.App.Comparator
                     LeftDatabase.Database.ConnectionString, 
                     mainTestNode.Results);
 
+                TestCollation();
+            
                 //Test Tables
                 var tablesTestNode = TestTables();
                 mainTestNode.Nodes.Add(tablesTestNode);
@@ -117,6 +119,12 @@ namespace DBSchemaComparator.App.Comparator
             
             //List of all nodes within a Tree Structure
             var listofnodes = Extensions.DepthFirstTraversal(mainTestNode, r => r.Nodes).ToList();
+        }
+
+        private void TestCollation()
+        {
+            
+
         }
 
         #region TestViews Methods
@@ -595,45 +603,6 @@ namespace DBSchemaComparator.App.Comparator
 
             SetResultLevel(indexesTestsNode);
 
-
-
-
-            //foreach (var leftDatabaseIndex in leftDatabaseIndexes)
-            //{
-            //    var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
-            //        $"Index Name {leftDatabaseIndex.IndexName} applied on {leftDatabaseIndex.TableName}.{leftDatabaseIndex.ColumnName}");
-            //    var rigthIndex = rightDatabaseIndexes.FirstOrDefault(r => 
-            //    string.Equals(r.IndexName, leftDatabaseIndex.IndexName, StringComparison.CurrentCultureIgnoreCase) &&
-            //    string.Equals(r.TableName, leftDatabaseIndex.TableName, StringComparison.CurrentCultureIgnoreCase));
-            //    if (rigthIndex == null)
-            //    {
-            //        AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Index, $"Indexes L: {leftDatabaseIndex.IndexName} R: misssing", indexNode.Results);
-            //    }
-            //    else
-            //    {
-            //        AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Index, $"Indexes L: {leftDatabaseIndex.IndexName} R: {rigthIndex.IndexName}", indexNode.Results);
-            //    }
-            //    indexesTestsNode.Nodes.Add(indexNode);
-            //}
-
-            //foreach (var rightDatabaseIndex in rightDatabaseIndexes)
-            //{
-            //    var indexNode = CreateTestNode(new List<TestResult>(), ObjectType.Index,
-            //       $"Index Name {rightDatabaseIndex.IndexName} applied on {rightDatabaseIndex.TableName}.{rightDatabaseIndex.ColumnName}");
-            //    var leftIndex = leftDatabaseIndexes.FirstOrDefault(l => 
-            //    string.Equals(l.IndexName, rightDatabaseIndex.IndexName, StringComparison.CurrentCultureIgnoreCase) &&
-            //    string.Equals(l.TableName, rightDatabaseIndex.TableName, StringComparison.CurrentCultureIgnoreCase));
-            //    if (leftIndex == null)
-            //    {
-            //        AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Index, $"Indexes L: missing R: {rightDatabaseIndex.IndexName}", indexNode.Results);
-            //    }
-            //    else
-            //    {
-            //        AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Index, $"Indexes L: {leftIndex.IndexName} R: {rightDatabaseIndex.IndexName}", indexNode.Results);
-            //    }
-            //    indexesTestsNode.Nodes.Add(indexNode);
-            //}
-            
             Logger.Info("End TestTables method.");
 
             return indexesTestsNode;
@@ -655,22 +624,11 @@ namespace DBSchemaComparator.App.Comparator
 
                 AddTestResult($"Indexes L: {leftIndex.IndexName} R: {rigthIndex.IndexName}", ErrorTypes.LpresentRpresent, ObjectType.Index, leftIndex.IndexName, indexNode.Results);
 
-                //Test Indexes
-                //  var testIndexNode = TestIndex(leftIndex, rigthIndex);
-                //  indexNode.Nodes.Add(testIndexNode);
-
                 SetResultLevel(indexNode);
                 indexesTestsNode.Nodes.Add(indexNode);
             }
 
         }
-
-        //private TestNodes TestIndex(Index leftIndex, Index rigthIndex)
-        //{
-                
-          
-
-        //}
 
         private void AddLeftMissingIndexNode(TestNodes indexesTestsNode, Index index)
         {

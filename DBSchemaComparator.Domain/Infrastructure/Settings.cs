@@ -78,7 +78,6 @@ namespace DBSchemaComparator.Domain.Infrastructure
                 Logger.Error(exception, "Cannot retrieve connection string.");
                 return string.Empty;
             }
-
         }
 
         public static List<string> GetDatabaseConnectionStrings(DatabaseConnectionList databaseConnection)

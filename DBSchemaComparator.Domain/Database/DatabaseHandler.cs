@@ -167,7 +167,7 @@ namespace DBSchemaComparator.Domain.Database
         {
             Logger.Info($"Selecting basic schema information of type: {infoType}");
 
-            Sql sqlQuery = GetSqlQuery(infoType);
+            Sql sqlQuery = GetSqlServerQuery(infoType);
 
             try
             {
@@ -190,7 +190,7 @@ namespace DBSchemaComparator.Domain.Database
             }
         }
 
-        private static Sql GetSqlQuery(InformationType infoType)
+        private static Sql GetSqlServerQuery(InformationType infoType)
         {
 
             var sqlQuery = Sql.Builder;
@@ -262,6 +262,9 @@ INNER JOIN sys.tables tab2
     ON tab2.object_id = fkc.referenced_object_id
 INNER JOIN sys.columns col2
     ON col2.column_id = referenced_column_id AND col2.object_id = tab2.object_id");
+                    break;
+                case InformationType.DatabaseCollation:
+                    sqlQuery.Append(@"SELECT CONVERT (varchar, SERVERPROPERTY('collation'))");
                     break;
             }
 

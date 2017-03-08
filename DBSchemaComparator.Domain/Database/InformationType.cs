@@ -11,6 +11,7 @@ namespace DBSchemaComparator.Domain.Database
         View,
         Checks,
         PrimaryKeys,
-        ForeignKeys
+        ForeignKeys,
+        DatabaseCollation
     }
 }

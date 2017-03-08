@@ -24,7 +24,6 @@
         Script,
         PrimaryKeysTests,
         PrimaryKey,
-        
         CheckTests,
         ForeignKeysTests
     }
