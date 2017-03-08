@@ -85,7 +85,7 @@ namespace DBSchemaComparator.App.Comparator
                     LeftDatabase.Database.ConnectionString, 
                     mainTestNode.Results);
 
-                TestCollation();
+                TestCollation(mainTestNode.Results);
             
                 //Test Tables
                 var tablesTestNode = TestTables();
@@ -121,11 +121,26 @@ namespace DBSchemaComparator.App.Comparator
             var listofnodes = Extensions.DepthFirstTraversal(mainTestNode, r => r.Nodes).ToList();
         }
 
-        private void TestCollation()
+        private void TestCollation(List<TestResult> results)
         {
-            
+            Logger.Info("Begin TestCollation method.");
 
+            var leftDbcollation = LeftDatabase.GetCollationInfo().First();
+            var rightDbcollation = RightDatabase.GetCollationInfo().First();
+
+            AddTestResult(
+                $"Test for Database Collation L: {leftDbcollation.CollationName} R: {rightDbcollation.CollationName}",
+                leftDbcollation.CollationName == rightDbcollation.CollationName
+                    ? ErrorTypes.IsMatch
+                    : ErrorTypes.NotMatch,
+                ObjectType.DatabaseCollation,
+                leftDbcollation.CollationName,
+                results);
+
+            Logger.Info($"End TestCollation method.");    
         }
+
+       
 
         #region TestViews Methods
         private TestNodes TestViews()
@@ -702,14 +717,21 @@ namespace DBSchemaComparator.App.Comparator
 
             if (leftFk == null)
             {
-                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.ForeignKey, $"Testing Foreign Key Constraint L: missing R: {rightFk.ConstraintName}.", testFkNode.Results);
+                AddTestResult($"Testing Foreign Key Constraint L: missing R: {rightFk.ConstraintName}", 
+                    ErrorTypes.LmissingRpresent, 
+                    ObjectType.ForeignKey, 
+                    rightFk.ConstraintName, 
+                    testFkNode.Results);
             }
             else
             {
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.ForeignKey, $"Testing Foreign Key Constraint L: {leftFk.ConstraintName} within Table: {leftFk.ConstraintTable} " +
-                                                                                          $"\nR: {rightFk.ConstraintName} within Table: {rightFk.ConstraintTable}", testFkNode.Results);
-                ForeignKeysSubtests(rightFk, leftFk, testFkNode);
+                AddTestResult($"Testing Foreign Key Constraint L: {leftFk.ConstraintName} within Table: {leftFk.ConstraintTable} \nR: {rightFk.ConstraintName} within Table: {rightFk.ConstraintTable}", 
+                    ErrorTypes.LpresentRpresent, 
+                    ObjectType.ForeignKey, 
+                    rightFk.ConstraintName, 
+                    testFkNode.Results);
 
+                ForeignKeysSubtests(rightFk, leftFk, testFkNode);
             }
             foreignKeys.Nodes.Add(testFkNode);
         }
@@ -724,52 +746,52 @@ namespace DBSchemaComparator.App.Comparator
 
             if (testColumnApplied)
             {
-                AddTestResult("SUCCESS",
+                AddTestResult($"Applied Column L: {leftFk.ColumnApplied} \nR: {leftFk.ColumnApplied} matches.",
                     ErrorTypes.IsMatch,
                     ObjectType.ForeignKey,
-                    $"Applied Column L: {leftFk.ColumnApplied} \nR: {leftFk.ColumnApplied} matches.",
+                    $"{leftFk.ConstraintName}.{leftFk.ColumnApplied}",
                     testFkNode.Results);
             }
             else
             {
-                AddTestResult("ERROR",
+                AddTestResult($"Applied Column L: {leftFk.ColumnApplied} R: {rightFk.ColumnApplied} missmatch.",
                     ErrorTypes.NotMatch,
                     ObjectType.ForeignKey,
-                    $"Applied Column L: {leftFk.ColumnApplied} R: {rightFk.ColumnApplied} missmatch.",
+                     $"{leftFk.ConstraintName}.{leftFk.ColumnApplied}",
                     testFkNode.Results);
             }
 
             if (testReferencedTable)
             {
-                AddTestResult("SUCCESS",
+                AddTestResult($"Referenced Table L: {leftFk.ReferencedTable} \nR: {rightFk.ReferencedTable} matches.",
                     ErrorTypes.IsMatch,
                     ObjectType.ForeignKey,
-                    $"Referenced Table Body L: {leftFk.ReferencedTable} \nR: {rightFk.ReferencedTable} matches.",
+                    $"{leftFk.ConstraintName}.{leftFk.ReferencedTable}",
                     testFkNode.Results);
             }
             else
             {
-                AddTestResult("ERROR",
+                AddTestResult($"Referenced Table L: {leftFk.ReferencedTable} \nR: {rightFk.ReferencedTable} missmatch.",
                     ErrorTypes.NotMatch,
                     ObjectType.ForeignKey,
-                    $"Referenced Table L: {leftFk.ReferencedTable} \nR: {rightFk.ReferencedTable} missmatch.",
+                   $"{leftFk.ConstraintName}.{leftFk.ReferencedTable}",
                     testFkNode.Results);
             }
 
             if (testReferencedColumn)
             {
-                AddTestResult("SUCCESS",
+                AddTestResult($"Referenced Column L: {leftFk.ReferencedColumn} \nR: {rightFk.ReferencedColumn} matches.",
                     ErrorTypes.IsMatch,
                     ObjectType.ForeignKey,
-                    $"Referenced Column L: {leftFk.ReferencedColumn} \nR: {rightFk.ReferencedColumn} matches.",
+                    $"{leftFk.ConstraintName}.{leftFk.ReferencedColumn}",
                     testFkNode.Results);
             }
             else
             {
-                AddTestResult("ERROR",
+                AddTestResult($"Referenced Column L: {leftFk.ReferencedColumn} \n R: {rightFk.ReferencedColumn} missmatch.",
                     ErrorTypes.NotMatch,
                     ObjectType.ForeignKey,
-                    $"Referenced Column L: {leftFk.ReferencedColumn} \n R: {rightFk.ReferencedColumn} missmatch.",
+                    $"{leftFk.ConstraintName}{leftFk.ReferencedColumn}",
                     testFkNode.Results);
             }
         }
@@ -783,12 +805,14 @@ namespace DBSchemaComparator.App.Comparator
 
             if (rightFk == null)
             {
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.ForeignKey, $"Testing Foreign Key Constraint L: {leftFk.ConstraintName} R: missing", testFkNode.Results);
+                AddTestResult($"Testing Foreign Key Constraint L: {leftFk.ConstraintName} R: missing", ErrorTypes.LpresentRmissing, ObjectType.ForeignKey, $"{leftFk.ConstraintName}" , testFkNode.Results);
             }
             else
             {
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.ForeignKey, $"Testing Foreign Key Constraint L: {leftFk.ConstraintName} within Table: {leftFk.ConstraintTable} " +
-                                                                                        $"\nR: {rightFk.ConstraintName} within Table: {rightFk.ConstraintTable}", testFkNode.Results);
+                AddTestResult($"Testing Foreign Key Constraint L: {leftFk.ConstraintName} within Table: {leftFk.ConstraintTable} \nR: {rightFk.ConstraintName} within Table: {rightFk.ConstraintTable}", 
+                    ErrorTypes.LpresentRpresent, 
+                    ObjectType.ForeignKey, leftFk.ConstraintName, 
+                    testFkNode.Results);
                 ForeignKeysSubtests(rightFk, leftFk, testFkNode);
                
             }
@@ -803,11 +827,13 @@ namespace DBSchemaComparator.App.Comparator
             var testCheckNode = CreateTestNode(new List<TestResult>(), ObjectType.Check, $"Test for Check Constraint: {rightCheck.ConstraintName} within table: {rightCheck.ConstraintTable}");
             if (leftCheck == null)
             {
-                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.Check, $"Testing Check Constraint L: missing R: {rightCheck.ConstraintName}", testCheckNode.Results);
+                AddTestResult($"Testing Check Constraint L: missing R: {rightCheck.ConstraintName}", ErrorTypes.LmissingRpresent, ObjectType.Check, rightCheck.ConstraintName , testCheckNode.Results);
             }
             else
             {
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Check, $"Testing Check Constraint L: {leftCheck.ConstraintName} within Table: {leftCheck.ConstraintTable} \nR: {leftCheck.ConstraintName} within Table: {leftCheck.ConstraintTable}",
+                AddTestResult($"Testing Check Constraint L: {leftCheck.ConstraintName} within Table: {leftCheck.ConstraintTable} \nR: {leftCheck.ConstraintName} within Table: {leftCheck.ConstraintTable}", 
+                    ErrorTypes.LpresentRpresent, 
+                    ObjectType.Check, leftCheck.ConstraintName,
                     testCheckNode.Results);
 
                 var testCheckBody = string.Equals(rightCheck.ConstraintBody, leftCheck.ConstraintBody, StringComparison.CurrentCultureIgnoreCase);
@@ -815,27 +841,28 @@ namespace DBSchemaComparator.App.Comparator
 
                 if (testCheckBody && testColumnApplied)
                 {
-                    AddTestResult("SUCCESS",
+                    AddTestResult($"Column and Body L: {leftCheck.ConstraintName} \nR: {leftCheck.ConstraintName} matches",
                         ErrorTypes.IsMatch,
-                        ObjectType.Check,
-                        $"Column and Body L: {leftCheck.ConstraintName} \nR: {leftCheck.ConstraintName} matches", testCheckNode.Results);
+                        ObjectType.Check, 
+                        leftCheck.ConstraintName, 
+                        testCheckNode.Results);
                 }
 
                 if (!testCheckBody)
                 {
-                    AddTestResult("ERROR",
+                    AddTestResult($"Testing Check Body L: {leftCheck.ConstraintName} with body {leftCheck.ConstraintBody} \nR: {leftCheck.ConstraintName} with body {leftCheck.ColumnApplied}",
                         ErrorTypes.NotMatch,
                         ObjectType.Check,
-                        $"Testing Check Body L: {leftCheck.ConstraintName} with body {leftCheck.ConstraintBody} " +
-                        $"\nR: {leftCheck.ConstraintName} with body {leftCheck.ColumnApplied}", testCheckNode.Results);
+                        leftCheck.ConstraintName, 
+                        testCheckNode.Results);
                 }
                 if (!testColumnApplied)
                 {
-                    AddTestResult("ERROR",
+                    AddTestResult($"Testing Applied Column L: {leftCheck.ConstraintName} on column {leftCheck.ColumnApplied} \nR: {leftCheck.ConstraintName} on column {leftCheck.ColumnApplied}",
                         ErrorTypes.NotMatch,
                         ObjectType.Check,
-                        $"Testing Applied Column L: {leftCheck.ConstraintName} on column {leftCheck.ColumnApplied} " +
-                        $"\nR: {leftCheck.ConstraintName} on column {leftCheck.ColumnApplied}", testCheckNode.Results);
+                        leftCheck.ConstraintName, 
+                        testCheckNode.Results);
                 }
             }
             checkConstraints.Nodes.Add(testCheckNode);
@@ -848,33 +875,43 @@ namespace DBSchemaComparator.App.Comparator
             var testCheckNode = CreateTestNode(new List<TestResult>(), ObjectType.Check, $"Test for Check Constraint: {leftCheck.ConstraintName} within table: {leftCheck.ConstraintTable}");
             if (rightCheck == null)
             {
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.Check, $"Testing Check Constraint L: {leftCheck.ConstraintName} R: missing", testCheckNode.Results);
+                AddTestResult($"Testing Check Constraint L: {leftCheck.ConstraintName} R: missing", ErrorTypes.LpresentRmissing, ObjectType.Check, leftCheck.ConstraintName, testCheckNode.Results);
             }
             else
             {
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.Check, $"Testing Check Constraint L: {leftCheck.ConstraintName} within Table: {leftCheck.ConstraintTable} \nR: {rightCheck.ConstraintName} within Table: {rightCheck.ConstraintTable}",
+                AddTestResult($"Testing Check Constraint L: {leftCheck.ConstraintName} within Table: {leftCheck.ConstraintTable} \nR: {rightCheck.ConstraintName} within Table: {rightCheck.ConstraintTable}", 
+                    ErrorTypes.LpresentRpresent, 
+                    ObjectType.Check, 
+                    rightCheck.ConstraintName,
                     testCheckNode.Results);
+
                 var testCheckBody = string.Equals(leftCheck.ConstraintBody, rightCheck.ConstraintBody, StringComparison.CurrentCultureIgnoreCase);
                 var testColumnApplied = string.Equals(leftCheck.ColumnApplied, rightCheck.ColumnApplied, StringComparison.CurrentCultureIgnoreCase);
 
                 if (testCheckBody && testColumnApplied)
                 {
-                    AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.Check, $"Column and Body L: {leftCheck.ConstraintName} \nR: {rightCheck.ConstraintName} matches", testCheckNode.Results);
+                    AddTestResult($"Column and Body L: {leftCheck.ConstraintName} \nR: {rightCheck.ConstraintName} matches", 
+                        ErrorTypes.IsMatch, 
+                        ObjectType.Check, 
+                        leftCheck.ConstraintName, 
+                        testCheckNode.Results);
                 }
 
                 if (!testCheckBody)
                 {
-                    AddTestResult("ERROR",
+                    AddTestResult($"Testing Check Body L: {leftCheck.ConstraintName} with body {leftCheck.ConstraintBody} \nR: {rightCheck.ConstraintName} with body {rightCheck.ColumnApplied}",
                         ErrorTypes.NotMatch,
                         ObjectType.Check,
-                        $"Testing Check Body L: {leftCheck.ConstraintName} with body {leftCheck.ConstraintBody} \nR: {rightCheck.ConstraintName} with body {rightCheck.ColumnApplied}", testCheckNode.Results);
+                        leftCheck.ConstraintName, 
+                        testCheckNode.Results);
                 }
                 if (!testColumnApplied)
                 {
-                    AddTestResult("ERROR",
+                    AddTestResult($"Testing Applied Column L: {leftCheck.ConstraintName} on column {leftCheck.ColumnApplied} \nR: {rightCheck.ConstraintName} on column {rightCheck.ColumnApplied}",
                         ErrorTypes.NotMatch,
                         ObjectType.Check,
-                        $"Testing Applied Column L: {leftCheck.ConstraintName} on column {leftCheck.ColumnApplied} \nR: {rightCheck.ConstraintName} on column {rightCheck.ColumnApplied}", testCheckNode.Results);
+                        leftCheck.ConstraintName, 
+                        testCheckNode.Results);
                 }
             }
             checkConstraints.Nodes.Add(testCheckNode);
@@ -889,13 +926,15 @@ namespace DBSchemaComparator.App.Comparator
 
             if (leftPrimaryKey == null)
             {
-                AddTestResult("ERROR", ErrorTypes.LmissingRpresent, ObjectType.PrimaryKey,
-                    $"Primary Keys L: misssing R: {rightPkKey.ConstraintName}", pkNode.Results);
+                AddTestResult($"Primary Keys L: misssing R: {rightPkKey.ConstraintName}", ErrorTypes.LmissingRpresent, ObjectType.PrimaryKey,
+                    rightPkKey.ConstraintName, pkNode.Results);
             }
             else
             {
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.PrimaryKey,
-                          $"Primary Keys L: {leftPrimaryKey.ConstraintName} R: {rightPkKey.ConstraintName} present on both sides.",
+                AddTestResult($"Primary Keys L: {leftPrimaryKey.ConstraintName} R: {rightPkKey.ConstraintName}.", 
+                    ErrorTypes.LpresentRpresent, 
+                    ObjectType.PrimaryKey,
+                          leftPrimaryKey.ConstraintName,
                           pkNode.Results);
 
                 var testColumnApplied = string.Equals(leftPrimaryKey.ColumnApplied,
@@ -906,20 +945,27 @@ namespace DBSchemaComparator.App.Comparator
 
                 if (testColumnApplied && testTableApplied)
                 {
-                    AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.PrimaryKey,
-                        $"Primary Keys L: {leftPrimaryKey.ConstraintName} R: {rightPkKey.ConstraintName} matches.",
+                    AddTestResult($"Primary Keys L: {leftPrimaryKey.ConstraintName} Table.Column:{leftPrimaryKey.ConstraintTable}.{leftPrimaryKey.ColumnApplied} " +
+                                  $"\nR: {rightPkKey.ConstraintName} Table.Column:{rightPkKey.ConstraintTable}.{rightPkKey.ColumnApplied}", 
+                        ErrorTypes.IsMatch, 
+                        ObjectType.PrimaryKey, 
+                        leftPrimaryKey.ConstraintName,
                         pkNode.Results);
                 }
                 if (!testColumnApplied)
                 {
-                    AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey,
-                        $"Primary Keys Columns Applied on L: {leftPrimaryKey.ConstraintName} on Column: {leftPrimaryKey.ColumnApplied}  \nR: {rightPkKey.ConstraintName} on Column: {rightPkKey.ColumnApplied}",
+                    AddTestResult($"Primary Keys Columns Applied on L: {leftPrimaryKey.ConstraintName} on Column: {leftPrimaryKey.ColumnApplied}  \nR: {rightPkKey.ConstraintName} on Column: {rightPkKey.ColumnApplied}", 
+                        ErrorTypes.NotMatch, 
+                        ObjectType.PrimaryKey,
+                        leftPrimaryKey.ConstraintName,
                         pkNode.Results);
                 }
                 if (!testTableApplied)
                 {
-                    AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey,
-                        $"Primary Keys applied on Tables L: {leftPrimaryKey.ConstraintName} on Table: {leftPrimaryKey.ConstraintTable} \nR: {rightPkKey.ConstraintName} on Table: {rightPkKey.ConstraintTable}",
+                    AddTestResult($"Primary Keys applied on Tables L: {leftPrimaryKey.ConstraintName} on Table: {leftPrimaryKey.ConstraintTable} \nR: {rightPkKey.ConstraintName} on Table: {rightPkKey.ConstraintTable}", 
+                        ErrorTypes.NotMatch, 
+                        ObjectType.PrimaryKey,
+                        leftPrimaryKey.ConstraintName,
                         pkNode.Results);
                 }
             }
@@ -936,12 +982,14 @@ namespace DBSchemaComparator.App.Comparator
 
             if (rightPrimaryKey == null)
             {
-                AddTestResult("ERROR", ErrorTypes.LpresentRmissing, ObjectType.PrimaryKey, $"Primary Keys L: {leftPkKey.ConstraintName} R: misssing", pkNode.Results);
+                AddTestResult($"Primary Keys L: {leftPkKey.ConstraintName} R: misssing", ErrorTypes.LpresentRmissing, ObjectType.PrimaryKey, leftPkKey.ConstraintName, pkNode.Results);
             }
             else
             {
-                AddTestResult("SUCCESS", ErrorTypes.LpresentRpresent, ObjectType.PrimaryKey,
-                       $"Primary Keys L: {leftPkKey.ConstraintName} R: {rightPrimaryKey.ConstraintName} present on both sides.",
+                AddTestResult($"Primary Keys L: {leftPkKey.ConstraintName} R: {rightPrimaryKey.ConstraintName}", 
+                    ErrorTypes.LpresentRpresent, 
+                    ObjectType.PrimaryKey,
+                       leftPkKey.ConstraintName,
                        pkNode.Results);
 
                 var testColumnApplied = string.Equals(leftPkKey.ColumnApplied,
@@ -952,22 +1000,25 @@ namespace DBSchemaComparator.App.Comparator
 
                 if (testColumnApplied && testTableApplied)
                 {
-                    AddTestResult("SUCCESS", ErrorTypes.IsMatch, ObjectType.PrimaryKey,
-                        $"Primary Keys L: {leftPkKey.ConstraintName} R: {rightPrimaryKey.ConstraintName} matches.",
+                    AddTestResult($"Primary Keys L: {leftPkKey.ConstraintName} Table.Column:{leftPkKey.ConstraintTable}.{leftPkKey.ColumnApplied} " +
+                                  $"\nR: {rightPrimaryKey.ConstraintName} Table.Column:{rightPrimaryKey.ConstraintTable}.{rightPrimaryKey.ColumnApplied}", 
+                        ErrorTypes.IsMatch, 
+                        ObjectType.PrimaryKey,
+                        leftPkKey.ConstraintName,
                         pkNode.Results);
                 }
 
                 if (!testColumnApplied)
                 {
-                    AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey,
-                        $"Primary Keys Columns Applied on L: {leftPkKey.ConstraintName} on Column: {leftPkKey.ColumnApplied}  \nR: {rightPrimaryKey.ConstraintName} on Column: {rightPrimaryKey.ColumnApplied}",
+                    AddTestResult($"Primary Keys Columns Applied on L: {leftPkKey.ConstraintName} on Column: {leftPkKey.ColumnApplied}  \nR: {rightPrimaryKey.ConstraintName} on Column: {rightPrimaryKey.ColumnApplied}", ErrorTypes.NotMatch, ObjectType.PrimaryKey,
+                        $"{leftPkKey.ConstraintName}.{leftPkKey.ColumnApplied}",
                         pkNode.Results);
                 }
 
                 if (!testTableApplied)
                 {
-                    AddTestResult("ERROR", ErrorTypes.NotMatch, ObjectType.PrimaryKey,
-                        $"Primary Keys applied on Tables L: {leftPkKey.ConstraintName} on Table: {leftPkKey.ConstraintTable} \nR: {rightPrimaryKey.ConstraintName} on Table: {rightPrimaryKey.ConstraintTable}",
+                    AddTestResult($"Primary Keys applied on Tables L: {leftPkKey.ConstraintName} on Table: {leftPkKey.ConstraintTable} \nR: {rightPrimaryKey.ConstraintName} on Table: {rightPrimaryKey.ConstraintTable}", ErrorTypes.NotMatch, ObjectType.PrimaryKey,
+                        $"{leftPkKey.ConstraintName}.{leftPkKey.ConstraintTable}",
                         pkNode.Results);
                 }
             }

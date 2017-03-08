@@ -78,6 +78,11 @@ namespace DBSchemaComparator.Domain.Database
             return SelectSchemaInfo<StoredProcedure>(InformationType.StoredProcedure);
         }
 
+        public IList<Collation> GetCollationInfo()
+        {
+            return SelectSchemaInfo<Collation>(InformationType.DatabaseCollation);
+        }
+
         public IList<CheckConstraint> GetCheckConstraintsInfo()
         {
             return SelectSchemaInfo<CheckConstraint>(InformationType.Checks);
@@ -264,7 +269,7 @@ INNER JOIN sys.columns col2
     ON col2.column_id = referenced_column_id AND col2.object_id = tab2.object_id");
                     break;
                 case InformationType.DatabaseCollation:
-                    sqlQuery.Append(@"SELECT CONVERT (varchar, SERVERPROPERTY('collation'))");
+                    sqlQuery.Append(@"SELECT CONVERT (varchar, SERVERPROPERTY('collation')) as COLLATION_TYPE");
                     break;
             }
 
