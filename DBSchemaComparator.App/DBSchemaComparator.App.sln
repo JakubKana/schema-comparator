@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBSchemaComparator.App", "DBSchemaComparator.App\DBSchemaComparator.App.csproj", "{0436F3B5-3733-4D20-8C1A-2C798F6365F8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBSchemaComparator.Domain", "..\DBSchemaComparator.Domain\DBSchemaComparator.Domain.csproj", "{783F4A61-65ED-4CD2-9205-D556CF573730}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBSchemaComparator.ScriptRunner", "..\DBSchemaComparator.ScriptRunner\DBSchemaComparator.ScriptRunner.csproj", "{92B4A07A-A1BB-4CD2-A963-DE2AA7BEC1ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{783F4A61-65ED-4CD2-9205-D556CF573730}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{783F4A61-65ED-4CD2-9205-D556CF573730}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{783F4A61-65ED-4CD2-9205-D556CF573730}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92B4A07A-A1BB-4CD2-A963-DE2AA7BEC1ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92B4A07A-A1BB-4CD2-A963-DE2AA7BEC1ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92B4A07A-A1BB-4CD2-A963-DE2AA7BEC1ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92B4A07A-A1BB-4CD2-A963-DE2AA7BEC1ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

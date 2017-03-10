@@ -36,8 +36,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\DBSchemaComparator.App\packages\NLog.4.4.2\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\DBSchemaComparator.App\packages\NLog.4.4.3\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -55,6 +54,7 @@
     <Compile Include="Database\DatabaseHandler.cs" />
     <Compile Include="Database\DatabaseType.cs" />
     <Compile Include="Infrastructure\Extensions.cs" />
+    <Compile Include="Models\General\ExitCodes.cs" />
     <Compile Include="Models\SQLServer\CheckConstraint.cs" />
     <Compile Include="Models\SQLServer\Collation.cs" />
     <Compile Include="Models\SQLServer\ForeignKey.cs" />

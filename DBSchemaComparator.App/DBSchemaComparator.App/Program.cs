@@ -16,14 +16,16 @@ namespace DBSchemaComparator.App
         {
             _logger.Info("Starting a Schema comparator application.");
             var connectionStrings = Settings.GetDatabaseConnectionStrings(Settings.Instance.DatabaseConnections);
-            
-            List<string> stringList = new List<string>();
 
-            stringList.Add("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=DBComparatorTest1;Integrated Security=True");
-            stringList.Add("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=DBComparatorTest2;Integrated Security=True");
+            //List<string> stringList = new List<string>();
 
-         //   var comparator = new ObjectComparator(connectionStrings.ElementAt(0), connectionStrings.ElementAt(1));
-            var comparator = new ObjectComparator(stringList.ElementAt(0), stringList.ElementAt(1));
+            //stringList.Add("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=DBComparatorTest1;Integrated Security=True");
+            //stringList.Add("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=DBComparatorTest2;Integrated Security=True");
+
+
+            // var comparator = new ObjectComparator(stringList.ElementAt(0), stringList.ElementAt(1));
+
+            var comparator = new ObjectComparator(connectionStrings.ElementAt(0), connectionStrings.ElementAt(1));
             comparator.CompareDatabases();
             
          

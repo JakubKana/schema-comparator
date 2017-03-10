@@ -28,36 +28,7 @@ namespace DBSchemaComparator.Domain.Database
             CreateDatabaseConnection(connectionString, databaseType);
         }
 
-        public bool ExecuteTransactionScript(string[] scriptArray)
-        {
-            
-            Database.EnableAutoSelect = false;
-            try
-            {
-                Logger.Info("Executing transaction script.");
-                Database.BeginTransaction();
-
-                //var script = "\ncreate procedure[dbo].[Companies_contact_by_Company_ID] @@Company_ID int as --------------------something------------------ select * from Companies_contact_view where Company_ID = @@Company_ID";
-                // var result = Database.Execute(script);
-
-                foreach (var s in scriptArray)
-                {
-                    Logger.Debug("Executing command", s);
-                    var script =
-                        Extensions.RemoveBeginingNewLine(Extensions.NormalizeParameters(s));
-                    var result = Database.Execute(script);
-                }
-                Logger.Info("Transaction Successful.");
-                Database.CompleteTransaction();
-                return true;
-            }
-            catch (Exception exception)
-            {
-                Logger.Info(exception, "Aborting transaction.");
-                Database.AbortTransaction();
-                return false;
-            }
-        }
+        
 
         public IList<PrimaryKey> GetPrimaryKeysInfo()
         {
