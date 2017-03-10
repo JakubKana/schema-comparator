@@ -11,6 +11,7 @@ namespace DBSchemaComparator.Domain.Models.General
     {
         Success = 0,
         InvalidArguments = 1,
-        ScriptFailed = 5
+        ScriptFailed = 5,
+        UnsupportedDbType = 6
     }
 }

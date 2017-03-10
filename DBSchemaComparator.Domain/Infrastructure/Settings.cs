@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using DBSchemaComparator.Domain.Models.General;
@@ -64,12 +65,15 @@ namespace DBSchemaComparator.Domain.Infrastructure
         {
             try
             {
-                var connectionString =
-                    string.Format($"Data Source={connection.IpAddress}; " +
-                                  $"Initial Catalog={connection.DbName}; " +
-                                  $"user ID ={connection.Username}; " +
-                                  $"password={connection.Pass};" +
-                                  $"connection timeout={connection.Timeout}");
+                SqlConnectionStringBuilder stringBuilder = new SqlConnectionStringBuilder
+                {
+                    UserID = connection.Username,
+                    Password = connection.Pass,
+                    InitialCatalog = connection.DbName,
+                    DataSource = connection.IpAddress,
+                    ConnectTimeout = connection.Timeout
+                };
+                var connectionString = stringBuilder.ConnectionString;
                 Logger.Trace($"Retrieving database connection string = {connectionString}");
                 return connectionString;
             }
