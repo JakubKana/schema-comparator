@@ -31,8 +31,6 @@ namespace DBSchemaComparator.App.Comparator
         public DatabaseHandler LeftDatabase { get; set; }
         public DatabaseHandler RightDatabase { get; set; }
 
-      //  public List<TestResult> TestResults = new List<TestResult>();
-
         public ObjectComparator(string connStringLeft, string connStringRight)
         {
             ConnStringLeft = connStringLeft;
@@ -44,19 +42,17 @@ namespace DBSchemaComparator.App.Comparator
             DatabaseType = dbType;
         }
 
-        public void CompareDatabases()
+        public TestNodes CompareDatabases()
         {
-            ConnectToDatabases(ConnStringLeft, ConnStringRight);
+           return GetResultTree(ConnStringLeft, ConnStringRight);
         }
 
-        private void ConnectToDatabases(string connStringLeft, string connStringRight)
+        private TestNodes GetResultTree(string connStringLeft, string connStringRight)
         {
             var mainTestNode = CreateTestNode(new List<TestResult>(), ObjectType.Root, "Root node");
 
             LeftDatabase = new DatabaseHandler(ConnStringLeft, DatabaseType.SqlServer);
             RightDatabase = new DatabaseHandler(ConnStringRight, DatabaseType.SqlServer);
-
-         
 
                 TestCollation(mainTestNode.Results);
             
@@ -84,14 +80,10 @@ namespace DBSchemaComparator.App.Comparator
                 var integrityConstraintsNode = TestIntegrityConstraints();
                 mainTestNode.Nodes.Add(integrityConstraintsNode);
            
-
-            Xml serializeXml = new Xml();
-            string xml = serializeXml.GetXml(mainTestNode);
-
-            XDocument xmlDoc = serializeXml.GetXDocument(mainTestNode);
+           
             
-            //List of all nodes within a Tree Structure
-            var listofnodes = Extensions.DepthFirstTraversal(mainTestNode, r => r.Nodes).ToList();
+            return mainTestNode;
+          
         }
 
         private void TestCollation(List<TestResult> results)

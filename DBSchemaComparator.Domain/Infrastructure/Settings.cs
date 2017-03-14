@@ -21,7 +21,8 @@ namespace DBSchemaComparator.Domain.Infrastructure
 
         private static Settings _instance;
 
-        public DatabaseConnectionList DatabaseConnections { get; set; }
+        public SettingsObject SettingsObject { get; set; }
+        
 
         public static Settings Instance
         {
@@ -47,8 +48,8 @@ namespace DBSchemaComparator.Domain.Infrastructure
                     string json = reader.ReadToEnd();
                     Logger.Debug($"Config file content:\n {json}");
                     Logger.Debug($"Deserializing json to object");
-                    DatabaseConnections = JsonConvert.DeserializeObject<DatabaseConnectionList>(json);
-                    Logger.Debug($"Deserialized object:\n", DatabaseConnections);
+                    SettingsObject = JsonConvert.DeserializeObject<SettingsObject>(json);
+                    Logger.Debug($"Deserialized object:\n", SettingsObject);
                 }
             }
             catch (IOException exception)
@@ -84,9 +85,16 @@ namespace DBSchemaComparator.Domain.Infrastructure
             }
         }
 
-        public static List<string> GetDatabaseConnectionStrings(DatabaseConnectionList databaseConnection)
+        public static List<string> GetDatabaseConnectionStrings(SettingsObject databaseConnection)
         {
-            return databaseConnection.DatabaseConnections.Select(GetConnectionString).Take(3).ToList();
+            return databaseConnection.DatabaseConnections.Select(GetConnectionString).Take(2).ToList();
+        }
+
+
+       public bool IsAbsoluteUrl(string url)
+        {
+            Uri result;
+            return Uri.TryCreate(url, UriKind.Absolute, out result);
         }
 
     }

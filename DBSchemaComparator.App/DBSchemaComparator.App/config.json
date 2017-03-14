@@ -16,5 +16,6 @@
       "Timeout": 10,
       "DbType": "SqlServer"
     }
-  ]
+  ],
+  "ResultPath" : "result.xml" 
 }
