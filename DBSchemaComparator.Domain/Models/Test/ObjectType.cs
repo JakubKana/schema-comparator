@@ -26,6 +26,7 @@
         PrimaryKey,
         CheckTests,
         ForeignKeysTests,
-        DatabaseCollation
+        DatabaseCollation,
+        ColumnCollation
     }
 }

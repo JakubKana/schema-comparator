@@ -56,34 +56,7 @@ namespace DBSchemaComparator.App.Comparator
             LeftDatabase = new DatabaseHandler(ConnStringLeft, DatabaseType.SqlServer);
             RightDatabase = new DatabaseHandler(ConnStringRight, DatabaseType.SqlServer);
 
-            //var scriptFromFile = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Create.sql"));
-            //var parsedScript = ScriptParser.GetMsScriptArray(scriptFromFile);
-            //var leftDbCreated = LeftDatabase.ExecuteTransactionScript(parsedScript);
-            //var rightDbCreated = RightDatabase.ExecuteTransactionScript(parsedScript);
-
-            //if (!leftDbCreated)
-            //{
-            //    AddTestResult("Creation of Left Database objects failed",ErrorTypes.CreationScriptFailed, ObjectType.Script, "Create Script",mainTestNode.Results);
-            //}
-
-            //if (!rightDbCreated)
-            //{
-            //    AddTestResult("Creation of Right Database objects failed", ErrorTypes.CreationScriptFailed, ObjectType.Script, "Create Script", mainTestNode.Results);
-            //}
-            //if (leftDbCreated && rightDbCreated)
-            //{
-            
-            AddTestResult("Deploying of Left Database objects success", 
-                    ErrorTypes.CreationScriptSuccess, 
-                    ObjectType.Script, 
-                    LeftDatabase.Database.ConnectionString, 
-                    mainTestNode.Results);
-
-                AddTestResult("Deploying of Right Database objects success", 
-                    ErrorTypes.CreationScriptSuccess, 
-                    ObjectType.Script, 
-                    LeftDatabase.Database.ConnectionString, 
-                    mainTestNode.Results);
+         
 
                 TestCollation(mainTestNode.Results);
             
@@ -110,7 +83,7 @@ namespace DBSchemaComparator.App.Comparator
                 // Test Integrity Constraints
                 var integrityConstraintsNode = TestIntegrityConstraints();
                 mainTestNode.Nodes.Add(integrityConstraintsNode);
-            //}
+           
 
             Xml serializeXml = new Xml();
             string xml = serializeXml.GetXml(mainTestNode);
@@ -424,13 +397,16 @@ namespace DBSchemaComparator.App.Comparator
                 CheckColumnIsNullable(leftTableColumn, rightTableColumn, columnNode.Results);
                 //Check Identity settings
                 CheckColumnIdentity(leftTableColumn, rightTableColumn, columnNode.Results);
-
+                //Check column Collation
+                CheckColumnCollation(leftTableColumn, rightTableColumn, columnNode.Results);
             }
 
             SetResultLevel(columnNode);
 
             testColumnsNode.Nodes.Add(columnNode);
         }
+
+        
 
         private void TestLeftDbColumns(Table rightTable, TestNodes testColumnsNode, Column leftTableColumn)
         {
@@ -450,6 +426,8 @@ namespace DBSchemaComparator.App.Comparator
                 CheckColumnIsNullable(leftTableColumn, rightTableColumn, columnNode.Results);
                 //Check Identity settings
                 CheckColumnIdentity(leftTableColumn, rightTableColumn, columnNode.Results);
+                //Check column Collation
+                CheckColumnCollation(leftTableColumn, rightTableColumn, columnNode.Results);
             }
             SetResultLevel(columnNode);
 
@@ -458,61 +436,51 @@ namespace DBSchemaComparator.App.Comparator
 
         private void CheckColumnIdentity(Column leftTableColumn, Column rightTableColumn, List<TestResult> testResults)
         {
-            if (leftTableColumn.IsIdentification == rightTableColumn.IsIdentification)
-            {
-                AddTestResult($"Identification setting for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.IsIdentification} R: {rightTableColumn.ColumnName} = {rightTableColumn.IsIdentification}", 
-                    ErrorTypes.IsMatch, 
-                    ObjectType.IsIdentification,
-                    $"L: {leftTableColumn.IsIdentification}. R: {rightTableColumn.IsIdentification}", 
-                    testResults);
-            }
-            else
-            {
-                AddTestResult($"Identification setting for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.IsIdentification} R: {rightTableColumn.ColumnName} = {rightTableColumn.IsIdentification}", 
-                    ErrorTypes.NotMatch, 
-                    ObjectType.IsIdentification,
-                    $"L: {leftTableColumn.IsIdentification} R: {rightTableColumn.IsIdentification}", 
-                    testResults);
-            }
-            
+            AddTestResult(
+                $"Identification setting for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.IsIdentification} R: {rightTableColumn.ColumnName} = {rightTableColumn.IsIdentification}",
+                leftTableColumn.IsIdentification == rightTableColumn.IsIdentification
+                    ? ErrorTypes.IsMatch
+                    : ErrorTypes.NotMatch,
+                ObjectType.IsIdentification,
+                $"L: {leftTableColumn.IsIdentification} R: {rightTableColumn.IsIdentification}",
+                testResults);
         }
 
         private void CheckColumnIsNullable(Column leftTableColumn, Column rightTableColumn, List<TestResult> testResults)
         {
-            if (leftTableColumn.IsNullable == rightTableColumn.IsNullable)
-            {
-                AddTestResult($"IsNullable setting for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.IsNullable} R: {rightTableColumn.ColumnName} = {rightTableColumn.IsNullable}", 
-                    ErrorTypes.IsMatch, 
-                    ObjectType.IsNullable,
-                    $"L: {leftTableColumn.IsNullable} R: {rightTableColumn.IsNullable}",
-                    testResults);
-            }
-            else
-            {
-                AddTestResult($"IsNullable setting for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.IsNullable} R: {rightTableColumn.ColumnName} = {rightTableColumn.IsNullable}", 
-                    ErrorTypes.NotMatch, 
-                    ObjectType.IsNullable,
-                    $"L: {leftTableColumn.IsNullable} R: {rightTableColumn.IsNullable}",
-                    testResults);
-            }
-
+            AddTestResult(
+                $"IsNullable setting for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.IsNullable} R: {rightTableColumn.ColumnName} = {rightTableColumn.IsNullable}",
+                leftTableColumn.IsNullable == rightTableColumn.IsNullable ? ErrorTypes.IsMatch : ErrorTypes.NotMatch,
+                ObjectType.IsNullable,
+                $"L: {leftTableColumn.IsNullable} R: {rightTableColumn.IsNullable}",
+                testResults);
         }
 
         private void CheckColumnType(Column leftTableColumn, Column rightTableColumn, List<TestResult> testResults)
         {
-                if (leftTableColumn.DataType == rightTableColumn.DataType) {
-                    AddTestResult($"DataTypes of tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.DataType} R: {rightTableColumn.ColumnName} = {rightTableColumn.DataType}", 
-                        ErrorTypes.IsMatch, 
-                        ObjectType.DataType, 
-                        $"L: {leftTableColumn.DataType} R: {rightTableColumn.DataType}"
-                        ,testResults);
-                } else {
-                    AddTestResult($"DataTypes of tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.DataType} R: {rightTableColumn.ColumnName} = {rightTableColumn.DataType}", 
-                        ErrorTypes.NotMatch, 
-                        ObjectType.DataType, 
-                        $"L: {leftTableColumn.DataType} R: {rightTableColumn.DataType}", 
-                        testResults);
-                }
+            AddTestResult(
+                $"DataTypes of tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.DataType} R: {rightTableColumn.ColumnName} = {rightTableColumn.DataType}",
+                leftTableColumn.DataType == rightTableColumn.DataType ? ErrorTypes.IsMatch : ErrorTypes.NotMatch,
+                ObjectType.DataType,
+                $"L: {leftTableColumn.DataType} R: {rightTableColumn.DataType}"
+                , testResults);
+        }
+
+        private void CheckColumnCollation(Column leftTableColumn, Column rightTableColumn, List<TestResult> testResults)
+        {
+            if (leftTableColumn.CollationName == null && rightTableColumn.CollationName == null)
+            {
+                AddTestResult("Collation for tested columns cannot be overwritten.",ErrorTypes.IsMatch, ObjectType.ColumnCollation, $"L: Type = {leftTableColumn.DataType} R: Type = {rightTableColumn.DataType}", testResults);
+            }
+            else
+            {
+               AddTestResult(
+               $"Collation for tested columns L: {leftTableColumn.ColumnName} = {leftTableColumn.CollationName} R: {rightTableColumn.ColumnName} = {rightTableColumn.CollationName}",
+               leftTableColumn.CollationName == rightTableColumn.CollationName ? ErrorTypes.IsMatch : ErrorTypes.NotMatch,
+               ObjectType.ColumnCollation,
+               $"L: {leftTableColumn.CollationName} R: {rightTableColumn.CollationName}",
+               testResults);
+            }
         }
 
         #endregion

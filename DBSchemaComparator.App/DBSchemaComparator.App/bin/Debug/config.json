@@ -1,21 +1,20 @@
 ﻿{
   "DatabaseConnections": [
     {
-      "DbName": "DBComparatorTest1",
-      "IpAddress": "(localdb)\\MSSQLLocalDB",
-      "Pass": "",
-      "Username": "ALEF\\jkana",
+      "DbName": "DatabaseComparatorTest1",
+      "IpAddress": "10.18.3.2",
+      "Pass": "cisco",
+      "Username": "SA",
       "Timeout": 10,
       "DbType": "SqlServer"
     },
     {
-      "DbName": "DBComparatorTest2",
-      "IpAddress": "(localdb)\\MSSQLLocalDB",
-      "Pass": "",
-      "Username": "ALEF\\jkana",
+      "DbName": "DatabaseComparatorTest2",
+      "IpAddress": "10.18.3.2",
+      "Pass": "cisco",
+      "Username": "SA",
       "Timeout": 10,
       "DbType": "SqlServer"
     }
   ]
-
 }

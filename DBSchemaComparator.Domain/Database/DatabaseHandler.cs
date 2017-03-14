@@ -176,7 +176,7 @@ namespace DBSchemaComparator.Domain.Database
                     sqlQuery.Append(@"SELECT TABLE_NAME FROM [INFORMATION_SCHEMA].[TABLES] WHERE TABLE_TYPE = 'BASE TABLE';");
                     break;
                 case InformationType.Columns:
-                    sqlQuery.Append(@"SELECT TABLE_NAME, COLUMN_NAME, IS_NULLABLE, DATA_TYPE FROM [INFORMATION_SCHEMA].[COLUMNS]");
+                    sqlQuery.Append(@"SELECT TABLE_NAME, COLUMN_NAME, IS_NULLABLE, DATA_TYPE, COLLATION_NAME FROM [INFORMATION_SCHEMA].[COLUMNS]");
                     break;
                 case InformationType.IdentityColumns:
                     sqlQuery.Append(@"SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS where COLUMNPROPERTY(object_id(TABLE_SCHEMA+'.'+TABLE_NAME), COLUMN_NAME, 'IsIdentity') = 1");

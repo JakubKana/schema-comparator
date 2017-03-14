@@ -15,6 +15,8 @@ namespace DBSchemaComparator.Domain.Models.SQLServer
         public string DataType { get; set; }
         [Column("IS_NULLABLE")]
         public string IsNullable { get; set; }
+        [Column("COLLATION_NAME")]
+        public string CollationName { get; set; }
         [Ignore]
         public bool IsIdentification { get; set; }
 

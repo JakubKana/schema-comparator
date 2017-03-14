@@ -32,11 +32,36 @@ namespace DBSchemaComparator.ScriptRunner
                 }
                 DatabaseHandler db = new DatabaseHandler(stringBuilder.ConnectionString, dbType);
 
-                if ()
-                
-                
-                
-               
+                //var scriptFromFile = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Create.sql"));
+                //var parsedScript = ScriptParser.GetMsScriptArray(scriptFromFile);
+                //var leftDbCreated = LeftDatabase.ExecuteTransactionScript(parsedScript);
+                //var rightDbCreated = RightDatabase.ExecuteTransactionScript(parsedScript);
+
+                //if (!leftDbCreated)
+                //{
+                //    AddTestResult("Creation of Left Database objects failed",ErrorTypes.CreationScriptFailed, ObjectType.Script, "Create Script",mainTestNode.Results);
+                //}
+
+                //if (!rightDbCreated)
+                //{
+                //    AddTestResult("Creation of Right Database objects failed", ErrorTypes.CreationScriptFailed, ObjectType.Script, "Create Script", mainTestNode.Results);
+                //}
+
+                //AddTestResult("Deploying of Left Database objects success",
+                //        ErrorTypes.CreationScriptSuccess,
+                //        ObjectType.Script,
+                //        LeftDatabase.Database.ConnectionString,
+                //        mainTestNode.Results);
+
+                //AddTestResult("Deploying of Right Database objects success",
+                //    ErrorTypes.CreationScriptSuccess,
+                //    ObjectType.Script,
+                //    LeftDatabase.Database.ConnectionString,
+                //    mainTestNode.Results);
+
+
+
+
 
             }
             {

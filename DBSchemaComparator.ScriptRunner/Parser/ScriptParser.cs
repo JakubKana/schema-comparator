@@ -26,12 +26,8 @@ namespace DBSchemaComparator.ScriptRunner.Parser
                 foreach (var s in scriptArray)
                 {
                     Logger.Debug("Executing command", s);
-                    switch (db.)
-                    {
-                            
-                    }
-                    var script =
-                        Extensions.RemoveBeginingNewLine(Extensions.NormalizeParameters(s));
+                    
+                    var script = Extensions.RemoveBeginingNewLine(Extensions.NormalizeParameters(s));
                     //var result = Database.Execute(script);
                 }
                 Logger.Info("Transaction Successful.");
