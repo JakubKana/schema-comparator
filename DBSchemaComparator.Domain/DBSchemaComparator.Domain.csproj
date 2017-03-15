@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.8.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\DBSchemaComparator.App\packages\MySql.ConnectorNET.Data.6.8.3.2\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\DBSchemaComparator.App\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -51,8 +55,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\BaseDatabase.cs" />
     <Compile Include="Database\DatabaseHandler.cs" />
     <Compile Include="Database\DatabaseType.cs" />
+    <Compile Include="Database\IDatabaseHandler.cs" />
     <Compile Include="Infrastructure\Extensions.cs" />
     <Compile Include="Models\General\ExitCodes.cs" />
     <Compile Include="Models\SQLServer\CheckConstraint.cs" />
@@ -92,6 +98,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Models\Generated\PetaPoco.Core.ttinclude" />
     <None Include="Models\Generated\PetaPoco.Generator.ttinclude" />
     <None Include="packages.config" />

@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DBSchemaComparator.Domain.Infrastructure;
+using DBSchemaComparator.Domain.Models.General;
+using DBSchemaComparator.Domain.Models.Test;
 using NLog;
 using PetaPoco;
 
@@ -11,7 +15,7 @@ namespace DBSchemaComparator.ScriptRunner.Parser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public bool ExecuteTransactionScript(string[] scriptArray, Database db)
+        public static bool ExecuteTransactionScript(string[] scriptArray, Database db)
         {
 
             db.EnableAutoSelect = false;
@@ -20,18 +24,16 @@ namespace DBSchemaComparator.ScriptRunner.Parser
                 Logger.Info("Executing transaction script.");
                 db.BeginTransaction();
 
-                //var script = "\ncreate procedure[dbo].[Companies_contact_by_Company_ID] @@Company_ID int as --------------------something------------------ select * from Companies_contact_view where Company_ID = @@Company_ID";
-                // var result = Database.Execute(script);
-
                 foreach (var s in scriptArray)
                 {
                     Logger.Debug("Executing command", s);
                     
                     var script = Extensions.RemoveBeginingNewLine(Extensions.NormalizeParameters(s));
-                    //var result = Database.Execute(script);
                 }
+
                 Logger.Info("Transaction Successful.");
-               db.CompleteTransaction();
+                db.CompleteTransaction();
+
                 return true;
             }
             catch (Exception exception)
@@ -58,6 +60,8 @@ namespace DBSchemaComparator.ScriptRunner.Parser
             
             return remains;
         }
+
+        
 
         private static bool FindComments(string obj)
         {

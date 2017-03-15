@@ -7,3 +7,5 @@ d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\obj\Debug\DBSchemaC
 d:\GitRepository\schema-comparator\DBSchemaComparator.Domain\obj\Debug\DBSchemaComparator.Domain.pdb
 D:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Debug\Newtonsoft.Json.dll
 D:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Debug\Newtonsoft.Json.xml
+D:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Debug\DBSchemaComparator.Domain.dll.config
+D:\GitRepository\schema-comparator\DBSchemaComparator.Domain\bin\Debug\MySql.Data.dll

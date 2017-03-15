@@ -1,34 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using DBSchemaComparator.Domain.Infrastructure;
 using DBSchemaComparator.Domain.Models.SQLServer;
 using NLog;
 using PetaPoco;
 
 namespace DBSchemaComparator.Domain.Database
 {
-    public class DatabaseHandler
+    public class DatabaseHandler : BaseDatabase, IDatabaseHandler
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        public PetaPoco.Database Database
-        {
-            get; private set;
-        }
-
-        private DatabaseType DbType { get; set; }
 
         public DatabaseHandler(string connectionString, DatabaseType databaseType)
         {
             CreateDatabaseConnection(connectionString, databaseType);
         }
-
-        
 
         public IList<PrimaryKey> GetPrimaryKeysInfo()
         {
@@ -79,39 +66,18 @@ namespace DBSchemaComparator.Domain.Database
             return SelectSchemaInfo<View>(InformationType.View);
         }
 
-        private void CreateDatabaseConnection(string connectionString, DatabaseType databaseType)
-        {
-            switch (databaseType)
-            {
-                case DatabaseType.SqlServer:
-                    DbType = databaseType;
-                    Database = new PetaPoco.Database(connectionString, new SqlServerDatabaseProvider());
-                    break;
-                case DatabaseType.MySql:
-                    DbType = databaseType;
-                    Database = new PetaPoco.Database(connectionString, "MySql.Data.MySqlClient");
-                  //  Database = new PetaPoco.Database(connectionString, new MySqlDatabaseProvider());
-                    break;
-                default:
-                    DbType = databaseType;
-                    Database = new PetaPoco.Database(connectionString, new SqlServerDatabaseProvider());
-                    break;
-            }
-        }
-
-        private IList<Table> SelectTablesSchemaInfo()
+        public IList<Table> SelectTablesSchemaInfo()
         {
             return SelectSchemaInfo<Table>(InformationType.Tables);
         }
 
-        private IList<Column> SelectColumnsSchemaInfo()
+        public IList<Column> SelectColumnsSchemaInfo()
         {
             return SelectSchemaInfo<Column>(InformationType.Columns);
         }
 
-        private IList<IdentityColumn> SelectColumnsWithIdentity()
+        public IList<IdentityColumn> SelectColumnsWithIdentity()
         {
-
             return SelectSchemaInfo<IdentityColumn>(InformationType.IdentityColumns);
         }
 
@@ -140,11 +106,11 @@ namespace DBSchemaComparator.Domain.Database
             return tables;
         }
 
-        private IList<T> SelectSchemaInfo<T>(InformationType infoType)
+        public IList<T> SelectSchemaInfo<T>(InformationType infoType)
         {
             Logger.Info($"Selecting basic schema information of type: {infoType}");
 
-            Sql sqlQuery = GetSqlServerQuery(infoType);
+            Sql sqlQuery = GetSqlQueryString(infoType);
 
             try
             {
@@ -167,7 +133,7 @@ namespace DBSchemaComparator.Domain.Database
             }
         }
 
-        private static Sql GetSqlServerQuery(InformationType infoType)
+        public Sql GetSqlQueryString(InformationType infoType)
         {
 
             var sqlQuery = Sql.Builder;
@@ -243,6 +209,8 @@ INNER JOIN sys.columns col2
                 case InformationType.DatabaseCollation:
                     sqlQuery.Append(@"SELECT CONVERT (varchar, SERVERPROPERTY('collation')) as COLLATION_TYPE");
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(infoType), infoType, "Unable to retrieve query string.");
             }
 
             Logger.Debug($"Returning SQL Query string {sqlQuery} of type {infoType}");
@@ -250,26 +218,6 @@ INNER JOIN sys.columns col2
             return sqlQuery;
         }
 
-
-
-        //public bool IsAvailible()
-        //{
-        //    try
-        //    {
-        //        using (var db = new PetaPoco.Database(Database.ConnectionString)))
-        //        {
-        //            db.Open();
-        //            db.Close();
-        //        }
-        //    }
-        //    catch (SqlException exception)
-        //    {
-        //        Logger.Warn($"Database unavailible {Database.ConnectionString}", exception);
-        //        return false;
-        //    }
-        //    return true;
-        //}
-
-
+       
     }
 }
