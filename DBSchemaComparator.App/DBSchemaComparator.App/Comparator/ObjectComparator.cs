@@ -987,7 +987,7 @@ namespace DBSchemaComparator.App.Comparator
 
         #endregion
 
-        private static TestNodes CreateTestNode(List<TestResult> testResults, ObjectType testType, string description)
+        public static TestNodes CreateTestNode(List<TestResult> testResults, ObjectType testType, string description)
         {
             var node = new TestNodes
             {
@@ -999,7 +999,7 @@ namespace DBSchemaComparator.App.Comparator
             return node;
         }
 
-        private static TestNodes CreateTestNode(List<TestResult> testResults, ObjectType testType, string description, ResultLevel resultLevel)
+        public static TestNodes CreateTestNode(List<TestResult> testResults, ObjectType testType, string description, ResultLevel resultLevel)
         {
             var node = new TestNodes
             {
@@ -1012,7 +1012,7 @@ namespace DBSchemaComparator.App.Comparator
             return node;
         }
 
-        private static void SetResultLevel(TestNodes testNode)
+        public static void SetResultLevel(TestNodes testNode)
         {
            
             ResultLevel resultLevel = ResultLevel.None;
@@ -1035,7 +1035,7 @@ namespace DBSchemaComparator.App.Comparator
 
         }
 
-        private void AddTestResult(string description, ErrorTypes errorType, ObjectType objType, string testedObjName, List<TestResult> testResults)
+        public void AddTestResult(string description, ErrorTypes errorType, ObjectType objType, string testedObjName, List<TestResult> testResults)
         {
             var matchingvalues = testResults.Exists(test =>
             test.ErrorType == errorType &&

@@ -55,6 +55,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DBSchemaComparator.App\DBSchemaComparator.App\DBSchemaComparator.App.csproj">
+      <Project>{0436F3B5-3733-4D20-8C1A-2C798F6365F8}</Project>
+      <Name>DBSchemaComparator.App</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DBSchemaComparator.Domain\DBSchemaComparator.Domain.csproj">
       <Project>{783f4a61-65ed-4cd2-9205-d556cf573730}</Project>
       <Name>DBSchemaComparator.Domain</Name>

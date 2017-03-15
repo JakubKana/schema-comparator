@@ -89,7 +89,8 @@ namespace DBSchemaComparator.Domain.Database
                     break;
                 case DatabaseType.MySql:
                     DbType = databaseType;
-                    Database = new PetaPoco.Database(connectionString, new MySqlDatabaseProvider());
+                    Database = new PetaPoco.Database(connectionString, "MySql.Data.MySqlClient");
+                  //  Database = new PetaPoco.Database(connectionString, new MySqlDatabaseProvider());
                     break;
                 default:
                     DbType = databaseType;

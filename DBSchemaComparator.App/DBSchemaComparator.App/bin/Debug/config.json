@@ -17,5 +17,5 @@
       "DbType": "SqlServer"
     }
   ],
-  "ResultPath" : "result.xml" 
+  "ResultPath":"Result"
 }

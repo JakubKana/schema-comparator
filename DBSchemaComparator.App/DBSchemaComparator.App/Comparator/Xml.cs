@@ -48,9 +48,6 @@ namespace DBSchemaComparator.App.Comparator
 
         public void SaveResultTree(string path, string xmlContent)
         {
-            
-
-
             try
             {
                 Logger.Info($"Saving xml to {path}");
@@ -58,12 +55,11 @@ namespace DBSchemaComparator.App.Comparator
              
                 var ticks = DateTime.Now.Ticks;
                 var fileName = $"test-{ticks}.xml";
+                string fullPath;
+                fullPath = Settings.Instance.IsAbsoluteUrl(path) ? path : Path.GetFullPath(path);
 
+                var dir = Directory.Exists(fullPath);
 
-                    var fullPath = Path.GetFullPath(path);
-                 
-                    var dir = Directory.Exists(fullPath);
-                   
                     if (!dir)
                     {
                        Directory.CreateDirectory(Path.Combine(fullPath));
@@ -77,9 +73,6 @@ namespace DBSchemaComparator.App.Comparator
                             xmlContent,
                             Encoding.UTF8);
                     }
-                    
-
-
             }
             catch (IOException ex)
             {

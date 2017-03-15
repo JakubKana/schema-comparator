@@ -72,5 +72,7 @@ namespace DBSchemaComparator.Domain.Infrastructure
             return normalizeText;
         }
 
+
+
     }
 }

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DBSchemaComparator.App.Comparator;
 using DBSchemaComparator.Domain.Database;
 using DBSchemaComparator.Domain.Infrastructure;
 using DBSchemaComparator.Domain.Models.General;
+using DBSchemaComparator.Domain.Models.Test;
 using NLog;
 using PetaPoco;
 
@@ -20,11 +23,18 @@ namespace DBSchemaComparator.ScriptRunner
             
             if (args.Length == 3)
             {
-                string databaseType = args[2].ToLower();
+                string databaseType = args[1].ToLower();
                 DatabaseType dbType = GetDatabaseType(databaseType);
-                SqlConnectionStringBuilder stringBuilder = new SqlConnectionStringBuilder(args[0]);
-                
-                
+                string connectionString = args[0];
+
+                SqlConnectionStringBuilder stringBuilder = new SqlConnectionStringBuilder();
+                stringBuilder.DataSource = "localhost";
+                stringBuilder.Password = "cisco";
+                stringBuilder.UserID = "SA";
+                stringBuilder.InitialCatalog = "dbcomparertest1";
+
+                var mainTestNode = ObjectComparator.CreateTestNode(new List<TestResult>(), ObjectType.Root, "Root node");
+
                 if (dbType == DatabaseType.Unsupported)
                 {
                     Logger.Error(new ArgumentException(), $"Unsupported database type {databaseType}");
@@ -32,7 +42,19 @@ namespace DBSchemaComparator.ScriptRunner
                 }
                 DatabaseHandler db = new DatabaseHandler(stringBuilder.ConnectionString, dbType);
 
-                //var scriptFromFile = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Create.sql"));
+
+                switch (dbType)
+                {
+                    case DatabaseType.SqlServer:
+                        break;
+                    case DatabaseType.MySql:
+                        break;
+                    case DatabaseType.Unsupported:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
                 //var parsedScript = ScriptParser.GetMsScriptArray(scriptFromFile);
                 //var leftDbCreated = LeftDatabase.ExecuteTransactionScript(parsedScript);
                 //var rightDbCreated = RightDatabase.ExecuteTransactionScript(parsedScript);
@@ -58,17 +80,35 @@ namespace DBSchemaComparator.ScriptRunner
                 //    ObjectType.Script,
                 //    LeftDatabase.Database.ConnectionString,
                 //    mainTestNode.Results);
-
-
-
-
-
-            }
+                Environment.Exit((int)ExitCodes.Success);
+            } else
             {
-                Logger.Info(new ArgumentException(), $"Invalid input argument count [{args.Length}]. Exactly arguments 3 required.");
+                Logger.Info(new ArgumentOutOfRangeException(), $"Invalid input argument count [{args.Length}]. Exactly arguments 3 required.");
                 Environment.Exit((int)ExitCodes.InvalidArguments);
             }
 
+        }
+
+        private void DeployMSScript(string pathToScript, List<TestResult> results)
+        {
+           
+            try
+            {
+                var scriptFromFile = File.ReadAllText(Path.Combine(pathToScript));
+
+               
+            }
+            catch (IOException ex)
+            {
+                Logger.Error(ex, "Unable to read script file.");
+                Environment.Exit((int)ExitCodes.InvalidArguments);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Unable to read script file.");
+            }
+
+            
         }
 
         private static DatabaseType GetDatabaseType(string dataType)
