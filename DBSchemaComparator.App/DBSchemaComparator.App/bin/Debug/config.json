@@ -5,8 +5,8 @@
       "IpAddress": "10.18.3.2",
       "Pass": "cisco",
       "Username": "SA",
-      "Timeout": 10,
-      "DbType": "SqlServer"
+      "Timeout": 10, 
+      "DbType": "mssql"
     },
     {
       "DbName": "DatabaseComparatorTest2",
@@ -14,7 +14,7 @@
       "Pass": "cisco",
       "Username": "SA",
       "Timeout": 10,
-      "DbType": "SqlServer"
+      "DbType": "Mssql"
     }
   ],
   "ResultPath":"Result"

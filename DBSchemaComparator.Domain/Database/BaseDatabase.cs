@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
+using NLog;
 using PetaPoco;
 
 namespace DBSchemaComparator.Domain.Database
 {
     public class BaseDatabase
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private DatabaseType DbType { get; set; }
 
         public PetaPoco.Database Database
@@ -16,7 +15,7 @@ namespace DBSchemaComparator.Domain.Database
             get; private set;
         }
 
-
+       
         protected void CreateDatabaseConnection(string connectionString, DatabaseType databaseType)
         {
             switch (databaseType)
@@ -28,7 +27,6 @@ namespace DBSchemaComparator.Domain.Database
                 case DatabaseType.MySql:
                     DbType = databaseType;
                     Database = new PetaPoco.Database(connectionString, new MySqlDatabaseProvider());
-
                     break;
                 default:
                     DbType = databaseType;

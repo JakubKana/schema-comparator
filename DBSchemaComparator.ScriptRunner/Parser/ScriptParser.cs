@@ -29,6 +29,7 @@ namespace DBSchemaComparator.ScriptRunner.Parser
                     Logger.Debug("Executing command", s);
                     
                     var script = Extensions.RemoveBeginingNewLine(Extensions.NormalizeParameters(s));
+                    db.Execute(script);
                 }
 
                 Logger.Info("Transaction Successful.");
@@ -56,12 +57,9 @@ namespace DBSchemaComparator.ScriptRunner.Parser
             if (remains.Last() == string.Empty)
             {
                 remains = remains.Take(remains.Length - 1).ToArray();
-            }
-            
+            }            
             return remains;
         }
-
-        
 
         private static bool FindComments(string obj)
         {

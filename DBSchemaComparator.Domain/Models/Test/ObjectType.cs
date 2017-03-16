@@ -27,6 +27,7 @@
         CheckTests,
         ForeignKeysTests,
         DatabaseCollation,
-        ColumnCollation
+        ColumnCollation,
+        ScriptTests
     }
 }

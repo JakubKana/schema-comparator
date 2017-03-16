@@ -6,7 +6,7 @@
       "Pass": "cisco",
       "Username": "SA",
       "Timeout": 10,
-      "DbType": "SqlServer"
+      "DbType": "mssql"
     },
     {
       "DbName": "DatabaseComparatorTest2",
@@ -14,7 +14,7 @@
       "Pass": "cisco",
       "Username": "SA",
       "Timeout": 10,
-      "DbType": "SqlServer"
+      "DbType": "mssql"
     }
   ],
   "ResultPath":"Result"

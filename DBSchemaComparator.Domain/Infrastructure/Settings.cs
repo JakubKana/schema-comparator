@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using DBSchemaComparator.Domain.Models.General;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using NLog;
 
@@ -66,23 +67,62 @@ namespace DBSchemaComparator.Domain.Infrastructure
         {
             try
             {
-                SqlConnectionStringBuilder stringBuilder = new SqlConnectionStringBuilder
+                switch (connection.DbType.ToLower())
                 {
-                    UserID = connection.Username,
-                    Password = connection.Pass,
-                    InitialCatalog = connection.DbName,
-                    DataSource = connection.IpAddress,
-                    ConnectTimeout = connection.Timeout
-                };
-                var connectionString = stringBuilder.ConnectionString;
-                Logger.Trace($"Retrieving database connection string = {connectionString}");
-                return connectionString;
+                    case "mssql":
+                        SqlConnectionStringBuilder msSqlBuilder = GetMsSqlStringBuilder(connection);
+
+                        Logger.Trace($"Retrieving MS SQL database connection string = {msSqlBuilder.ConnectionString}");
+                        return msSqlBuilder.ConnectionString;
+                    case "mysql":
+                        MySqlConnectionStringBuilder mySqlBuilder = GetMySqlStringBuilder(connection);
+                        Logger.Trace($"Retrieving MySQL database connection string = {mySqlBuilder.ConnectionString}");
+                        return mySqlBuilder.ConnectionString;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+              
+              
             }
             catch (Exception exception)
             {
                 Logger.Error(exception, "Cannot retrieve connection string.");
                 return string.Empty;
             }
+        }
+
+        public static MySqlConnectionStringBuilder GetMySqlStringBuilder(DatabaseConnection connection)
+        {
+            return new MySqlConnectionStringBuilder
+            {
+                UserID = connection.Username,
+                Password = connection.Pass,
+                Server = connection.IpAddress,
+                Database = connection.DbName,
+                ConnectionTimeout = connection.Timeout
+            };
+        }
+        public static MySqlConnectionStringBuilder GetMySqlStringBuilder(string connectionString)
+        {
+            return new MySqlConnectionStringBuilder(connectionString);
+           
+        }
+
+        public static SqlConnectionStringBuilder GetMsSqlStringBuilder(DatabaseConnection connection)
+        {
+            return new SqlConnectionStringBuilder
+            {
+                UserID = connection.Username,
+                Password = connection.Pass,
+                InitialCatalog = connection.DbName,
+                DataSource = connection.IpAddress,
+                ConnectTimeout = (int)connection.Timeout
+            };
+        }
+        public static SqlConnectionStringBuilder GetMsSqlStringBuilder(string connectionString)
+        {
+            return new SqlConnectionStringBuilder(connectionString);
+
         }
 
         public static List<string> GetDatabaseConnectionStrings(SettingsObject databaseConnection)

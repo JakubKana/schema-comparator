@@ -8,11 +8,11 @@ using PetaPoco;
 
 namespace DBSchemaComparator.Domain.Database
 {
-    public class DatabaseHandler : BaseDatabase, IDatabaseHandler
+    public class MsSqlDatabaseHandler : BaseDatabase, IDatabaseHandler
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public DatabaseHandler(string connectionString, DatabaseType databaseType)
+        public MsSqlDatabaseHandler(string connectionString, DatabaseType databaseType)
         {
             CreateDatabaseConnection(connectionString, databaseType);
         }
@@ -218,6 +218,6 @@ INNER JOIN sys.columns col2
             return sqlQuery;
         }
 
-       
+        
     }
 }
