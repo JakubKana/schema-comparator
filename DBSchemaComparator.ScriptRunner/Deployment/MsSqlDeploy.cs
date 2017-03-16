@@ -11,33 +11,36 @@ using DBSchemaComparator.Domain.Models.General;
 using DBSchemaComparator.Domain.Models.Test;
 using DBSchemaComparator.ScriptRunner.Parser;
 using NLog;
+using PetaPoco;
 
 namespace DBSchemaComparator.ScriptRunner.Deployment
 {
-    public class MsSqlDeploy : BaseDatabase
+    public class MsSqlDeploy : BaseDatabase, IDeployment
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public void CreateMsDatabase(MsSqlDatabaseHandler db, string dbName)
+        public void CreateDatabase(Database db, string dbName)
         {
             try
             {
-                using (var dbContext = db.Database)
+                using (var dbContext = db)
                 {
                     var result = dbContext.Execute($"CREATE DATABASE {dbName}");
                 }
             }
             catch (SqlException ex)
             {
-
+                Logger.Error(ex, "Cannot execute SQL command.");
+                Environment.Exit((int)ExitCodes.UnexpectedError);
             }
             catch (Exception ex)
             {
-                
-            } 
-           
+                Logger.Error(ex, "Unable to create database.");
+                Environment.Exit((int)ExitCodes.UnexpectedError);
+            }
+
         }
 
-        public bool CheckMsDatabaseExists(string databaseName)
+        public bool CheckDatabaseExists(string databaseName)
         {
             Logger.Info($"Checking if database exists {databaseName}");
             using (var conn = Database)
@@ -94,5 +97,6 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             }
         }
 
+    
     }
 }

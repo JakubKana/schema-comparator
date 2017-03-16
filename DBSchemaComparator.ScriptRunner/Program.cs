@@ -34,8 +34,6 @@ namespace DBSchemaComparator.ScriptRunner
                 string connectionString = args[0];
                 string pathToScript = args[2];
                 
-                
-
                 try
                 {
                     switch (dbType)
@@ -43,13 +41,16 @@ namespace DBSchemaComparator.ScriptRunner
                         case DatabaseType.SqlServer:
 
                             MsSqlDatabaseHandler db = new MsSqlDatabaseHandler(connectionString, dbType);
+
                             MsSqlDeploy deploy = new MsSqlDeploy();
+
                             var dbName = Settings.GetMsSqlStringBuilder(db.Database.ConnectionString).InitialCatalog;
                             
-                            if (!deploy.CheckMsDatabaseExists(dbName))
+                            if (!deploy.CheckDatabaseExists(dbName))
                             {
-                                deploy.CreateMsDatabase(db, dbName);
+                                deploy.CreateDatabase(db.Database, dbName);
                             }
+
                             deploy.DeployMsScript(pathToScript, mainTestNode, db);
 
                             break;
@@ -89,7 +90,6 @@ namespace DBSchemaComparator.ScriptRunner
                         case DatabaseType.SqlServer:
                             MsSqlDatabaseHandler db = new MsSqlDatabaseHandler(connectionString, dbType);
                             var dbName = Settings.GetMsSqlStringBuilder(db.Database.ConnectionString).InitialCatalog;
-
 
                             break;
                         case DatabaseType.MySql:

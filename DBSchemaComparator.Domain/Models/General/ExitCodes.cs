@@ -15,6 +15,7 @@ namespace DBSchemaComparator.Domain.Models.General
         ScriptFailed = 5,
         UnsupportedDbType = 6,
         UnableToExportXml = 7,
+        SqlError = 8,
         UnexpectedError = 10
 
     }
