@@ -23,7 +23,6 @@ namespace DBSchemaComparator.Domain.Infrastructure
         private static Settings _instance;
 
         public SettingsObject SettingsObject { get; set; }
-        
 
         public static Settings Instance
         {
@@ -81,8 +80,6 @@ namespace DBSchemaComparator.Domain.Infrastructure
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-              
-              
             }
             catch (Exception exception)
             {
@@ -129,7 +126,6 @@ namespace DBSchemaComparator.Domain.Infrastructure
         {
             return databaseConnection.DatabaseConnections.Select(GetConnectionString).Take(2).ToList();
         }
-
 
        public bool IsAbsoluteUrl(string url)
         {

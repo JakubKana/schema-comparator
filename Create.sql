@@ -6,7 +6,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_PADDING ON
 GO
-CREATE TABLE [dbo].[Companies](
+CREATE TABLsdfsdfE [dbo].[Companies](
 	[Company_ID] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [varchar](100) NOT NULL,
 	[Address] [varchar](200) NULL,

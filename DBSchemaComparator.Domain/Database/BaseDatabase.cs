@@ -35,5 +35,19 @@ namespace DBSchemaComparator.Domain.Database
             }
         }
 
+
+        public static DatabaseType GetDatabaseType(string dataType)
+        {
+            switch (dataType.ToLower())
+            {
+                case "mssql":
+                    return DatabaseType.SqlServer;
+                case "mysql":
+                    return DatabaseType.MySql;
+                default:
+                    throw new ArgumentOutOfRangeException();
+
+            }
+        }
     }
 }

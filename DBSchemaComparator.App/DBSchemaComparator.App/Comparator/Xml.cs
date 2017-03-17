@@ -21,10 +21,10 @@ namespace DBSchemaComparator.App.Comparator
         public string GetXml(TestNodes testNodes)
         {
             Logger.Info($"Serialization of {testNodes} to XML string");
-            XmlSerializer xsSubmit = new XmlSerializer(typeof(TestNodes));
+            XmlSerializer xsSubmit = new XmlSerializer(typeof(TestNodes), "http://alef.com/db-comparator/test");
             var subReq = testNodes;
             string xmlDocument;
-
+           
             using (var sww = new StringWriter())
             {
                 using (XmlWriter writer = XmlWriter.Create(sww))

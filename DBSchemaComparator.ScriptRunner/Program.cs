@@ -23,120 +23,110 @@ namespace DBSchemaComparator.ScriptRunner
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
-            Xml xmlCreator = new Xml();
+
             //Create Test Tree
             var mainTestNode = ObjectComparator.CreateTestNode(new List<TestResult>(), ObjectType.Root, "Root node");
-            if (args.Length == 3)
+            try
             {
-                // Read arguments
-                string databaseType = args[1].ToLower();
-                DatabaseType dbType = GetDatabaseType(databaseType);
-                string connectionString = args[0];
-                string pathToScript = args[2];
-                
-                try
+                if (args.Length == 3 && args[2].ToLower() == "delete")
                 {
-                    switch (dbType)
+                    // Read arguments
+                    string connectionString = args[0];
+
+                    var connStringBuilder = Settings.GetMsSqlStringBuilder(connectionString);
+                    var dbName = connStringBuilder.InitialCatalog;
+                    connStringBuilder.Remove("Initial Catalog");
+                    var connStringWithoutCatalog = connStringBuilder.ConnectionString;
+
+                    string databaseType = args[1].ToLower();
+
+                    DatabaseType dbType = BaseDatabase.GetDatabaseType(databaseType);
+
+                    try
                     {
-                        case DatabaseType.SqlServer:
-
-                            MsSqlDatabaseHandler db = new MsSqlDatabaseHandler(connectionString, dbType);
-
-                            MsSqlDeploy deploy = new MsSqlDeploy();
-
-                            var dbName = Settings.GetMsSqlStringBuilder(db.Database.ConnectionString).InitialCatalog;
-                            
-                            if (!deploy.CheckDatabaseExists(dbName))
-                            {
-                                deploy.CreateDatabase(db.Database, dbName);
-                            }
-
-                            deploy.DeployMsScript(pathToScript, mainTestNode, db);
-
-                            break;
-                        case DatabaseType.MySql:
-                            throw new NotImplementedException();
-                           
-                        default:
-                            throw new ArgumentOutOfRangeException();
+                        switch (dbType)
+                        {
+                            case DatabaseType.SqlServer:
+                                MsSqlDatabaseHandler db1 = new MsSqlDatabaseHandler(connStringWithoutCatalog, dbType);
+                                MsSqlDeploy deploy = new MsSqlDeploy();
+                                if (deploy.CheckDatabaseExists(db1.Database, dbName))
+                                    deploy.DeleteDatabase(db1.Database, dbName);
+                                break;
+                            case DatabaseType.MySql:
+                                throw new NotImplementedException();
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
                     }
-                        Environment.Exit((int)ExitCodes.Success);
-                }
-
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    Logger.Error(ex, $"Unsupported database type {databaseType}");
-                    Environment.Exit((int)ExitCodes.InvalidArguments);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex, $"Unexpected exception occured.");
-                    Environment.Exit((int)ExitCodes.UnexpectedError);
-                }
-
-               
-            }
-            else if (args.Length == 3 && args[0].ToLower() == "delete")
-            {
-                // Read arguments
-                string databaseType = args[2].ToLower();
-                DatabaseType dbType = GetDatabaseType(databaseType);
-                string connectionString = args[1];
-
-                try
-                {
-                    switch (dbType)
+                    catch (ArgumentOutOfRangeException ex)
                     {
-                        case DatabaseType.SqlServer:
-                            MsSqlDatabaseHandler db = new MsSqlDatabaseHandler(connectionString, dbType);
-                            var dbName = Settings.GetMsSqlStringBuilder(db.Database.ConnectionString).InitialCatalog;
+                        Logger.Error(ex, $"Unsupported database type {databaseType}");
+                        Environment.Exit((int) ExitCodes.InvalidArguments);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex, $"Unexpected exception occured.");
+                        Environment.Exit((int) ExitCodes.UnsupportedDbType);
+                    }
 
-                            break;
-                        case DatabaseType.MySql:
+                    Environment.Exit((int) ExitCodes.Success);
+                }
+                else if (args.Length == 3)
+                {
+                    // Read arguments
+                    string connectionString = args[0];
+                    var connStringBuilder = Settings.GetMsSqlStringBuilder(connectionString);
+                    var dbName = connStringBuilder.InitialCatalog;
+                    connStringBuilder.Remove("Initial Catalog");
+                    var connStringWithoutCatalog = connStringBuilder.ConnectionString;
 
+                    string databaseType = args[1];
+                    DatabaseType dbType = BaseDatabase.GetDatabaseType(databaseType);
 
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
+                    string pathToScript = args[2];
+
+                    try
+                    {
+                        switch (dbType)
+                        {
+                            case DatabaseType.SqlServer:
+                                MsSqlDatabaseHandler db = new MsSqlDatabaseHandler(connectionString, dbType);
+
+                                MsSqlDatabaseHandler db1 = new MsSqlDatabaseHandler(connStringWithoutCatalog, dbType);
+
+                                MsSqlDeploy deploy = new MsSqlDeploy();
+
+                                if (!deploy.CheckDatabaseExists(db1.Database, dbName))
+                                {
+                                    deploy.CreateDatabase(db1.Database, dbName);
+                                }
+
+                                deploy.DeployMsScript(pathToScript, mainTestNode, db);
+                                break;
+                            case DatabaseType.MySql:
+                                throw new NotImplementedException();
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        Environment.Exit((int) ExitCodes.Success);
+                    }
+                    catch (ArgumentOutOfRangeException ex)
+                    {
+                        Logger.Error(ex, $"Unsupported database type {databaseType}");
+                        Environment.Exit((int) ExitCodes.InvalidArguments);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex, "Unexpected exception occured.");
+                        Environment.Exit((int) ExitCodes.UnexpectedError);
                     }
                 }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    Logger.Error(ex, $"Unsupported database type {databaseType}");
-                    Environment.Exit((int)ExitCodes.InvalidArguments);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex, $"Unexpected exception occured.");
-                    Environment.Exit((int)ExitCodes.UnsupportedDbType);
-                }
-
-                Environment.Exit((int)ExitCodes.Success);
             }
-            else
+            catch (Exception ex)
             {
-                Logger.Info(new ArgumentOutOfRangeException(), $"Invalid input argument count [{args.Length}]. Exactly arguments 3 required.");
-                Environment.Exit((int)ExitCodes.InvalidArguments);
-            }
-
-        }
-
-        
-
-        
-
-        
-        private static DatabaseType GetDatabaseType(string dataType)
-        {
-            switch (dataType)
-            {
-                case "mssql":
-                    return DatabaseType.SqlServer;
-                case "mysql":
-                    return DatabaseType.MySql;
-                default:
-                    throw new ArgumentOutOfRangeException();
-                   
+                Logger.Error(ex,
+                    $"Invalid input argument count [{args.Length}]. Exactly arguments 3 required.");
+                Environment.Exit((int) ExitCodes.InvalidArguments);
             }
         }
     }

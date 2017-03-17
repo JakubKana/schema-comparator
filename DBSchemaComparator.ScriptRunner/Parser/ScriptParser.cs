@@ -29,6 +29,7 @@ namespace DBSchemaComparator.ScriptRunner.Parser
                     Logger.Debug("Executing command", s);
                     
                     var script = Extensions.RemoveBeginingNewLine(Extensions.NormalizeParameters(s));
+
                     db.Execute(script);
                 }
 
