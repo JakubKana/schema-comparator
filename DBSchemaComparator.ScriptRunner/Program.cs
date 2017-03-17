@@ -102,6 +102,7 @@ namespace DBSchemaComparator.ScriptRunner
                                 }
 
                                 deploy.DeployMsScript(pathToScript, mainTestNode, db);
+
                                 break;
                             case DatabaseType.MySql:
                                 throw new NotImplementedException();

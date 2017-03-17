@@ -98,6 +98,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
                 mainTestNode.Nodes.Add(deployTestNode);
 
                 var resultPath = Settings.Instance.SettingsObject.ResultPath;
+
                 Xml xmlCreator = new Xml();
 
                 var xmlContent = xmlCreator.GetXml(mainTestNode);
