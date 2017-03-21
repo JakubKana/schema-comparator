@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using DBSchemaComparator.Domain.Models.SQLServer;
+using DBSchemaComparator.Domain.SqlBuilder;
 using PetaPoco;
 
 
@@ -21,6 +22,6 @@ namespace DBSchemaComparator.Domain.Database
         IList<Column> SelectColumnsSchemaInfo();
         IList<IdentityColumn> SelectColumnsWithIdentity();
         IList<T> SelectSchemaInfo<T>(InformationType infoType);
-        Sql GetSqlQueryString(InformationType infoType);
+       
     }
 }

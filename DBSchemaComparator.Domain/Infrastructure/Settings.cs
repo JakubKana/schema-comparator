@@ -75,6 +75,7 @@ namespace DBSchemaComparator.Domain.Infrastructure
                         return msSqlBuilder.ConnectionString;
                     case "mysql":
                         MySqlConnectionStringBuilder mySqlBuilder = GetMySqlStringBuilder(connection);
+
                         Logger.Trace($"Retrieving MySQL database connection string = {mySqlBuilder.ConnectionString}");
                         return mySqlBuilder.ConnectionString;
                     default:

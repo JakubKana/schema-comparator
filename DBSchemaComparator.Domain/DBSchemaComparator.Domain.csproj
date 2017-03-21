@@ -56,10 +56,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\BaseDatabase.cs" />
-    <Compile Include="Database\MsSqlDatabaseHandler.cs" />
+    <Compile Include="Database\DatabaseHandler.cs" />
     <Compile Include="Database\DatabaseType.cs" />
     <Compile Include="Database\IDatabaseHandler.cs" />
-    <Compile Include="Database\MySqlDatabaseHandler.cs" />
+    <Compile Include="SqlBuilder\ISqlQueryBuilder.cs" />
+    <Compile Include="SqlBuilder\MsSqlQueryBuilder.cs" />
+    <Compile Include="SqlBuilder\MySqlQueryBuilder.cs" />
+    <Compile Include="SqlBuilder\SqlBaseBuilder.cs" />
     <Compile Include="Infrastructure\Extensions.cs" />
     <Compile Include="Models\General\ExitCodes.cs" />
     <Compile Include="Models\DbObjects\CheckConstraint.cs" />
@@ -68,7 +71,7 @@
     <Compile Include="Models\DbObjects\IConstraint.cs" />
     <Compile Include="Models\DbObjects\Function.cs" />
     <Compile Include="Models\DbObjects\IdentityColumn.cs" />
-    <Compile Include="Database\InformationType.cs" />
+    <Compile Include="SqlBuilder\InformationType.cs" />
     <Compile Include="Infrastructure\Settings.cs" />
     <Compile Include="Models\General\DatabaseConnection.cs" />
     <Compile Include="Models\General\SettingsObject.cs" />
@@ -91,6 +94,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\DbObjects\Table.cs" />
     <Compile Include="Models\Test\TestResult.cs" />
+    <Compile Include="SqlBuilder\SqlBuilderFactory.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -1,4 +1,4 @@
-namespace DBSchemaComparator.Domain.Database
+namespace DBSchemaComparator.Domain.SqlBuilder
 {
     public enum InformationType
     {

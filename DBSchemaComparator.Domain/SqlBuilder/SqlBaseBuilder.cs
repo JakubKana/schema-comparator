@@ -1,149 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using DBSchemaComparator.Domain.Models.SQLServer;
+using DBSchemaComparator.Domain.Database;
 using NLog;
 using PetaPoco;
 
-namespace DBSchemaComparator.Domain.Database
+namespace DBSchemaComparator.Domain.SqlBuilder
 {
-    public class MsSqlDatabaseHandler : BaseDatabase, IDatabaseHandler
+    public class SqlBaseBuilder : ISqlQueryBuilder
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public MsSqlDatabaseHandler(string connectionString, DatabaseType databaseType)
+        protected virtual string GetTableString()
         {
-            CreateDatabaseConnection(connectionString, databaseType);
+            return @"SELECT TABLE_NAME FROM [INFORMATION_SCHEMA].[TABLES] WHERE TABLE_TYPE = 'BASE TABLE';";
         }
 
-        public IList<PrimaryKey> GetPrimaryKeysInfo()
+        protected virtual string GetColumnsString()
         {
-            return SelectSchemaInfo<PrimaryKey>(InformationType.PrimaryKeys);
+            return @"SELECT TABLE_NAME, COLUMN_NAME, IS_NULLABLE, DATA_TYPE, COLLATION_NAME FROM [INFORMATION_SCHEMA].[COLUMNS]";
         }
 
-        public IList<Table> GetTablesSchemaInfo()
+        public virtual Sql GetSqlQueryString(InformationType infoType)
         {
-            var tables = SelectTablesSchemaInfo();
-            var columns = SelectColumnsSchemaInfo();
-            var identity = SelectColumnsWithIdentity();
-            var columnsWithIdentity = JoinIdentityInfoToColumns(columns, identity);
-            return JoinColumnsToTables(tables, columnsWithIdentity);
-        }
-
-        public IList<StoredProcedure> GetStoredProceduresInfo()
-        {
-            return SelectSchemaInfo<StoredProcedure>(InformationType.StoredProcedure);
-        }
-
-        public IList<Collation> GetCollationInfo()
-        {
-            return SelectSchemaInfo<Collation>(InformationType.DatabaseCollation);
-        }
-
-        public IList<CheckConstraint> GetCheckConstraintsInfo()
-        {
-            return SelectSchemaInfo<CheckConstraint>(InformationType.Checks);
-        }
-
-        public IList<ForeignKey> GetForeignKeysInfo()
-        {
-            return SelectSchemaInfo<ForeignKey>(InformationType.ForeignKeys);
-        }
-
-        public IList<Index> GetIndexesInfo()
-        {
-            return SelectSchemaInfo<Index>(InformationType.Indexes);
-        }
-
-        public IList<Function> GetFunctionsInfo()
-        {
-            return SelectSchemaInfo<Function>(InformationType.Function);
-        }
-
-        public IList<View> GetViewsInfo()
-        {
-            return SelectSchemaInfo<View>(InformationType.View);
-        }
-
-        public IList<Table> SelectTablesSchemaInfo()
-        {
-            return SelectSchemaInfo<Table>(InformationType.Tables);
-        }
-
-        public IList<Column> SelectColumnsSchemaInfo()
-        {
-            return SelectSchemaInfo<Column>(InformationType.Columns);
-        }
-
-        public IList<IdentityColumn> SelectColumnsWithIdentity()
-        {
-            return SelectSchemaInfo<IdentityColumn>(InformationType.IdentityColumns);
-        }
-
-        private static IList<Column> JoinIdentityInfoToColumns(IList<Column> columns, IList<IdentityColumn> identityColumns)
-        {
-            foreach (var ideCol in identityColumns)
-            {
-                foreach (var column in columns)
-                {
-                    if (ideCol.TableName == column.TableName && ideCol.ColumnName == column.ColumnName)
-                    {
-                        column.IsIdentification = true;
-                    }
-                }
-            }
-            return columns;
-        }
-
-        private static IList<Table> JoinColumnsToTables(IList<Table> tables, IList<Column> columns)
-        {
-            foreach (var table in tables)
-            {
-                var columnsOfTable = columns.Where(col => col.TableName == table.TableName);
-                table.Columns = columnsOfTable.ToList();
-            }
-            return tables;
-        }
-
-        public IList<T> SelectSchemaInfo<T>(InformationType infoType)
-        {
-            Logger.Info($"Selecting basic schema information of type: {infoType}");
-
-            Sql sqlQuery = GetSqlQueryString(infoType);
-
-            try
-            {
-                using (var db = Database)
-                {
-                    Logger.Info($"Querying database with {sqlQuery}");
-                    var queryResult = db.Query<T>(sqlQuery).ToList();
-                    return queryResult;
-                }
-            }
-            catch (SqlException exception)
-            {
-                Logger.Warn(exception, $"Unable to retrieve basic schema information of type {infoType} from database.");
-                return null;
-            }
-            catch (Exception exception)
-            {
-                Logger.Warn(exception, "Unexpected error.");
-                return null;
-            }
-        }
-
-        public Sql GetSqlQueryString(InformationType infoType)
-        {
-
+            
             var sqlQuery = Sql.Builder;
             switch (infoType)
             {
                 case InformationType.Tables:
-                    sqlQuery.Append(@"SELECT TABLE_NAME FROM [INFORMATION_SCHEMA].[TABLES] WHERE TABLE_TYPE = 'BASE TABLE';");
+                    sqlQuery.Append(GetTableString());
                     break;
                 case InformationType.Columns:
-                    sqlQuery.Append(@"SELECT TABLE_NAME, COLUMN_NAME, IS_NULLABLE, DATA_TYPE, COLLATION_NAME FROM [INFORMATION_SCHEMA].[COLUMNS]");
+                    sqlQuery.Append(GetColumnsString());
                     break;
                 case InformationType.IdentityColumns:
                     sqlQuery.Append(@"SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS where COLUMNPROPERTY(object_id(TABLE_SCHEMA+'.'+TABLE_NAME), COLUMN_NAME, 'IsIdentity') = 1");
@@ -218,6 +104,6 @@ INNER JOIN sys.columns col2
             return sqlQuery;
         }
 
-        
+       
     }
 }

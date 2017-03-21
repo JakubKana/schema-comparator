@@ -119,8 +119,8 @@ namespace DBSchemaComparator.ScriptRunner
 
         private static void DeployMsSqlDatabase(TestNodes mainTestNode, string connectionString, string dbName, string connStringWithoutCatalog, DatabaseType dbType, string pathToScript)
         {
-            MsSqlDatabaseHandler db = new MsSqlDatabaseHandler(connectionString, dbType);
-            MsSqlDatabaseHandler db1 = new MsSqlDatabaseHandler(connStringWithoutCatalog, dbType);
+            DatabaseHandler db = new DatabaseHandler(connectionString, dbType);
+            DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
             MsSqlDeploy deploy = new MsSqlDeploy();
 
             if (!deploy.CheckDatabaseExists(db1.Database, dbName))
@@ -132,7 +132,7 @@ namespace DBSchemaComparator.ScriptRunner
 
         private static void DeleteMsSqlDatabase(string dbName, string connStringWithoutCatalog, DatabaseType dbType)
         {
-            MsSqlDatabaseHandler db1 = new MsSqlDatabaseHandler(connStringWithoutCatalog, dbType);
+            DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
             MsSqlDeploy deploy = new MsSqlDeploy();
             if (deploy.CheckDatabaseExists(db1.Database, dbName))
                 deploy.DeleteDatabase(db1.Database, dbName);

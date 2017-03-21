@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using NLog;
 using PetaPoco;
 
@@ -8,14 +10,17 @@ namespace DBSchemaComparator.Domain.Database
     public class BaseDatabase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private DatabaseType DbType { get; set; }
+        protected DatabaseType DbType { get; set; }
 
         public PetaPoco.Database Database
         {
             get; private set;
         }
+        public BaseDatabase(string connectionString, DatabaseType databaseType)
+        {
+            CreateDatabaseConnection(connectionString, databaseType);
+        }
 
-       
         protected void CreateDatabaseConnection(string connectionString, DatabaseType databaseType)
         {
             switch (databaseType)
@@ -34,7 +39,6 @@ namespace DBSchemaComparator.Domain.Database
                     break;
             }
         }
-
 
         public static DatabaseType GetDatabaseType(string dataType)
         {

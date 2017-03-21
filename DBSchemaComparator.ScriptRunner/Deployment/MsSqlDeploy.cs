@@ -16,10 +16,11 @@ using PetaPoco;
 
 namespace DBSchemaComparator.ScriptRunner.Deployment
 {
-    public class MsSqlDeploy : BaseDatabase, IDeployment
+    public class MsSqlDeploy : IDeployment
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-       
+
+
         public void CreateDatabase(Database db, string dbName)
         {
             try
@@ -75,7 +76,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             return result.HasValue;
         }
 
-        public void DeployMsScript(string pathToScript, TestNodes mainTestNode, MsSqlDatabaseHandler db)
+        public void DeployMsScript(string pathToScript, TestNodes mainTestNode, DatabaseHandler db)
         {
             try
             {

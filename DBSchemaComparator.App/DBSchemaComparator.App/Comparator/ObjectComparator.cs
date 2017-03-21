@@ -31,7 +31,7 @@ namespace DBSchemaComparator.App.Comparator
         public IDatabaseHandler LeftMsSqlDatabase { get; set; }
         public IDatabaseHandler RightMsSqlDatabase { get; set; }
 
-        public ObjectComparator(string connStringLeft, string connStringRight)
+        private ObjectComparator(string connStringLeft, string connStringRight)
         {
             ConnStringLeft = connStringLeft;
             ConnStringRight = connStringRight;
@@ -51,8 +51,8 @@ namespace DBSchemaComparator.App.Comparator
         {
             var mainTestNode = CreateTestNode(new List<TestResult>(), ObjectType.Root, "Root node");
 
-            LeftMsSqlDatabase = new MsSqlDatabaseHandler(ConnStringLeft, DatabaseType.SqlServer);
-            RightMsSqlDatabase = new MsSqlDatabaseHandler(ConnStringRight, DatabaseType.SqlServer);
+            LeftMsSqlDatabase = new DatabaseHandler(ConnStringLeft, DatabaseType);
+            RightMsSqlDatabase = new DatabaseHandler(ConnStringRight, DatabaseType);
 
                 TestCollation(mainTestNode.Results);
             

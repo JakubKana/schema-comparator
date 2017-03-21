@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using DBSchemaComparator.App.Comparator;
+using DBSchemaComparator.Domain.Database;
 using DBSchemaComparator.Domain.Infrastructure;
 using DBSchemaComparator.Domain.Models.General;
 using NLog;
@@ -38,7 +39,7 @@ namespace DBSchemaComparator.App
             // stringList.Add("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=DBComparatorTest2;Integrated Security=True");
             // var comparator = new ObjectComparator(stringList.ElementAt(0), stringList.ElementAt(1));
 
-            var comparator = new ObjectComparator(connectionStrings.ElementAt(0), connectionStrings.ElementAt(1));
+            var comparator = new ObjectComparator(connectionStrings.ElementAt(0), connectionStrings.ElementAt(1), DatabaseType.SqlServer);
 
             var resultTree = comparator.CompareDatabases();
 
