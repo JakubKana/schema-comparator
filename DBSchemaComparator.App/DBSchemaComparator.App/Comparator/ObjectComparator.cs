@@ -28,8 +28,8 @@ namespace DBSchemaComparator.App.Comparator
             private set { DatabaseType = value; }
         }
 
-        public MsSqlDatabaseHandler LeftMsSqlDatabase { get; set; }
-        public MsSqlDatabaseHandler RightMsSqlDatabase { get; set; }
+        public IDatabaseHandler LeftMsSqlDatabase { get; set; }
+        public IDatabaseHandler RightMsSqlDatabase { get; set; }
 
         public ObjectComparator(string connStringLeft, string connStringRight)
         {

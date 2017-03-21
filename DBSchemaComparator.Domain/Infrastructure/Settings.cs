@@ -104,7 +104,6 @@ namespace DBSchemaComparator.Domain.Infrastructure
             return new MySqlConnectionStringBuilder(connectionString);
            
         }
-
         public static SqlConnectionStringBuilder GetMsSqlStringBuilder(DatabaseConnection connection)
         {
             return new SqlConnectionStringBuilder

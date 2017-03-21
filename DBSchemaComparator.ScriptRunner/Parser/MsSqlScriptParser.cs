@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using DBSchemaComparator.Domain.Infrastructure;
-using DBSchemaComparator.Domain.Models.General;
-using DBSchemaComparator.Domain.Models.Test;
 using NLog;
 using PetaPoco;
 
 namespace DBSchemaComparator.ScriptRunner.Parser
 {
-    public class ScriptParser
+    public class MsSqlScriptParser : IParser
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public static bool ExecuteTransactionScript(string[] scriptArray, Database db)
+        public bool ExecuteTransactionScript(string[] scriptArray, Database db)
         {
 
             db.EnableAutoSelect = false;
@@ -27,13 +23,14 @@ namespace DBSchemaComparator.ScriptRunner.Parser
                 foreach (var s in scriptArray)
                 {
                     Logger.Debug("Executing command", s);
-                    
+
                     var script = Extensions.RemoveBeginingNewLine(Extensions.NormalizeParameters(s));
 
                     db.Execute(script);
                 }
 
                 Logger.Info("Transaction Successful.");
+
                 db.CompleteTransaction();
 
                 return true;
@@ -46,7 +43,7 @@ namespace DBSchemaComparator.ScriptRunner.Parser
             }
         }
 
-        public static string[] GetMsScriptArray(string script)
+        public string[] GetMsScriptArray(string script)
         {
             //Split by GO statement
             var parsed = Regex.Split(script, "GO\n");
@@ -68,5 +65,6 @@ namespace DBSchemaComparator.ScriptRunner.Parser
             return result;
         }
 
+        
     }
 }

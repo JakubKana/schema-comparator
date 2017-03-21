@@ -36,8 +36,8 @@ namespace DBSchemaComparator.ScriptRunner
                     var connStringBuilder = Settings.GetMsSqlStringBuilder(connectionString);
                     var dbName = connStringBuilder.InitialCatalog;
                     connStringBuilder.Remove("Initial Catalog");
-                    var connStringWithoutCatalog = connStringBuilder.ConnectionString;
 
+                    var connStringWithoutCatalog = connStringBuilder.ConnectionString;
                     string databaseType = args[1].ToLower();
 
                     DatabaseType dbType = BaseDatabase.GetDatabaseType(databaseType);
@@ -47,10 +47,7 @@ namespace DBSchemaComparator.ScriptRunner
                         switch (dbType)
                         {
                             case DatabaseType.SqlServer:
-                                MsSqlDatabaseHandler db1 = new MsSqlDatabaseHandler(connStringWithoutCatalog, dbType);
-                                MsSqlDeploy deploy = new MsSqlDeploy();
-                                if (deploy.CheckDatabaseExists(db1.Database, dbName))
-                                    deploy.DeleteDatabase(db1.Database, dbName);
+                                DeleteMsSqlDatabase(dbName, connStringWithoutCatalog, dbType);
                                 break;
                             case DatabaseType.MySql:
                                 throw new NotImplementedException();
@@ -90,21 +87,10 @@ namespace DBSchemaComparator.ScriptRunner
                         switch (dbType)
                         {
                             case DatabaseType.SqlServer:
-                                MsSqlDatabaseHandler db = new MsSqlDatabaseHandler(connectionString, dbType);
-
-                                MsSqlDatabaseHandler db1 = new MsSqlDatabaseHandler(connStringWithoutCatalog, dbType);
-
-                                MsSqlDeploy deploy = new MsSqlDeploy();
-
-                                if (!deploy.CheckDatabaseExists(db1.Database, dbName))
-                                {
-                                    deploy.CreateDatabase(db1.Database, dbName);
-                                }
-
-                                deploy.DeployMsScript(pathToScript, mainTestNode, db);
-
+                                DeployMsSqlDatabase(mainTestNode, connectionString, dbName, connStringWithoutCatalog, dbType, pathToScript);
                                 break;
                             case DatabaseType.MySql:
+
                                 throw new NotImplementedException();
                             default:
                                 throw new ArgumentOutOfRangeException();
@@ -129,6 +115,27 @@ namespace DBSchemaComparator.ScriptRunner
                     $"Invalid input argument count [{args.Length}]. Exactly arguments 3 required.");
                 Environment.Exit((int) ExitCodes.InvalidArguments);
             }
+        }
+
+        private static void DeployMsSqlDatabase(TestNodes mainTestNode, string connectionString, string dbName, string connStringWithoutCatalog, DatabaseType dbType, string pathToScript)
+        {
+            MsSqlDatabaseHandler db = new MsSqlDatabaseHandler(connectionString, dbType);
+            MsSqlDatabaseHandler db1 = new MsSqlDatabaseHandler(connStringWithoutCatalog, dbType);
+            MsSqlDeploy deploy = new MsSqlDeploy();
+
+            if (!deploy.CheckDatabaseExists(db1.Database, dbName))
+            {
+                deploy.CreateDatabase(db1.Database, dbName);
+            }
+            deploy.DeployMsScript(pathToScript, mainTestNode, db);
+        }
+
+        private static void DeleteMsSqlDatabase(string dbName, string connStringWithoutCatalog, DatabaseType dbType)
+        {
+            MsSqlDatabaseHandler db1 = new MsSqlDatabaseHandler(connStringWithoutCatalog, dbType);
+            MsSqlDeploy deploy = new MsSqlDeploy();
+            if (deploy.CheckDatabaseExists(db1.Database, dbName))
+                deploy.DeleteDatabase(db1.Database, dbName);
         }
     }
 }

@@ -59,14 +59,15 @@
     <Compile Include="Database\MsSqlDatabaseHandler.cs" />
     <Compile Include="Database\DatabaseType.cs" />
     <Compile Include="Database\IDatabaseHandler.cs" />
+    <Compile Include="Database\MySqlDatabaseHandler.cs" />
     <Compile Include="Infrastructure\Extensions.cs" />
     <Compile Include="Models\General\ExitCodes.cs" />
-    <Compile Include="Models\SQLServer\CheckConstraint.cs" />
-    <Compile Include="Models\SQLServer\Collation.cs" />
-    <Compile Include="Models\SQLServer\ForeignKey.cs" />
-    <Compile Include="Models\SQLServer\IConstraint.cs" />
-    <Compile Include="Models\SQLServer\Function.cs" />
-    <Compile Include="Models\SQLServer\IdentityColumn.cs" />
+    <Compile Include="Models\DbObjects\CheckConstraint.cs" />
+    <Compile Include="Models\DbObjects\Collation.cs" />
+    <Compile Include="Models\DbObjects\ForeignKey.cs" />
+    <Compile Include="Models\DbObjects\IConstraint.cs" />
+    <Compile Include="Models\DbObjects\Function.cs" />
+    <Compile Include="Models\DbObjects\IdentityColumn.cs" />
     <Compile Include="Database\InformationType.cs" />
     <Compile Include="Infrastructure\Settings.cs" />
     <Compile Include="Models\General\DatabaseConnection.cs" />
@@ -77,23 +78,21 @@
       <DependentUpon>Database.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PetaPoco.cs" />
-    <Compile Include="Models\SQLServer\Column.cs" />
-    <Compile Include="Models\SQLServer\Index.cs" />
-    <Compile Include="Models\SQLServer\IProcedure.cs" />
-    <Compile Include="Models\SQLServer\PrimaryKey.cs" />
-    <Compile Include="Models\SQLServer\StoredProcedure.cs" />
-    <Compile Include="Models\SQLServer\View.cs" />
+    <Compile Include="Models\DbObjects\Column.cs" />
+    <Compile Include="Models\DbObjects\Index.cs" />
+    <Compile Include="Models\DbObjects\IProcedure.cs" />
+    <Compile Include="Models\DbObjects\PrimaryKey.cs" />
+    <Compile Include="Models\DbObjects\StoredProcedure.cs" />
+    <Compile Include="Models\DbObjects\View.cs" />
     <Compile Include="Models\Test\ResultLevel.cs" />
     <Compile Include="Models\Test\ErrorTypes.cs" />
     <Compile Include="Models\Test\ObjectType.cs" />
     <Compile Include="Models\Test\TestNodes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Models\SQLServer\Table.cs" />
+    <Compile Include="Models\DbObjects\Table.cs" />
     <Compile Include="Models\Test\TestResult.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\MySQL\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>

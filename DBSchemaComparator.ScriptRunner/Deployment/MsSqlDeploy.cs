@@ -20,7 +20,6 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
        
-
         public void CreateDatabase(Database db, string dbName)
         {
             try
@@ -80,12 +79,13 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
         {
             try
             {
+                var msScriptParser = new MsSqlScriptParser();
                 var deployTestNode = ObjectComparator.CreateTestNode(new List<TestResult>(), ObjectType.ScriptTests,
                     "Set of tests for Script");
 
                 var scriptFromFile = File.ReadAllText(Path.Combine(pathToScript));
-                var parsedScript = ScriptParser.GetMsScriptArray(scriptFromFile);
-                var dbCreated = ScriptParser.ExecuteTransactionScript(parsedScript, db.Database);
+                var parsedScript = msScriptParser.GetMsScriptArray(scriptFromFile);
+                var dbCreated = msScriptParser.ExecuteTransactionScript(parsedScript, db.Database);
 
                 if (dbCreated) return;
 
@@ -98,11 +98,10 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
                 mainTestNode.Nodes.Add(deployTestNode);
 
                 var resultPath = Settings.Instance.SettingsObject.ResultPath;
-
                 Xml xmlCreator = new Xml();
-
                 var xmlContent = xmlCreator.GetXml(mainTestNode);
                 xmlCreator.SaveResultTree(resultPath, xmlContent);
+
                 Environment.Exit((int)ExitCodes.ScriptFailed);
             }
             catch (IOException ex)

@@ -22,7 +22,9 @@ namespace DBSchemaComparator.App.Comparator
         {
             Logger.Info($"Serialization of {testNodes} to XML string");
             XmlSerializer xsSubmit = new XmlSerializer(typeof(TestNodes), "http://alef.com/db-comparator/test");
+
             var subReq = testNodes;
+
             string xmlDocument;
            
             using (var sww = new StringWriter())
@@ -35,6 +37,7 @@ namespace DBSchemaComparator.App.Comparator
                 }
             }
             Logger.Info("Serialization successful.");
+
             return xmlDocument;
         }
         public XDocument GetXDocument(TestNodes testNodes)
@@ -42,7 +45,9 @@ namespace DBSchemaComparator.App.Comparator
             Logger.Info($"Serializing {testNodes} to XDocument.");
 
             var xmlDocument = XDocument.Parse(GetXml(testNodes));
+
             Logger.Debug(xmlDocument);
+
             return xmlDocument;
         }
 
