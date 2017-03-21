@@ -23,6 +23,7 @@ namespace DBSchemaComparator.Domain.SqlBuilder
         {
             
             var sqlQuery = Sql.Builder;
+            
             switch (infoType)
             {
                 case InformationType.Tables:

@@ -9,9 +9,11 @@ namespace DBSchemaComparator.Domain.SqlBuilder
 {
     public class MySqlQueryBuilder : SqlBaseBuilder
     {
-        public override Sql GetSqlQueryString(InformationType infoType)
+
+
+        protected override string GetTableString()
         {
-           
+            return @"";
         }
     }
 }
