@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using DBSchemaComparator.Domain.Infrastructure;
 using DBSchemaComparator.Domain.Models.SQLServer;
 using DBSchemaComparator.Domain.SqlBuilder;
 using NLog;
@@ -108,8 +109,8 @@ namespace DBSchemaComparator.Domain.Database
         public IList<T> SelectSchemaInfo<T>(InformationType infoType)
         {
             Logger.Info($"Selecting basic schema information of type: {infoType}");
-            var queryBuilder = SqlBuilderFactory.Create(DbType);
 
+            var queryBuilder = SqlBuilderFactory.Create(DbType, Database.ConnectionString);
 
             Sql sqlQuery = queryBuilder.GetSqlQueryString(infoType);;
 

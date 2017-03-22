@@ -9,14 +9,6 @@ namespace DBSchemaComparator.Domain.SqlBuilder
 {
     public class MsSqlQueryBuilder : SqlBaseBuilder
     {
-        public override Sql GetSqlQueryString(InformationType infoType)
-        {
-            
-            var sqlQuery = Sql.Builder;
-
-
-
-            return sqlQuery;
-        }
+        
     }
 }

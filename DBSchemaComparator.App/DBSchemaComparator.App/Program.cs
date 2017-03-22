@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using DBSchemaComparator.App.Comparator;
 using DBSchemaComparator.Domain.Database;
 using DBSchemaComparator.Domain.Infrastructure;
 using DBSchemaComparator.Domain.Models.General;
 using NLog;
-using Extensions = DBSchemaComparator.Domain.Infrastructure.Extensions;
 
 
 namespace DBSchemaComparator.App
@@ -33,13 +31,15 @@ namespace DBSchemaComparator.App
             }
             
             Xml xml = new Xml();
-            
+
             // List<string> stringList = new List<string>();
             // stringList.Add("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=DBComparatorTest1;Integrated Security=True");
             // stringList.Add("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=DBComparatorTest2;Integrated Security=True");
             // var comparator = new ObjectComparator(stringList.ElementAt(0), stringList.ElementAt(1));
 
-            var comparator = new ObjectComparator(connectionStrings.ElementAt(0), connectionStrings.ElementAt(1), DatabaseType.SqlServer);
+            var dbType = BaseDatabase.GetDatabaseType(Settings.Instance.SettingsObject.DatabaseConnections.First().DbType);
+
+            var comparator = new ObjectComparator(connectionStrings.ElementAt(0), connectionStrings.ElementAt(1), dbType);
 
             var resultTree = comparator.CompareDatabases();
 

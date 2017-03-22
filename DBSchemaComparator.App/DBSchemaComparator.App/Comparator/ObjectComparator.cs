@@ -16,16 +16,16 @@ namespace DBSchemaComparator.App.Comparator
 {
     public class ObjectComparator
     {
-
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private string ConnStringLeft { get; set; }
         private string ConnStringRight { get; set; }
 
-        public DatabaseType DatabaseType
+        private DatabaseType _dbType;
+        public DatabaseType DbType
         {
-            get { return DatabaseType; }
-            private set { DatabaseType = value; }
+            get { return this._dbType; }
+            private set { _dbType = value; }
         }
 
         public IDatabaseHandler LeftMsSqlDatabase { get; set; }
@@ -39,7 +39,7 @@ namespace DBSchemaComparator.App.Comparator
 
         public ObjectComparator(string connStringLeft, string connStringRight, DatabaseType dbType) : this(connStringLeft, connStringRight)
         {
-            DatabaseType = dbType;
+            DbType = dbType;
         }
 
         public TestNodes CompareDatabases()
@@ -51,8 +51,8 @@ namespace DBSchemaComparator.App.Comparator
         {
             var mainTestNode = CreateTestNode(new List<TestResult>(), ObjectType.Root, "Root node");
 
-            LeftMsSqlDatabase = new DatabaseHandler(ConnStringLeft, DatabaseType);
-            RightMsSqlDatabase = new DatabaseHandler(ConnStringRight, DatabaseType);
+            LeftMsSqlDatabase = new DatabaseHandler(ConnStringLeft, DbType);
+            RightMsSqlDatabase = new DatabaseHandler(ConnStringRight, DbType);
 
                 TestCollation(mainTestNode.Results);
             
@@ -79,9 +79,7 @@ namespace DBSchemaComparator.App.Comparator
                 // Test Integrity Constraints
                 var integrityConstraintsNode = TestIntegrityConstraints();
                 mainTestNode.Nodes.Add(integrityConstraintsNode);
-           
-           
-            
+
             return mainTestNode;
           
         }
