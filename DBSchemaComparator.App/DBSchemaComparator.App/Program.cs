@@ -13,7 +13,7 @@ namespace DBSchemaComparator.App
     public class Program
     {
         private static Logger Logger = LogManager.GetCurrentClassLogger();
-
+        private static Settings _settings;
         static void Main(string[] args)
         {
             Logger.Info("Starting a Schema comparator application.");
@@ -22,12 +22,13 @@ namespace DBSchemaComparator.App
 
             if (args.Length == 0)
             {
-                connectionStrings = Settings.GetDatabaseConnectionStrings(Settings.Instance.SettingsObject);
+                _settings = new Settings();
+                connectionStrings = Settings.GetDatabaseConnectionStrings(Settings.SettingsObject);
             }
             else
             {
-                new Settings(args[0]);
-                connectionStrings = Settings.GetDatabaseConnectionStrings(Settings.Instance.SettingsObject);
+               _settings = new Settings(args[0]);
+                connectionStrings = Settings.GetDatabaseConnectionStrings(Settings.SettingsObject);
             }
             
             Xml xml = new Xml();
@@ -37,17 +38,19 @@ namespace DBSchemaComparator.App
             // stringList.Add("Data Source=(LocalDB)\\MSSQLLocalDB;Initial Catalog=DBComparatorTest2;Integrated Security=True");
             // var comparator = new ObjectComparator(stringList.ElementAt(0), stringList.ElementAt(1));
 
-            var dbType = BaseDatabase.GetDatabaseType(Settings.Instance.SettingsObject.DatabaseConnections.First().DbType);
+            var dbType = BaseDatabase.GetDatabaseType(Settings.SettingsObject.DatabaseConnections.First().DbType);
 
             var comparator = new ObjectComparator(connectionStrings.ElementAt(0), connectionStrings.ElementAt(1), dbType);
 
+            
+
             var resultTree = comparator.CompareDatabases();
 
-            var resultPath = Settings.Instance.SettingsObject.ResultPath;
+            //var resultPath = Settings.SettingsObject.ResultPath;
 
-            string xmlContent = xml.GetXml(resultTree);
+            //string xmlContent = xml.GetXml(resultTree);
 
-            xml.SaveResultTree(resultPath, xmlContent);
+            //xml.SaveResultTree(resultPath, xmlContent);
 
             // List of all nodes within a Tree Structure
             // var listofnodes = Extensions.DepthFirstTraversal(resultTree, r => r.Nodes).ToList();

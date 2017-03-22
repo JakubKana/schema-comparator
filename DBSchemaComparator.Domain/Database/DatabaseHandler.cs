@@ -112,7 +112,7 @@ namespace DBSchemaComparator.Domain.Database
 
             var queryBuilder = SqlBuilderFactory.Create(DbType, Database.ConnectionString);
 
-            Sql sqlQuery = queryBuilder.GetSqlQueryString(infoType);;
+            Sql sqlQuery = queryBuilder.GetSqlQueryString(infoType);
 
             try
             {

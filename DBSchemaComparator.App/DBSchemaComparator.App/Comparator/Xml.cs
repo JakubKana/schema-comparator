@@ -61,7 +61,7 @@ namespace DBSchemaComparator.App.Comparator
                 var ticks = DateTime.Now.Ticks;
                 var fileName = $"test-{ticks}.xml";
                 string fullPath;
-                fullPath = Settings.Instance.IsAbsoluteUrl(path) ? path : Path.GetFullPath(path);
+                fullPath = Settings.IsAbsoluteUrl(path) ? path : Path.GetFullPath(path);
 
                 var dir = Directory.Exists(fullPath);
 

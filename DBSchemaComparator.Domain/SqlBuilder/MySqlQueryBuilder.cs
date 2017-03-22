@@ -16,7 +16,7 @@ namespace DBSchemaComparator.Domain.SqlBuilder
             DbName = dbName;
         }
 
-        protected override string GetTableQuery() => $"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA='{DbName}';";
+        protected override string GetTableQuery() => $"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA=DATABASE();";
 
         protected override string GetColumnsQuery() => $"SELECT TABLE_NAME, COLUMN_NAME, IS_NULLABLE, DATA_TYPE, COLLATION_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='{DbName}';";
 
@@ -38,14 +38,10 @@ namespace DBSchemaComparator.Domain.SqlBuilder
             return $"";
         }
 
-        protected override string GetPrimaryKeysQuery()
-        {
-            return $"";
-        }
+        protected override string GetPrimaryKeysQuery() => $"SELECT Col.Column_Name AS COLUMN_NAME, Tab.TABLE_NAME as TABLE_NAME,Col.CONSTRAINT_NAME as CONSTRAINT_NAME from INFORMATION_SCHEMA.TABLE_CONSTRAINTS Tab, INFORMATION_SCHEMA.KEY_COLUMN_USAGE Col WHERE Col.Constraint_Name=Tab.Constraint_Name AND Col.Table_Name=Tab.Table_Name AND CONSTRAINT_TYPE='PRIMARY KEY' AND Col.CONSTRAINT_SCHEMA='{DbName}';";
 
         protected override string GetForeignKeysQuery()
         {
-
             return $"";
         }
 

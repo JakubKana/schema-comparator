@@ -20,25 +20,27 @@ namespace DBSchemaComparator.Domain.Infrastructure
 
         private static readonly string ConfigPath = ConfigurationManager.AppSettings["ConfigPath"];
 
-        private static Settings _instance;
+       // private static Settings _instance;
 
-        public SettingsObject SettingsObject { get; set; }
+        public static SettingsObject SettingsObject { get; set; }
 
-        public static Settings Instance
-        {
-            get
-            {
-                if (_instance != null)
-                    return _instance;
+        //public static Settings Instance
+        //{
+        //    get
+        //    {
+        //        if (_instance != null)
+        //            return _instance;
 
-                Logger.Info("Creating settings object");
-                _instance = new Settings();
-                return _instance;
-            }
-        }
+        //        Logger.Info("Creating settings object");
+        //        _instance = new Settings();
+        //        return _instance;
+        //    }
+        //}
 
         public Settings(string configFilePath)
         {
+            Logger.Info("Creating settings object");
+
             try
             {
                 Logger.Debug($"Loading settings from file {configFilePath}");
@@ -58,7 +60,7 @@ namespace DBSchemaComparator.Domain.Infrastructure
             }
         }
 
-        private Settings() : this(ConfigPath) { }
+        public Settings() : this(ConfigPath) { }
 
 
      
@@ -91,14 +93,31 @@ namespace DBSchemaComparator.Domain.Infrastructure
 
         public static MySqlConnectionStringBuilder GetMySqlStringBuilder(DatabaseConnection connection)
         {
-            return new MySqlConnectionStringBuilder
+            MySqlConnectionStringBuilder connectionBuilder;
+            if (string.IsNullOrWhiteSpace(connection.Port))
             {
-                UserID = connection.Username,
-                Password = connection.Pass,
-                Server = connection.IpAddress,
-                Database = connection.DbName,
-                ConnectionTimeout = connection.Timeout
-            };
+                connectionBuilder = new MySqlConnectionStringBuilder
+                {
+                    UserID = connection.Username,
+                    Password = connection.Pass,
+                    Server = connection.IpAddress,
+                    Database = connection.DbName,
+                    ConnectionTimeout = connection.Timeout,
+                    Port = uint.Parse(connection.Port)
+                };
+            }
+            else
+            {
+                connectionBuilder = new MySqlConnectionStringBuilder
+                {
+                    UserID = connection.Username,
+                    Password = connection.Pass,
+                    Server = connection.IpAddress,
+                    Database = connection.DbName,
+                    ConnectionTimeout = connection.Timeout
+                };
+            }
+            return connectionBuilder;
         }
         public static MySqlConnectionStringBuilder GetMySqlStringBuilder(string connectionString)
         {
@@ -107,19 +126,19 @@ namespace DBSchemaComparator.Domain.Infrastructure
         }
         public static SqlConnectionStringBuilder GetMsSqlStringBuilder(DatabaseConnection connection)
         {
-            return new SqlConnectionStringBuilder
-            {
-                UserID = connection.Username,
-                Password = connection.Pass,
-                InitialCatalog = connection.DbName,
-                DataSource = connection.IpAddress,
-                ConnectTimeout = (int)connection.Timeout
-            };
+            SqlConnectionStringBuilder connectionBuilder = new SqlConnectionStringBuilder
+                {
+                    UserID = connection.Username,
+                    Password = connection.Pass,
+                    InitialCatalog = connection.DbName,
+                    DataSource = connection.IpAddress,
+                    ConnectTimeout = (int)connection.Timeout
+                };
+            return connectionBuilder;
         }
         public static SqlConnectionStringBuilder GetMsSqlStringBuilder(string connectionString)
         {
             return new SqlConnectionStringBuilder(connectionString);
-
         }
 
         public static List<string> GetDatabaseConnectionStrings(SettingsObject databaseConnection)
@@ -127,7 +146,7 @@ namespace DBSchemaComparator.Domain.Infrastructure
             return databaseConnection.DatabaseConnections.Select(GetConnectionString).Take(2).ToList();
         }
 
-       public bool IsAbsoluteUrl(string url)
+       public static bool IsAbsoluteUrl(string url)
         {
             Uri result;
             return Uri.TryCreate(url, UriKind.Absolute, out result);

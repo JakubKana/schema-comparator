@@ -1,20 +1,22 @@
 ﻿{
   "DatabaseConnections": [
     {
-      "DbName": "DatabaseComparatorTest1",
-      "IpAddress": "10.18.3.2",
+      "DbName": "dbcomparertest1",
+      "IpAddress": "127.0.0.1",
       "Pass": "cisco",
       "Username": "SA",
       "Timeout": 10,
-      "DbType": "mssql"
+      "DbType": "mysql",
+	  "Port": 3306
     },
     {
-      "DbName": "DatabaseComparatorTest2",
-      "IpAddress": "10.18.3.2",
+      "DbName": "dbcomparertest2",
+      "IpAddress": "127.0.0.1",
       "Pass": "cisco",
       "Username": "SA",
       "Timeout": 10,
-      "DbType": "mssql"
+      "DbType": "mysql",
+	  "Port": 3306
     }
   ],
   "ResultPath":"Result"

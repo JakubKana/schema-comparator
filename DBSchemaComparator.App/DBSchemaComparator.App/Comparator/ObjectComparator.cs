@@ -103,8 +103,6 @@ namespace DBSchemaComparator.App.Comparator
             Logger.Info($"End TestCollation method.");    
         }
 
-       
-
         #region TestViews Methods
         private TestNodes TestViews()
         {
@@ -395,8 +393,6 @@ namespace DBSchemaComparator.App.Comparator
 
             testColumnsNode.Nodes.Add(columnNode);
         }
-
-        
 
         private void TestLeftDbColumns(Table rightTable, TestNodes testColumnsNode, Column leftTableColumn)
         {
@@ -1011,8 +1007,7 @@ namespace DBSchemaComparator.App.Comparator
         }
 
         public static void SetResultLevel(TestNodes testNode)
-        {
-           
+        { 
             ResultLevel resultLevel = ResultLevel.None;
 
             if(testNode.Nodes.Any()) { 
