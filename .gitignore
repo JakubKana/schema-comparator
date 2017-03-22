@@ -41,12 +41,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-DBSchemaComparator.Domain/[Bb]in/
-DBSchemaComparator.App/DBSchemaComparator.App/[Bb]in
-DBSchemaComparator.Domain/[Oo]bj/
-DBSchemaComparator.App/DBSchemaComparator.App/[Oo]bj/
-DBSchemaComparator.ScriptRunner/[Bb]in/
-DBSchemaComparator.ScriptRunner/[Oo]bj/
+
 
 # Visual Studio 2015 cache/options directory
 .vs/
