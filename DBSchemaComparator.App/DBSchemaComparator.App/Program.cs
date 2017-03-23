@@ -14,22 +14,48 @@ namespace DBSchemaComparator.App
     {
         private static Logger Logger = LogManager.GetCurrentClassLogger();
         private static Settings _settings;
+
         static void Main(string[] args)
         {
             Logger.Info("Starting a Schema comparator application.");
 
-            List<string> connectionStrings;
+            List<string> connectionStrings = null;
 
-            if (args.Length == 0)
+            try
             {
-                _settings = new Settings();
+                if (args.Length == 0)
+                {
+                    _settings = new Settings();
+                }
+                else if (args.Length == 1)
+                {
+                    _settings = new Settings(args[0]);
+                }
+                else if (args.Length == 2)
+                {
+                    _settings = new Settings(args[0], args[1]);
+                }
+                else if (args.Length == 3)
+                {
+                    _settings = new Settings(args[0], args[1], args[2]);
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
                 connectionStrings = Settings.GetDatabaseConnectionStrings(Settings.SettingsObject);
             }
-            else
+            catch (ArgumentOutOfRangeException ex)
             {
-               _settings = new Settings(args[0]);
-                connectionStrings = Settings.GetDatabaseConnectionStrings(Settings.SettingsObject);
+                Logger.Error(ex, "Invalid arguments count");
+                Environment.Exit((int)ExitCodes.InvalidArguments);
             }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Unexpected error");
+                Environment.Exit((int)ExitCodes.UnexpectedError);
+            }
+        
             
             Xml xml = new Xml();
 
@@ -42,15 +68,13 @@ namespace DBSchemaComparator.App
 
             var comparator = new ObjectComparator(connectionStrings.ElementAt(0), connectionStrings.ElementAt(1), dbType);
 
-            
-
             var resultTree = comparator.CompareDatabases();
 
-            //var resultPath = Settings.SettingsObject.ResultPath;
+            var resultPath = Settings.SettingsObject.ResultPath;
 
-            //string xmlContent = xml.GetXml(resultTree);
+            string xmlContent = xml.GetXml(resultTree);
 
-            //xml.SaveResultTree(resultPath, xmlContent);
+            xml.SaveResultTree(resultPath, xmlContent);
 
             // List of all nodes within a Tree Structure
             // var listofnodes = Extensions.DepthFirstTraversal(resultTree, r => r.Nodes).ToList();

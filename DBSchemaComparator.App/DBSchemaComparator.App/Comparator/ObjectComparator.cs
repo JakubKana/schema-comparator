@@ -28,8 +28,8 @@ namespace DBSchemaComparator.App.Comparator
             private set { _dbType = value; }
         }
 
-        public IDatabaseHandler LeftMsSqlDatabase { get; set; }
-        public IDatabaseHandler RightMsSqlDatabase { get; set; }
+        public IDatabaseHandler LeftDatabase { get; set; }
+        public IDatabaseHandler RightDatabase { get; set; }
 
         private ObjectComparator(string connStringLeft, string connStringRight)
         {
@@ -51,9 +51,10 @@ namespace DBSchemaComparator.App.Comparator
         {
             var mainTestNode = CreateTestNode(new List<TestResult>(), ObjectType.Root, "Root node");
 
-            LeftMsSqlDatabase = new DatabaseHandler(ConnStringLeft, DbType);
-            RightMsSqlDatabase = new DatabaseHandler(ConnStringRight, DbType);
+            LeftDatabase = new DatabaseHandler(ConnStringLeft, DbType);
+            RightDatabase = new DatabaseHandler(ConnStringRight, DbType);
 
+                //Test Database Collation
                 TestCollation(mainTestNode.Results);
             
                 //Test Tables
@@ -88,8 +89,8 @@ namespace DBSchemaComparator.App.Comparator
         {
             Logger.Info("Begin TestCollation method.");
 
-            var leftDbcollation = LeftMsSqlDatabase.GetCollationInfo().First();
-            var rightDbcollation = RightMsSqlDatabase.GetCollationInfo().First();
+            var leftDbcollation = LeftDatabase.GetCollationInfo().First();
+            var rightDbcollation = RightDatabase.GetCollationInfo().First();
 
             AddTestResult(
                 $"Test for Database Collation L: {leftDbcollation.CollationName} R: {rightDbcollation.CollationName}",
@@ -109,8 +110,8 @@ namespace DBSchemaComparator.App.Comparator
             Logger.Info("Begin TestViews");
             var viewsTestNode = CreateTestNode(null, ObjectType.ViewsTests, "Set of tests for views");
 
-            var leftDbViews = LeftMsSqlDatabase.GetViewsInfo().ToList();
-            var rightDbViews = RightMsSqlDatabase.GetViewsInfo().ToList();
+            var leftDbViews = LeftDatabase.GetViewsInfo().ToList();
+            var rightDbViews = RightDatabase.GetViewsInfo().ToList();
 
             //Functions only in the left database
             var uniqueLeft = leftDbViews.Where(p => rightDbViews.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
@@ -196,8 +197,8 @@ namespace DBSchemaComparator.App.Comparator
 
             var functionsTestNode = CreateTestNode(null, ObjectType.TablesTests, "Set of tests for functions" );
 
-            var leftDbFunctions = LeftMsSqlDatabase.GetFunctionsInfo().ToList();
-            var rightDbFunctions = RightMsSqlDatabase.GetFunctionsInfo().ToList();
+            var leftDbFunctions = LeftDatabase.GetFunctionsInfo().ToList();
+            var rightDbFunctions = RightDatabase.GetFunctionsInfo().ToList();
 
             //Functions only in the left database
             var uniqueLeft = leftDbFunctions.Where(p => rightDbFunctions.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
@@ -293,8 +294,8 @@ namespace DBSchemaComparator.App.Comparator
             
             Logger.Info("Begin TestTables method.");
 
-            var leftDatabaseTables = LeftMsSqlDatabase.GetTablesSchemaInfo().ToList();
-            var rightDatabaseTables = RightMsSqlDatabase.GetTablesSchemaInfo().ToList();
+            var leftDatabaseTables = LeftDatabase.GetTablesSchemaInfo().ToList();
+            var rightDatabaseTables = RightDatabase.GetTablesSchemaInfo().ToList();
 
             //Tables only in the left database
             var uniqueLeft = leftDatabaseTables.Where(p => rightDatabaseTables.All(p2 => !string.Equals(p2.TableName,p.TableName, StringComparison.CurrentCultureIgnoreCase))).ToList();
@@ -478,8 +479,8 @@ namespace DBSchemaComparator.App.Comparator
 
             var proceduresTestsNode = CreateTestNode(null, ObjectType.StoredProceduresTests, "Set of tests for stored procedures");
 
-            var leftDatabaseSp = LeftMsSqlDatabase.GetStoredProceduresInfo().ToList();
-            var rightDatabaseSp = RightMsSqlDatabase.GetStoredProceduresInfo().ToList();
+            var leftDatabaseSp = LeftDatabase.GetStoredProceduresInfo().ToList();
+            var rightDatabaseSp = RightDatabase.GetStoredProceduresInfo().ToList();
 
             //Procedures only in the left database
             var uniqueLeft = leftDatabaseSp.Where(p => rightDatabaseSp.All(p2 => !string.Equals(p2.Name, p.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
@@ -553,8 +554,8 @@ namespace DBSchemaComparator.App.Comparator
             Logger.Info("Begin TestIndexes method.");
             var indexesTestsNode = CreateTestNode(null, ObjectType.IndexTests, "Set of tests for indexes");
 
-            var leftDatabaseIndexes = LeftMsSqlDatabase.GetIndexesInfo().ToList();
-            var rightDatabaseIndexes = RightMsSqlDatabase.GetIndexesInfo().ToList();
+            var leftDatabaseIndexes = LeftDatabase.GetIndexesInfo().ToList();
+            var rightDatabaseIndexes = RightDatabase.GetIndexesInfo().ToList();
 
             //Tables only in the left database
             var uniqueLeft = leftDatabaseIndexes.Where(p => rightDatabaseIndexes.All(p2 => !string.Equals(p2.IndexName, p.IndexName, StringComparison.CurrentCultureIgnoreCase) && !string.Equals(p2.TableName, p.TableName, StringComparison.CurrentCultureIgnoreCase))).ToList();
@@ -634,26 +635,33 @@ namespace DBSchemaComparator.App.Comparator
             var checkConstraints = CreateTestNode(null, ObjectType.CheckTests, "Set of tests for check constraints");
             
             // Primary Keys
-            var leftDbPk = LeftMsSqlDatabase.GetPrimaryKeysInfo().ToList();
-            var rightDbPk = RightMsSqlDatabase.GetPrimaryKeysInfo().ToList();
+            var leftDbPk = LeftDatabase.GetPrimaryKeysInfo().ToList();
+            var rightDbPk = RightDatabase.GetPrimaryKeysInfo().ToList();
 
             leftDbPk.ForEach(leftPkKey => TestLeftDbPrimaryKey(primaryKeys,rightDbPk,leftPkKey));
             rightDbPk.ForEach(rightPkKey => TestRightDbPrimaryKey(primaryKeys, leftDbPk, rightPkKey));
            
             // Foreign Keys
-            var leftDbFk = LeftMsSqlDatabase.GetForeignKeysInfo().ToList();
-            var rightDbFk = RightMsSqlDatabase.GetForeignKeysInfo().ToList();
+            var leftDbFk = LeftDatabase.GetForeignKeysInfo().ToList();
+            var rightDbFk = RightDatabase.GetForeignKeysInfo().ToList();
 
             leftDbFk.ForEach(leftFk => TestLeftDbForeignKeys(foreignKeys, rightDbFk, leftFk));
             rightDbFk.ForEach(rightFk => TestRigthDbForeignKeys(foreignKeys, rightDbFk, rightFk));
-            
+
             // Check Constraints
-            var leftDbChk = LeftMsSqlDatabase.GetCheckConstraintsInfo().ToList();
-            var rightDbChk = RightMsSqlDatabase.GetCheckConstraintsInfo().ToList();
-
-            leftDbChk.ForEach(leftCheck => TestLeftDbChecks(checkConstraints, rightDbChk, leftCheck));
-            rightDbChk.ForEach(rightCheck => TestRightDbCheck(checkConstraints, leftDbChk, rightCheck));
-
+            if (DbType == DatabaseType.SqlServer)
+            {
+                var leftDbChk = LeftDatabase.GetCheckConstraintsInfo().ToList();
+                var rightDbChk = RightDatabase.GetCheckConstraintsInfo().ToList();
+                leftDbChk.ForEach(leftCheck => TestLeftDbChecks(checkConstraints, rightDbChk, leftCheck));
+                rightDbChk.ForEach(rightCheck => TestRightDbCheck(checkConstraints, leftDbChk, rightCheck));
+            } else if (DbType == DatabaseType.MySql)
+            {
+                var notSupportedNode = CreateTestNode(new List<TestResult>(), ObjectType.Check,
+                    "MySql checks not supported");
+                AddTestResult($"Testing Check Constraint: Not Supported", ErrorTypes.IsMatch, ObjectType.Check, "MySql engines does not support check constraints.", notSupportedNode.Results);
+                checkConstraints.Nodes.Add(notSupportedNode);
+            }
           
             integrityConstraintsTestNode.Nodes.Add(primaryKeys);
             integrityConstraintsTestNode.Nodes.Add(foreignKeys);
@@ -868,6 +876,7 @@ namespace DBSchemaComparator.App.Comparator
                         testCheckNode.Results);
                 }
             }
+
             checkConstraints.Nodes.Add(testCheckNode);
         }
 

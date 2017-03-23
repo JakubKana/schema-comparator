@@ -8,5 +8,4 @@ namespace DBSchemaComparator.Domain.SqlBuilder
         Sql GetSqlQueryString(InformationType infoType);
     }
 
-   
 }

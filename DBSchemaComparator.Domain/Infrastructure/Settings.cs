@@ -19,8 +19,11 @@ namespace DBSchemaComparator.Domain.Infrastructure
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private static readonly string ConfigPath = ConfigurationManager.AppSettings["ConfigPath"];
+        private string v1;
+        private string v2;
+        private string v3;
 
-       // private static Settings _instance;
+        // private static Settings _instance;
 
         public static SettingsObject SettingsObject { get; set; }
 
@@ -62,8 +65,19 @@ namespace DBSchemaComparator.Domain.Infrastructure
 
         public Settings() : this(ConfigPath) { }
 
+        public Settings(string v1, string v2)
+        {
+            this.v1 = v1;
+            this.v2 = v2;
+        }
 
-     
+        public Settings(string v1, string v2, string v3)
+        {
+            this.v1 = v1;
+            this.v2 = v2;
+            this.v3 = v3;
+        }
+
         public static string GetConnectionString(DatabaseConnection connection)
         {
             try
@@ -122,7 +136,6 @@ namespace DBSchemaComparator.Domain.Infrastructure
         public static MySqlConnectionStringBuilder GetMySqlStringBuilder(string connectionString)
         {
             return new MySqlConnectionStringBuilder(connectionString);
-           
         }
         public static SqlConnectionStringBuilder GetMsSqlStringBuilder(DatabaseConnection connection)
         {

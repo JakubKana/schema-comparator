@@ -16,67 +16,14 @@ using PetaPoco;
 
 namespace DBSchemaComparator.ScriptRunner.Deployment
 {
-    public class MsSqlDeploy : IDeployment
+    public class MsSqlDeploy : BaseSqlDeploy, IDeployment
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
 
-        public void CreateDatabase(Database db, string dbName)
-        {
-            try
-            {
-                Logger.Info("Executing transaction script.");
-                var result = db.Execute($"CREATE DATABASE {dbName}");
-                Logger.Info("Transaction Successful.");
-            }
-            catch (SqlException ex)
-            {
-                Logger.Error(ex, "Cannot execute SQL command.");
-                db.AbortTransaction();
-                Environment.Exit((int)ExitCodes.UnexpectedError);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Unable to create database.");
-                db.AbortTransaction();
-                Environment.Exit((int)ExitCodes.UnexpectedError);
-            }
-        }
+        
 
-        public void DeleteDatabase(Database db, string dbName)
-        {
-            try
-            {
-                Logger.Info($"Executing DROP DATABASE {dbName} script.");
-                var result = db.Execute($"DROP DATABASE {dbName}");
-                Logger.Info($"DROP DATABASE {dbName} Successful.");
-            }
-            catch (SqlException ex)
-            {
-                Logger.Error(ex, "Cannot execute SQL command.");
-                db.AbortTransaction();
-                Environment.Exit((int)ExitCodes.UnexpectedError);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Unable to create database.");
-                db.AbortTransaction();
-                Environment.Exit((int)ExitCodes.UnexpectedError);
-            }
-        }
-
-        public bool CheckDatabaseExists(Database db, string databaseName)
-        {
-            Logger.Info($"Checking if database exists {databaseName}");
-            long? result;
-            
-            result = db.Single<long?>($"SELECT db_id('{databaseName}')");
-            Logger.Debug($"Database {databaseName} result {result}");
-            
-            return result.HasValue;
-        }
-
-        public void DeployMsScript(string pathToScript, TestNodes mainTestNode, DatabaseHandler db)
+        public void DeployScript(string pathToScript, TestNodes mainTestNode, DatabaseHandler db)
         {
             try
             {
@@ -98,7 +45,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
                 ObjectComparator.SetResultLevel(deployTestNode);
                 mainTestNode.Nodes.Add(deployTestNode);
 
-                var resultPath = Settings.Instance.SettingsObject.ResultPath;
+                var resultPath = Settings.SettingsObject.ResultPath;
                 Xml xmlCreator = new Xml();
                 var xmlContent = xmlCreator.GetXml(mainTestNode);
                 xmlCreator.SaveResultTree(resultPath, xmlContent);
@@ -117,6 +64,25 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             }
         }
 
-        
+        public static void DeployMsSqlDatabase(TestNodes mainTestNode, string connectionString, string dbName, string connStringWithoutCatalog, DatabaseType dbType, string pathToScript)
+        {
+            DatabaseHandler db = new DatabaseHandler(connectionString, dbType);
+            DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
+            MsSqlDeploy deploy = new MsSqlDeploy();
+
+            if (!deploy.CheckDatabaseExists(db1.Database, dbName))
+            {
+                deploy.CreateDatabase(db1.Database, dbName);
+            }
+            deploy.DeployScript(pathToScript, mainTestNode, db);
+        }
+
+        public static void DeleteMsSqlDatabase(string dbName, string connStringWithoutCatalog, DatabaseType dbType)
+        {
+            DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
+            MsSqlDeploy deploy = new MsSqlDeploy();
+            if (deploy.CheckDatabaseExists(db1.Database, dbName))
+                deploy.DeleteDatabase(db1.Database, dbName);
+        }
     }
 }

@@ -117,25 +117,6 @@ namespace DBSchemaComparator.ScriptRunner
             }
         }
 
-        private static void DeployMsSqlDatabase(TestNodes mainTestNode, string connectionString, string dbName, string connStringWithoutCatalog, DatabaseType dbType, string pathToScript)
-        {
-            DatabaseHandler db = new DatabaseHandler(connectionString, dbType);
-            DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
-            MsSqlDeploy deploy = new MsSqlDeploy();
-
-            if (!deploy.CheckDatabaseExists(db1.Database, dbName))
-            {
-                deploy.CreateDatabase(db1.Database, dbName);
-            }
-            deploy.DeployMsScript(pathToScript, mainTestNode, db);
-        }
-
-        private static void DeleteMsSqlDatabase(string dbName, string connStringWithoutCatalog, DatabaseType dbType)
-        {
-            DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
-            MsSqlDeploy deploy = new MsSqlDeploy();
-            if (deploy.CheckDatabaseExists(db1.Database, dbName))
-                deploy.DeleteDatabase(db1.Database, dbName);
-        }
+        
     }
 }
