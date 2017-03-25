@@ -43,7 +43,7 @@ namespace DBSchemaComparator.ScriptRunner.Parser
             }
         }
 
-        public string[] GetMsScriptArray(string script)
+        public string[] GetScriptArray(string script)
         {
             //Split by GO statement
             var parsed = Regex.Split(script, "GO\n");

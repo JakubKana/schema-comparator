@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DBSchemaComparator.Domain.Infrastructure;
 using DBSchemaComparator.ScriptRunner.Deployment;
 using NLog;
 using PetaPoco;
@@ -17,12 +19,56 @@ namespace DBSchemaComparator.ScriptRunner.Parser
 
         public bool ExecuteTransactionScript(string[] scriptArray, Database db)
         {
-            throw new NotImplementedException();
+
+            db.EnableAutoSelect = false;
+            try
+            {
+                Logger.Info("Executing transaction script.");
+                db.BeginTransaction();
+
+                foreach (var s in scriptArray)
+                {
+                    Logger.Debug("Executing command", s);
+
+                    var script = Extensions.NormalizeParameters(s);
+
+                    db.Execute(script);
+                }
+
+                Logger.Info("Transaction Successful.");
+
+                db.CompleteTransaction();
+
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Logger.Info(exception, "Aborting transaction.");
+                db.AbortTransaction();
+                return false;
+            }
         }
 
-        public string[] GetMsScriptArray(string script)
+        public string[] GetScriptArray(string script)
         {
-            throw new NotImplementedException();
+            //Split by GO statement
+            var parsed = Regex.Split(script, ";\n");
+            //Remove comments
+            Predicate<string> filter = FindComments;
+
+            var results = Array.FindAll(parsed, filter);
+            var remains = parsed.Except(results).ToArray();
+            if (remains.Last() == string.Empty)
+            {
+                remains = remains.Take(remains.Length - 1).ToArray();
+            }
+            return remains;
+        }
+
+        private static bool FindComments(string obj)
+        {
+            var result = Regex.IsMatch(obj, "^(\n)*(#|--|/\\*)");
+            return result;
         }
     }
 }

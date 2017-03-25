@@ -32,7 +32,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
                     "Set of tests for Script");
 
                 var scriptFromFile = File.ReadAllText(Path.Combine(pathToScript));
-                var parsedScript = msScriptParser.GetMsScriptArray(scriptFromFile);
+                var parsedScript = msScriptParser.GetScriptArray(scriptFromFile);
                 var dbCreated = msScriptParser.ExecuteTransactionScript(parsedScript, db.Database);
 
                 if (dbCreated) return;
