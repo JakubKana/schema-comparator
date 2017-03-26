@@ -21,8 +21,6 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
 
-        
-
         public void DeployScript(string pathToScript, TestNodes mainTestNode, DatabaseHandler db)
         {
             try
@@ -64,7 +62,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             }
         }
 
-        public static void DeployMsSqlDatabase(TestNodes mainTestNode, string connectionString, string dbName, string connStringWithoutCatalog, DatabaseType dbType, string pathToScript)
+        public static void DeployDatabase(TestNodes mainTestNode, string connectionString, string dbName, string connStringWithoutCatalog, DatabaseType dbType, string pathToScript)
         {
             DatabaseHandler db = new DatabaseHandler(connectionString, dbType);
             DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
@@ -77,7 +75,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             deploy.DeployScript(pathToScript, mainTestNode, db);
         }
 
-        public static void DeleteMsSqlDatabase(string dbName, string connStringWithoutCatalog, DatabaseType dbType)
+        public static void DeleteDatabase(string dbName, string connStringWithoutCatalog, DatabaseType dbType)
         {
             DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
             MsSqlDeploy deploy = new MsSqlDeploy();

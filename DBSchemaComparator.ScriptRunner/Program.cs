@@ -44,10 +44,13 @@ namespace DBSchemaComparator.ScriptRunner
 
                     try
                     {
+                        
+                        
                         switch (dbType)
                         {
+                          
                             case DatabaseType.SqlServer:
-                                DeleteMsSqlDatabase(dbName, connStringWithoutCatalog, dbType);
+                                MsSqlDeploy.DeleteDatabase(dbName, connStringWithoutCatalog, dbType);
                                 break;
                             case DatabaseType.MySql:
                                 throw new NotImplementedException();
@@ -87,7 +90,7 @@ namespace DBSchemaComparator.ScriptRunner
                         switch (dbType)
                         {
                             case DatabaseType.SqlServer:
-                                DeployMsSqlDatabase(mainTestNode, connectionString, dbName, connStringWithoutCatalog, dbType, pathToScript);
+                                MsSqlDeploy.DeployDatabase(mainTestNode, connectionString, dbName, connStringWithoutCatalog, dbType, pathToScript);
                                 break;
                             case DatabaseType.MySql:
 

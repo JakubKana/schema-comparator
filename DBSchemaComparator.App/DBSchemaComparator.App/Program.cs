@@ -23,21 +23,10 @@ namespace DBSchemaComparator.App
 
             try
             {
-                if (args.Length == 0)
+               
+               if (args.Length == 4)
                 {
-                    _settings = new Settings();
-                }
-                else if (args.Length == 1)
-                {
-                    _settings = new Settings(args[0]);
-                }
-                else if (args.Length == 2)
-                {
-                    _settings = new Settings(args[0], args[1]);
-                }
-                else if (args.Length == 3)
-                {
-                    _settings = new Settings(args[0], args[1], args[2]);
+                    _settings = new Settings(args[0], args[1], args[2], args[3]);
                 }
                 else
                 {

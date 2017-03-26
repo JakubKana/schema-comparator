@@ -10,10 +10,10 @@ using PetaPoco;
 
 namespace DBSchemaComparator.ScriptRunner.Deployment
 {
-    public class MySqlDeploy : IDeployment
+    public class MySqlDeploy : BaseSqlDeploy, IDeployment
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public bool CheckDatabaseExists(Database db, string databaseName)
+        public override bool CheckDatabaseExists(Database db, string databaseName)
         {
             Logger.Info($"Checking if database exists {databaseName}");
             long? result;
@@ -24,7 +24,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             return result.HasValue;
         }
 
-        public void CreateDatabase(Database db, string dbName)
+        public override void CreateDatabase(Database db, string dbName)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             }
         }
 
-        public void DeleteDatabase(Database db, string dbName)
+        public override void DeleteDatabase(Database db, string dbName)
         {
             try
             {

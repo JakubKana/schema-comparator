@@ -51,7 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Deployment\BaseSqlDeploy.cs" />
-    <Compile Include="Deployment\DeploymentBuilderFactory.cs" />
     <Compile Include="Deployment\IDeployment.cs" />
     <Compile Include="Deployment\MsSqlDeploy.cs" />
     <Compile Include="Deployment\MySqlDeploy.cs" />

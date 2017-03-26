@@ -18,10 +18,10 @@ namespace DBSchemaComparator.Domain.Infrastructure
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private static readonly string ConfigPath = ConfigurationManager.AppSettings["ConfigPath"];
-        private string v1;
-        private string v2;
-        private string v3;
+
+        public string ConfigPath { get; }
+        public string ConnString1 { get; }
+        public string ConnString2 { get; }
 
         // private static Settings _instance;
 
@@ -63,20 +63,42 @@ namespace DBSchemaComparator.Domain.Infrastructure
             }
         }
 
-        public Settings() : this(ConfigPath) { }
-
-        public Settings(string v1, string v2)
+        public Settings(string connString1, string connString2, string resultPath, string dbType)
         {
-            this.v1 = v1;
-            this.v2 = v2;
+            Logger.Info("Creating settings object");
+
+            ConnString1 = connString1;
+            ConnString2 = connString2;
+            ConfigPath = resultPath;
+            var listStrings = new List<DatabaseConnection>();
+            switch (dbType.ToLower())
+            {
+                case "mssql":
+                    listStrings.Add(GetMsDatabaseConnection(connString1, dbType));
+                    listStrings.Add(GetMsDatabaseConnection(connString2, dbType));
+                    SettingsObject = new SettingsObject
+                    {
+                        DatabaseConnections = listStrings,
+                        ResultPath = dbType
+                    };
+                    break;
+                case "mysql":
+                  
+                    listStrings.Add(GetMyDatabaseConnection(connString1, dbType));
+                    listStrings.Add(GetMyDatabaseConnection(connString2, dbType));
+                    SettingsObject = new SettingsObject
+                    {
+                        DatabaseConnections = listStrings,
+                        ResultPath = dbType
+                    };
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        public Settings(string v1, string v2, string v3)
-        {
-            this.v1 = v1;
-            this.v2 = v2;
-            this.v3 = v3;
-        }
+    
+
 
         public static string GetConnectionString(DatabaseConnection connection)
         {
@@ -86,12 +108,10 @@ namespace DBSchemaComparator.Domain.Infrastructure
                 {
                     case "mssql":
                         SqlConnectionStringBuilder msSqlBuilder = GetMsSqlStringBuilder(connection);
-
                         Logger.Trace($"Retrieving MS SQL database connection string = {msSqlBuilder.ConnectionString}");
                         return msSqlBuilder.ConnectionString;
                     case "mysql":
                         MySqlConnectionStringBuilder mySqlBuilder = GetMySqlStringBuilder(connection);
-
                         Logger.Trace($"Retrieving MySQL database connection string = {mySqlBuilder.ConnectionString}");
                         return mySqlBuilder.ConnectionString;
                     default:
@@ -133,22 +153,25 @@ namespace DBSchemaComparator.Domain.Infrastructure
             }
             return connectionBuilder;
         }
+
         public static MySqlConnectionStringBuilder GetMySqlStringBuilder(string connectionString)
         {
             return new MySqlConnectionStringBuilder(connectionString);
         }
+
         public static SqlConnectionStringBuilder GetMsSqlStringBuilder(DatabaseConnection connection)
         {
             SqlConnectionStringBuilder connectionBuilder = new SqlConnectionStringBuilder
-                {
-                    UserID = connection.Username,
-                    Password = connection.Pass,
-                    InitialCatalog = connection.DbName,
-                    DataSource = connection.IpAddress,
-                    ConnectTimeout = (int)connection.Timeout
-                };
+            {
+                UserID = connection.Username,
+                Password = connection.Pass,
+                InitialCatalog = connection.DbName,
+                DataSource = connection.IpAddress,
+                ConnectTimeout = (int) connection.Timeout
+            };
             return connectionBuilder;
         }
+
         public static SqlConnectionStringBuilder GetMsSqlStringBuilder(string connectionString)
         {
             return new SqlConnectionStringBuilder(connectionString);
@@ -159,11 +182,61 @@ namespace DBSchemaComparator.Domain.Infrastructure
             return databaseConnection.DatabaseConnections.Select(GetConnectionString).Take(2).ToList();
         }
 
-       public static bool IsAbsoluteUrl(string url)
+        public static bool IsAbsoluteUrl(string url)
         {
             Uri result;
             return Uri.TryCreate(url, UriKind.Absolute, out result);
         }
 
+
+
+        private static DatabaseConnection GetMsDatabaseConnection(string connString1, string dbType)
+        {
+            SqlConnectionStringBuilder msSqlBuilder1 = new SqlConnectionStringBuilder(connString1);
+
+            var dbConnection = new DatabaseConnection
+            {
+                DbName = msSqlBuilder1.InitialCatalog,
+                DbType = dbType,
+                IpAddress = msSqlBuilder1.DataSource,
+                Pass = msSqlBuilder1.Password,
+                Timeout = (uint) msSqlBuilder1.ConnectTimeout,
+                Username = msSqlBuilder1.UserID
+            };
+
+            return dbConnection;
+        }
+
+        private DatabaseConnection GetMyDatabaseConnection(string connString1, string dbType)
+        {
+            MySqlConnectionStringBuilder mySqlBuilder = new MySqlConnectionStringBuilder(connString1);
+            DatabaseConnection dbConnection;
+            if (string.IsNullOrWhiteSpace(mySqlBuilder.Port.ToString()))
+            {
+                dbConnection = new DatabaseConnection
+                {
+                    DbName = mySqlBuilder.Database,
+                    DbType = dbType,
+                    IpAddress = mySqlBuilder.Server,
+                    Pass = mySqlBuilder.Password,
+                    Timeout = mySqlBuilder.ConnectionTimeout,
+                    Username = mySqlBuilder.UserID
+                };
+            }
+            else
+            {
+                dbConnection = new DatabaseConnection
+                {
+                    DbName = mySqlBuilder.Database,
+                    DbType = dbType,
+                    IpAddress = mySqlBuilder.Server,
+                    Pass = mySqlBuilder.Password,
+                    Timeout = mySqlBuilder.ConnectionTimeout,
+                    Username = mySqlBuilder.UserID,
+                    Port = mySqlBuilder.Port.ToString()
+                };
+            }
+            return dbConnection;
+        }
     }
 }
