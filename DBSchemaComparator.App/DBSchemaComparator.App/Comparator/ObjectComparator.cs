@@ -580,7 +580,6 @@ namespace DBSchemaComparator.App.Comparator
 
         private void TestMatchedIndexes(List<Index> leftIndexesList, List<Index> rightIndexesList, TestNodes indexesTestsNode)
         {
-
             foreach (var leftIndex in leftIndexesList)
             {
                 Logger.Info($"Testing index {leftIndex.TableName}");    
@@ -595,9 +594,9 @@ namespace DBSchemaComparator.App.Comparator
                 AddTestResult($"Indexes L: {leftIndex.IndexName} R: {rigthIndex.IndexName}", ErrorTypes.LpresentRpresent, ObjectType.Index, leftIndex.IndexName, indexNode.Results);
 
                 SetResultLevel(indexNode);
+
                 indexesTestsNode.Nodes.Add(indexNode);
             }
-
         }
 
         private void AddLeftMissingIndexNode(TestNodes indexesTestsNode, Index index)
@@ -660,12 +659,18 @@ namespace DBSchemaComparator.App.Comparator
                 var notSupportedNode = CreateTestNode(new List<TestResult>(), ObjectType.Check,
                     "MySql checks not supported");
                 AddTestResult($"Testing Check Constraint: Not Supported", ErrorTypes.IsMatch, ObjectType.Check, "MySql engines does not support check constraints.", notSupportedNode.Results);
+                SetResultLevel(notSupportedNode);
                 checkConstraints.Nodes.Add(notSupportedNode);
             }
-          
+            SetResultLevel(primaryKeys);
+            SetResultLevel(foreignKeys);
+            SetResultLevel(checkConstraints);
+
             integrityConstraintsTestNode.Nodes.Add(primaryKeys);
             integrityConstraintsTestNode.Nodes.Add(foreignKeys);
             integrityConstraintsTestNode.Nodes.Add(checkConstraints);
+
+            SetResultLevel(integrityConstraintsTestNode);
 
             Logger.Info("End TestIntegrityConstraints method");
             return integrityConstraintsTestNode;
@@ -695,6 +700,7 @@ namespace DBSchemaComparator.App.Comparator
 
                 ForeignKeysSubtests(rightFk, leftFk, testFkNode);
             }
+            SetResultLevel(testFkNode);
             foreignKeys.Nodes.Add(testFkNode);
         }
 
@@ -778,6 +784,7 @@ namespace DBSchemaComparator.App.Comparator
                 ForeignKeysSubtests(rightFk, leftFk, testFkNode);
                
             }
+            SetResultLevel(testFkNode);
             foreignKeys.Nodes.Add(testFkNode);
         }
 
@@ -827,6 +834,7 @@ namespace DBSchemaComparator.App.Comparator
                         testCheckNode.Results);
                 }
             }
+            SetResultLevel(testCheckNode);
             checkConstraints.Nodes.Add(testCheckNode);
         }
 
@@ -876,7 +884,7 @@ namespace DBSchemaComparator.App.Comparator
                         testCheckNode.Results);
                 }
             }
-
+            SetResultLevel(testCheckNode);
             checkConstraints.Nodes.Add(testCheckNode);
         }
 
@@ -932,6 +940,7 @@ namespace DBSchemaComparator.App.Comparator
                         pkNode.Results);
                 }
             }
+            SetResultLevel(pkNode);
             primaryKeys.Nodes.Add(pkNode);
         }
 
@@ -985,6 +994,7 @@ namespace DBSchemaComparator.App.Comparator
                         pkNode.Results);
                 }
             }
+            SetResultLevel(pkNode);
             primaryKeys.Nodes.Add(pkNode);
         }
 

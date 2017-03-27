@@ -46,17 +46,16 @@ namespace DBSchemaComparator.ScriptRunner
                                 connStringBuilder.Remove("Initial Catalog");
                                 var connStringWithoutCatalog = connStringBuilder.ConnectionString;
                                 deploy.DeleteDatabase(dbName, connStringWithoutCatalog, dbType);
-
                                 break;
+
                             case DatabaseType.MySql:
                                 var deploy1 = new MySqlDeploy();
                                 var connStringBuilder1 = Settings.GetMySqlStringBuilder(connectionString);
                                 var dbName1 = connStringBuilder1.Database;
-                                connStringBuilder1.Remove("");
                                 var connStringWithoutCatalog1 = connStringBuilder1.ConnectionString;
                                 deploy1.DeleteDatabase(dbName1, connStringWithoutCatalog1, dbType);
-
                                 break;
+
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
@@ -97,6 +96,7 @@ namespace DBSchemaComparator.ScriptRunner
                                 var connStringWithoutCatalog = connStringBuilder.ConnectionString;
                                 deploy.DeployDatabase(mainTestNode, connectionString, dbName, connStringWithoutCatalog, dbType, pathToScript);
                                 break;
+
                             case DatabaseType.MySql:
                                 var deploy1 = new MySqlDeploy();
                                 var connStringBuilder1 = Settings.GetMySqlStringBuilder(connectionString);
@@ -105,6 +105,7 @@ namespace DBSchemaComparator.ScriptRunner
                                 var connStringWithoutCatalog1 = connStringBuilder1.ConnectionString;
                                 deploy1.DeployDatabase(mainTestNode, connectionString, dbName1, connStringWithoutCatalog1, dbType, pathToScript);
                                 break;
+
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }

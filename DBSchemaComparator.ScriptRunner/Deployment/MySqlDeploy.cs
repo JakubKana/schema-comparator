@@ -57,7 +57,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             try
             {
                 Logger.Info($"Executing DROP DATABASE {dbName} script.");
-                var result = db.Execute($"DROP DATABASE '{dbName}';");
+                var result = db.Execute($"DROP DATABASE {dbName};");
                 Logger.Info($"DROP DATABASE {dbName} Successful.");
             }
             catch (SqlException ex)
