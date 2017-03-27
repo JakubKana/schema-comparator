@@ -20,7 +20,6 @@ namespace DBSchemaComparator.App
             Logger.Info("Starting a Schema comparator application.");
 
             List<string> connectionStrings = null;
-
             try
             {
                 if (args.Length == 4)
@@ -52,15 +51,11 @@ namespace DBSchemaComparator.App
             // var comparator = new ObjectComparator(stringList.ElementAt(0), stringList.ElementAt(1));
 
             var dbType = BaseDatabase.GetDatabaseType(Settings.SettingsObject.DatabaseConnections.First().DbType);
-
             var comparator = new ObjectComparator(connectionStrings.ElementAt(0), connectionStrings.ElementAt(1), dbType);
-
             var resultTree = comparator.CompareDatabases();
 
             var resultPath = Settings.SettingsObject.ResultPath;
-
             string xmlContent = xml.GetXml(resultTree);
-
             xml.SaveResultTree(resultPath, xmlContent);
 
             // List of all nodes within a Tree Structure
