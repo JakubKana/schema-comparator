@@ -23,8 +23,7 @@ namespace DBSchemaComparator.App
 
             try
             {
-               
-               if (args.Length == 4)
+                if (args.Length == 4)
                 {
                     _settings = new Settings(args[0], args[1], args[2], args[3]);
                 }
@@ -45,7 +44,6 @@ namespace DBSchemaComparator.App
                 Environment.Exit((int)ExitCodes.UnexpectedError);
             }
         
-            
             Xml xml = new Xml();
 
             // List<string> stringList = new List<string>();

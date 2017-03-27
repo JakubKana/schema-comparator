@@ -79,7 +79,7 @@ namespace DBSchemaComparator.Domain.Infrastructure
                     SettingsObject = new SettingsObject
                     {
                         DatabaseConnections = listStrings,
-                        ResultPath = dbType
+                        ResultPath = resultPath
                     };
                     break;
                 case "mysql":
@@ -89,7 +89,7 @@ namespace DBSchemaComparator.Domain.Infrastructure
                     SettingsObject = new SettingsObject
                     {
                         DatabaseConnections = listStrings,
-                        ResultPath = dbType
+                        ResultPath = resultPath
                     };
                     break;
                 default:
