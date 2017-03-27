@@ -26,11 +26,14 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             try
             {
                 var msScriptParser = new MsSqlScriptParser();
+
                 var deployTestNode = ObjectComparator.CreateTestNode(new List<TestResult>(), ObjectType.ScriptTests,
                     "Set of tests for Script");
 
                 var scriptFromFile = File.ReadAllText(Path.Combine(pathToScript));
+
                 var parsedScript = msScriptParser.GetScriptArray(scriptFromFile);
+
                 var dbCreated = msScriptParser.ExecuteTransactionScript(parsedScript, db.Database);
 
                 if (dbCreated) return;
@@ -40,14 +43,16 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
                     ObjectType.Script,
                     $"Script: {pathToScript}",
                     deployTestNode.Results);
-                ObjectComparator.SetResultLevel(deployTestNode);
-                mainTestNode.Nodes.Add(deployTestNode);
 
+                ObjectComparator.SetResultLevel(deployTestNode);
+
+                mainTestNode.Nodes.Add(deployTestNode);
                 var resultPath = Settings.SettingsObject.ResultPath;
+
                 Xml xmlCreator = new Xml();
                 var xmlContent = xmlCreator.GetXml(mainTestNode);
-                xmlCreator.SaveResultTree(resultPath, xmlContent);
 
+                xmlCreator.SaveResultTree(resultPath, xmlContent);
                 Environment.Exit((int)ExitCodes.ScriptFailed);
             }
             catch (IOException ex)
@@ -62,7 +67,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             }
         }
 
-        public static void DeployDatabase(TestNodes mainTestNode, string connectionString, string dbName, string connStringWithoutCatalog, DatabaseType dbType, string pathToScript)
+        public void DeployDatabase(TestNodes mainTestNode, string connectionString, string dbName, string connStringWithoutCatalog, DatabaseType dbType, string pathToScript)
         {
             DatabaseHandler db = new DatabaseHandler(connectionString, dbType);
             DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
@@ -75,7 +80,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
             deploy.DeployScript(pathToScript, mainTestNode, db);
         }
 
-        public static void DeleteDatabase(string dbName, string connStringWithoutCatalog, DatabaseType dbType)
+        public void DeleteDatabase(string dbName, string connStringWithoutCatalog, DatabaseType dbType)
         {
             DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
             MsSqlDeploy deploy = new MsSqlDeploy();

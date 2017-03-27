@@ -52,7 +52,7 @@ namespace DBSchemaComparator.ScriptRunner.Parser
         public string[] GetScriptArray(string script)
         {
             //Split by GO statement
-            var parsed = Regex.Split(script, ";\n");
+            var parsed = Regex.Split(script, ";");
             //Remove comments
             Predicate<string> filter = FindComments;
 
@@ -67,7 +67,7 @@ namespace DBSchemaComparator.ScriptRunner.Parser
 
         private static bool FindComments(string obj)
         {
-            var result = Regex.IsMatch(obj, "^(\n)*(#|--|/\\*)");
+            var result = Regex.IsMatch(obj, "^(\r|\n)*(#|--|/\\*)");
             return result;
         }
     }

@@ -32,26 +32,31 @@ namespace DBSchemaComparator.ScriptRunner
                 {
                     // Read arguments
                     string connectionString = args[0];
-
-                    var connStringBuilder = Settings.GetMsSqlStringBuilder(connectionString);
-                    var dbName = connStringBuilder.InitialCatalog;
-                    connStringBuilder.Remove("Initial Catalog");
-
-                    var connStringWithoutCatalog = connStringBuilder.ConnectionString;
                     string databaseType = args[1].ToLower();
-
                     DatabaseType dbType = BaseDatabase.GetDatabaseType(databaseType);
 
                     try
                     {
                         switch (dbType)
                         {
-                          
                             case DatabaseType.SqlServer:
-                                MsSqlDeploy.DeleteDatabase(dbName, connStringWithoutCatalog, dbType);
+                                var deploy = new MsSqlDeploy();
+                                var connStringBuilder = Settings.GetMsSqlStringBuilder(connectionString);
+                                var dbName = connStringBuilder.InitialCatalog;
+                                connStringBuilder.Remove("Initial Catalog");
+                                var connStringWithoutCatalog = connStringBuilder.ConnectionString;
+                                deploy.DeleteDatabase(dbName, connStringWithoutCatalog, dbType);
+
                                 break;
                             case DatabaseType.MySql:
-                                throw new NotImplementedException();
+                                var deploy1 = new MySqlDeploy();
+                                var connStringBuilder1 = Settings.GetMySqlStringBuilder(connectionString);
+                                var dbName1 = connStringBuilder1.Database;
+                                connStringBuilder1.Remove("");
+                                var connStringWithoutCatalog1 = connStringBuilder1.ConnectionString;
+                                deploy1.DeleteDatabase(dbName1, connStringWithoutCatalog1, dbType);
+
+                                break;
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
@@ -73,10 +78,7 @@ namespace DBSchemaComparator.ScriptRunner
                 {
                     // Read arguments
                     string connectionString = args[0];
-                    var connStringBuilder = Settings.GetMsSqlStringBuilder(connectionString);
-                    var dbName = connStringBuilder.InitialCatalog;
-                    connStringBuilder.Remove("Initial Catalog");
-                    var connStringWithoutCatalog = connStringBuilder.ConnectionString;
+                    
 
                     string databaseType = args[1];
                     DatabaseType dbType = BaseDatabase.GetDatabaseType(databaseType);
@@ -88,11 +90,21 @@ namespace DBSchemaComparator.ScriptRunner
                         switch (dbType)
                         {
                             case DatabaseType.SqlServer:
-                                MsSqlDeploy.DeployDatabase(mainTestNode, connectionString, dbName, connStringWithoutCatalog, dbType, pathToScript);
+                                var deploy = new MsSqlDeploy();
+                                var connStringBuilder = Settings.GetMsSqlStringBuilder(connectionString);
+                                var dbName = connStringBuilder.InitialCatalog;
+                                connStringBuilder.Remove("Initial Catalog");
+                                var connStringWithoutCatalog = connStringBuilder.ConnectionString;
+                                deploy.DeployDatabase(mainTestNode, connectionString, dbName, connStringWithoutCatalog, dbType, pathToScript);
                                 break;
                             case DatabaseType.MySql:
-
-                                throw new NotImplementedException();
+                                var deploy1 = new MySqlDeploy();
+                                var connStringBuilder1 = Settings.GetMySqlStringBuilder(connectionString);
+                                var dbName1 = connStringBuilder1.Database;
+                                connStringBuilder1.Remove("Database");
+                                var connStringWithoutCatalog1 = connStringBuilder1.ConnectionString;
+                                deploy1.DeployDatabase(mainTestNode, connectionString, dbName1, connStringWithoutCatalog1, dbType, pathToScript);
+                                break;
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
