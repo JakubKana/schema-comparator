@@ -63,6 +63,39 @@ namespace DBSchemaComparator.Domain.Infrastructure
             }
         }
 
+        public Settings(string connString1, string resultPath, string dbType)
+        {
+            Logger.Info("Creating settings object");
+
+            ConnString1 = connString1;
+           
+            ConfigPath = resultPath;
+            var listStrings = new List<DatabaseConnection>();
+            switch (dbType.ToLower())
+            {
+                case "mssql":
+                    listStrings.Add(GetMsDatabaseConnection(connString1, dbType));
+                    SettingsObject = new SettingsObject
+                    {
+                        DatabaseConnections = listStrings,
+                        ResultPath = resultPath
+                    };
+                    break;
+                case "mysql":
+
+                    listStrings.Add(GetMyDatabaseConnection(connString1, dbType));
+                    SettingsObject = new SettingsObject
+                    {
+                        DatabaseConnections = listStrings,
+                        ResultPath = resultPath
+                    };
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+
         public Settings(string connString1, string connString2, string resultPath, string dbType)
         {
             Logger.Info("Creating settings object");

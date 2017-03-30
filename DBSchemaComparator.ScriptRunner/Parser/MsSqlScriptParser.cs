@@ -46,7 +46,7 @@ namespace DBSchemaComparator.ScriptRunner.Parser
         public string[] GetScriptArray(string script)
         {
             //Split by GO statement
-            var parsed = Regex.Split(script, "GO\n");
+            var parsed = Regex.Split(script, "GO");
             //Remove comments
             Predicate<string> filter = FindComments;
 

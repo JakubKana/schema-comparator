@@ -21,6 +21,8 @@ namespace DBSchemaComparator.ScriptRunner
     public class Program
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        private static Settings _settings;
         static void Main(string[] args)
         {
 
@@ -28,13 +30,14 @@ namespace DBSchemaComparator.ScriptRunner
             var mainTestNode = ObjectComparator.CreateTestNode(new List<TestResult>(), ObjectType.Root, "Root node");
             try
             {
-                if (args.Length == 3 && args[2].ToLower() == "delete")
+                if (args.Length == 4 && args[2].ToLower() == "delete")
                 {
                     // Read arguments
                     string connectionString = args[0];
                     string databaseType = args[1].ToLower();
+                    string resultPath = args[3];
                     DatabaseType dbType = BaseDatabase.GetDatabaseType(databaseType);
-
+                    _settings = new Settings(connectionString, resultPath, databaseType);
                     try
                     {
                         switch (dbType)
@@ -42,8 +45,10 @@ namespace DBSchemaComparator.ScriptRunner
                             case DatabaseType.SqlServer:
                                 var deploy = new MsSqlDeploy();
                                 var connStringBuilder = Settings.GetMsSqlStringBuilder(connectionString);
+
                                 var dbName = connStringBuilder.InitialCatalog;
                                 connStringBuilder.Remove("Initial Catalog");
+
                                 var connStringWithoutCatalog = connStringBuilder.ConnectionString;
                                 deploy.DeleteDatabase(dbName, connStringWithoutCatalog, dbType);
                                 break;
@@ -51,11 +56,12 @@ namespace DBSchemaComparator.ScriptRunner
                             case DatabaseType.MySql:
                                 var deploy1 = new MySqlDeploy();
                                 var connStringBuilder1 = Settings.GetMySqlStringBuilder(connectionString);
+
                                 var dbName1 = connStringBuilder1.Database;
                                 var connStringWithoutCatalog1 = connStringBuilder1.ConnectionString;
+
                                 deploy1.DeleteDatabase(dbName1, connStringWithoutCatalog1, dbType);
                                 break;
-
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
@@ -73,7 +79,7 @@ namespace DBSchemaComparator.ScriptRunner
 
                     Environment.Exit((int) ExitCodes.Success);
                 }
-                else if (args.Length == 3)
+                else if (args.Length == 4)
                 {
                     // Read arguments
                     string connectionString = args[0];
@@ -83,7 +89,8 @@ namespace DBSchemaComparator.ScriptRunner
                     DatabaseType dbType = BaseDatabase.GetDatabaseType(databaseType);
 
                     string pathToScript = args[2];
-
+                    string resultPath = args[3];
+                    _settings = new Settings(connectionString, resultPath, databaseType);
                     try
                     {
                         switch (dbType)

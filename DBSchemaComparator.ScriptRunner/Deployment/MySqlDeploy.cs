@@ -120,6 +120,7 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
                 var resultPath = Settings.SettingsObject.ResultPath;
                 Xml xmlCreator = new Xml();
                 var xmlContent = xmlCreator.GetXml(mainTestNode);
+
                 xmlCreator.SaveResultTree(resultPath, xmlContent);
 
                 Environment.Exit((int)ExitCodes.ScriptFailed);
