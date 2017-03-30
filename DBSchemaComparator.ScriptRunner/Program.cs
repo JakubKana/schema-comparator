@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DBSchemaComparator.App.Comparator;
 using DBSchemaComparator.Domain.Database;
 using DBSchemaComparator.Domain.Infrastructure;
 using DBSchemaComparator.Domain.Models.General;
-using DBSchemaComparator.Domain.Models.SQLServer;
 using DBSchemaComparator.Domain.Models.Test;
 using DBSchemaComparator.ScriptRunner.Deployment;
-using DBSchemaComparator.ScriptRunner.Parser;
 using NLog;
-using PetaPoco;
 
 namespace DBSchemaComparator.ScriptRunner
 {
@@ -81,6 +73,7 @@ namespace DBSchemaComparator.ScriptRunner
                 }
                 else if (args.Length == 4)
                 {
+                    Logger.Info("Running deploying script task.");
                     // Read arguments
                     string connectionString = args[0];
                     
@@ -90,6 +83,9 @@ namespace DBSchemaComparator.ScriptRunner
 
                     string pathToScript = args[2];
                     string resultPath = args[3];
+
+                    Logger.Debug($"Arguments passed \narg[0]:{connectionString} \narg[1]:{databaseType} \narg[2]:{pathToScript} \narg[3]:{resultPath}.");
+
                     _settings = new Settings(connectionString, resultPath, databaseType);
                     try
                     {
@@ -116,6 +112,7 @@ namespace DBSchemaComparator.ScriptRunner
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
+                        Logger.Info("Task successful.");
                         Environment.Exit((int) ExitCodes.Success);
                     }
                     catch (ArgumentOutOfRangeException ex)

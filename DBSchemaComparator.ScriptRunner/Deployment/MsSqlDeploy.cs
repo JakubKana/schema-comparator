@@ -69,6 +69,10 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
 
         public void DeployDatabase(TestNodes mainTestNode, string connectionString, string dbName, string connStringWithoutCatalog, DatabaseType dbType, string pathToScript)
         {
+            Logger.Info("Deploying database.");
+
+            Logger.Debug($"Deploying database {dbName}. Deployed script path: {pathToScript}.");
+
             DatabaseHandler db = new DatabaseHandler(connectionString, dbType);
             DatabaseHandler db1 = new DatabaseHandler(connStringWithoutCatalog, dbType);
             MsSqlDeploy deploy = new MsSqlDeploy();
@@ -78,6 +82,8 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
                 deploy.CreateDatabase(db1.Database, dbName);
             }
             deploy.DeployScript(pathToScript, mainTestNode, db);
+
+            Logger.Info("Deployed successful.");
         }
 
         public void DeleteDatabase(string dbName, string connStringWithoutCatalog, DatabaseType dbType)
