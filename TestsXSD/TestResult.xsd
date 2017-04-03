@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://alef.com/db-comparator/test"
+  xmlns:test="http://alef.com/db-comparator/test"
+  xmlns="http://alef.com/db-comparator/test" elementFormDefault="qualified">
+  <xs:element name="TestNodes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="Description"/>
+          <xs:element ref="NodeType"/>
+          <xs:element ref="Nodes"/>
+        </xs:choice>
+        <xs:element ref="Results" minOccurs="0"/>
+        <xs:element name="ResultLevel" type="ResultLevelType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="NodeType" type="xs:NCName"/>
+  
+  <xs:element name="Nodes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="TestNodes"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="Results">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="TestResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="TestResult">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ObjectType"/>
+        <xs:element ref="TestedObjectName"/>
+        <xs:element ref="ErrorType"/>
+        <xs:element ref="Description"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="ObjectType" type="xs:NCName"/>
+  
+  <xs:element name="TestedObjectName" type="xs:string"/>
+  
+  <xs:element name="ErrorType" type="ErrorType"/>
+ 
+  <xs:element name="Description" type="xs:string"/>
+  
+  
+  <xs:simpleType name="ResultLevelType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Success"/>
+      <xs:enumeration value="Error"/>
+      <xs:enumeration value="None"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  
+  <xs:simpleType name="ErrorType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="LpresentRpresent"/>
+      <xs:enumeration value="LpresentRmissing"/>
+      <xs:enumeration value="LmissingRpresent"/>
+      <xs:enumeration value="NotMatch"/>
+      <xs:enumeration value="IsMatch"/>
+      <xs:enumeration value="CreationScriptFailed"/>
+      <xs:enumeration value="CreationScriptSuccess"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>
