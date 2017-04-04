@@ -195,7 +195,7 @@ namespace DBSchemaComparator.App.Comparator
         {
             Logger.Info("Begin TestFunctions method.");
 
-            var functionsTestNode = CreateTestNode(null, ObjectType.TablesTests, "Set of tests for functions" );
+            var functionsTestNode = CreateTestNode(null, ObjectType.FunctionsTests, "Set of tests for functions" );
 
             var leftDbFunctions = LeftDatabase.GetFunctionsInfo().ToList();
             var rightDbFunctions = RightDatabase.GetFunctionsInfo().ToList();
