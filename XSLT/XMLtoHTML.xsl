@@ -10,7 +10,6 @@
     
     <xsl:output method="html" encoding="utf-8" indent="yes"/>
     
-    
     <xsl:template match="/af:TestNodes">
         <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;</xsl:text>
         <html>
@@ -37,8 +36,7 @@
                        <li>Node: <xsl:value-of select="af:NodeType"/></li>
                        <li>Description: <xsl:value-of select="af:Description"/></li>
                        <li>Result level: <xsl:value-of select="af:ResultLevel"/></li>
-                  <xsl:apply-templates select="af:Nodes/af:TestNodes" mode="testNodes"/>
-                  
+                       <xsl:apply-templates select="af:Nodes/af:TestNodes" mode="testNodes"/>
                    </ul>
                </div>
            </body>
@@ -46,52 +44,31 @@
     </xsl:template>
     
    <xsl:template match="af:TestNodes" mode="testNodes">
-     
-         <li class="jstree-open">
+         <li>
               <xsl:value-of select="af:NodeType"/> 
               <ul>
-                  <xsl:if test="count(./af:Description) > 0">
-                    <li>Description: <xsl:value-of select="af:Description"/></li>
+                  <xsl:if test="./af:Description">
+                      <li>Description: <xsl:value-of select="./af:Description"/></li>
                   </xsl:if>
-                 
+                  <xsl:if test="./af:ResultLevel">
+                      <li>Result level: <xsl:value-of select="./af:ResultLevel"/></li>
+                  </xsl:if>
                   <xsl:if test="count(./af:Nodes/af:TestNodes) > 0">
                       <li>Test Results
                           <ul>
-                              <xsl:apply-templates select="af:Nodes/af:TestNodes" mode="testResults"></xsl:apply-templates>    
+                              <xsl:apply-templates select="af:Nodes/af:TestNodes"/>    
                           </ul>
                       </li>
                   </xsl:if>
                   <xsl:if test="count(./af:Results/af:TestResult) > 0">
                       Results: <xsl:apply-templates select="./af:Results/af:TestResult"/>
                   </xsl:if>
-                  <xsl:if test="count(./af:ResultLevel) > 0">
-                      <li>Result level: <xsl:value-of select="af:ResultLevel"/></li>
-                  </xsl:if>
               </ul>
          </li>   
-     
    </xsl:template>
     
-    <xsl:template match="af:TestNodes" mode="testResults">
-        <li>Test: <xsl:value-of select="./af:NodeType"/>
-            <ul>
-                <xsl:if test="./af:Description">
-                    <li>Description: <xsl:value-of select="./af:Description"/></li>
-                </xsl:if>
-                <xsl:if test="./af:ResultLevel">
-                    <li>Result level: <xsl:value-of select="./af:ResultLevel"/></li>
-                </xsl:if>
-                <xsl:if test="count(./af:Nodes/af:TestNodes) > 0">
-                    <xsl:apply-templates select="." />
-                </xsl:if>
-                <xsl:if test="./af:Results">
-                    <xsl:apply-templates select="./af:Results/af:TestResult"/>
-                </xsl:if>
-            </ul>
-        </li>
-    </xsl:template>
     <xsl:template match="af:TestNodes">
-        <li>Test: <xsl:value-of select="./af:NodeType"/>
+        <li><xsl:value-of select="./af:NodeType"/>
             <ul>
                 <xsl:if test="./af:Description">
                     <li>Description: <xsl:value-of select="./af:Description"/></li>
@@ -102,14 +79,13 @@
                 <xsl:if test="count(./af:Nodes/af:TestNodes) > 0">
                     <xsl:apply-templates select="./af:Nodes/af:TestNodes"/>
                 </xsl:if>
-                <xsl:if test="./af:Results">
-                    <ul>
+                <xsl:if test="count(./af:Results/af:TestResult) > 0">
                         <xsl:apply-templates select="./af:Results/af:TestResult"/>
-                    </ul>
                 </xsl:if>
             </ul>
         </li>
     </xsl:template>
+    
     <xsl:template match="af:TestResult">
         <li>Test details: <xsl:value-of select="./af:ObjectType"/>
             <ul>
