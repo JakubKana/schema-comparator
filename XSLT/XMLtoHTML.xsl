@@ -48,7 +48,8 @@
               <xsl:value-of select="af:NodeType"/> 
               <ul>
                   <xsl:if test="./af:Description">
-                      <li>Description: <xsl:value-of select="./af:Description"/></li>
+                      <li>
+                          Description: <xsl:value-of select="./af:Description"/></li>
                   </xsl:if>
                   <xsl:if test="./af:ResultLevel">
                       <li>Result level: <xsl:value-of select="./af:ResultLevel"/></li>
@@ -71,7 +72,8 @@
         <li><xsl:value-of select="./af:NodeType"/>
             <ul>
                 <xsl:if test="./af:Description">
-                    <li>Description: <xsl:value-of select="./af:Description"/></li>
+                    <li>
+                        Description: <xsl:value-of select="./af:Description"/></li>
                 </xsl:if>
                 <xsl:if test="./af:ResultLevel">
                     <li>Result level: <xsl:value-of select="./af:ResultLevel"/></li>
