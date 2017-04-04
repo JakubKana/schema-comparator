@@ -890,7 +890,7 @@ namespace DBSchemaComparator.App.Comparator
 
         private void TestRightDbPrimaryKey(TestNodes primaryKeys, IList<PrimaryKey> leftDbPk, PrimaryKey rightPkKey)
         {
-            var pkNode = CreateTestNode(new List<TestResult>(), ObjectType.PrimaryKeysTests, $"Primary Key R: {rightPkKey.ConstraintName} applied on {rightPkKey.ConstraintTable}.{rightPkKey.ColumnApplied}");
+            var pkNode = CreateTestNode(new List<TestResult>(), ObjectType.PrimaryKey, $"Primary Key R: {rightPkKey.ConstraintName} applied on {rightPkKey.ConstraintTable}.{rightPkKey.ColumnApplied}");
             var leftPrimaryKey = leftDbPk.FirstOrDefault(l =>
            string.Equals(l.ConstraintName, rightPkKey.ConstraintName, StringComparison.CurrentCultureIgnoreCase) &&
            string.Equals(l.ConstraintTable, rightPkKey.ConstraintTable, StringComparison.CurrentCultureIgnoreCase));
