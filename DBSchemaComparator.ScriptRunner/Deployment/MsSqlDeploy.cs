@@ -47,9 +47,11 @@ namespace DBSchemaComparator.ScriptRunner.Deployment
                 ObjectComparator.SetResultLevel(deployTestNode);
 
                 mainTestNode.Nodes.Add(deployTestNode);
+
                 var resultPath = Settings.SettingsObject.ResultPath;
 
                 Xml xmlCreator = new Xml();
+
                 var xmlContent = xmlCreator.GetXml(mainTestNode);
 
                 xmlCreator.SaveResultTree(resultPath, xmlContent);
