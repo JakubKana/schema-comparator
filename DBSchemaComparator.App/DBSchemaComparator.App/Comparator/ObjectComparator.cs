@@ -7,6 +7,7 @@ using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using DBSchemaComparator.Domain.Database;
+using DBSchemaComparator.Domain.Infrastructure;
 using DBSchemaComparator.Domain.Models.SQLServer;
 using DBSchemaComparator.Domain.Models.Test;
 using NLog;
@@ -49,7 +50,8 @@ namespace DBSchemaComparator.App.Comparator
 
         private TestNodes GetResultTree(string connStringLeft, string connStringRight)
         {
-            var mainTestNode = CreateTestNode(new List<TestResult>(), ObjectType.Root, "Root node");
+            
+            var mainTestNode = CreateTestNode(new List<TestResult>(), ObjectType.Root, $"Root node.\nLeft DB: {connStringLeft}\nRight DB: {connStringRight}");
 
             LeftDatabase = new DatabaseHandler(ConnStringLeft, DbType);
             RightDatabase = new DatabaseHandler(ConnStringRight, DbType);
