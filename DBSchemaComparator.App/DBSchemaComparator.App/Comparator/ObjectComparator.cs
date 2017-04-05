@@ -81,7 +81,7 @@ namespace DBSchemaComparator.App.Comparator
                 // Test Integrity Constraints
                 var integrityConstraintsNode = TestIntegrityConstraints();
                 mainTestNode.Nodes.Add(integrityConstraintsNode);
-
+            SetResultLevel(mainTestNode);
             return mainTestNode;
           
         }
