@@ -9,6 +9,7 @@ namespace DBSchemaComparator.Domain.Database
 {
     public interface IDatabaseHandler
     {
+        string DatabaseName { get; set; }
         IList<PrimaryKey> GetPrimaryKeysInfo();
         IList<Table> GetTablesSchemaInfo();
         IList<StoredProcedure> GetStoredProceduresInfo();

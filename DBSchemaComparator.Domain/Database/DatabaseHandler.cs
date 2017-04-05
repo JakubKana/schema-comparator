@@ -13,7 +13,7 @@ namespace DBSchemaComparator.Domain.Database
     public class DatabaseHandler : BaseDatabase, IDatabaseHandler
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
+       
         public DatabaseHandler(string connectionString, DatabaseType databaseType)
             : base(connectionString, databaseType) { }
 
@@ -135,6 +135,6 @@ namespace DBSchemaComparator.Domain.Database
             }
         }
 
-       
+        
     }
 }

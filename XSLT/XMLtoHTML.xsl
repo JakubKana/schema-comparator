@@ -15,7 +15,6 @@
                <title>Result <xsl:value-of select="fn:current-time()"/></title>
                <link rel="stylesheet" href="css/themes/style.min.css" />
                <link rel="stylesheet" href="css/bootstrap.min.css"/>
-         
                <script src="js/jquery-3.2.0.js"/>
                <script src="js/bootstrap.min.js"/>
                <script src="js/jstree.min.js"/>

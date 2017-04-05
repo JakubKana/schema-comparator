@@ -49,15 +49,14 @@ namespace DBSchemaComparator.App.Comparator
         }
 
         private TestNodes GetResultTree(string connStringLeft, string connStringRight)
-        {
-            
-            var mainTestNode = CreateTestNode(new List<TestResult>(), ObjectType.Root, $"Root node.\nLeft DB: {connStringLeft}\nRight DB: {connStringRight}");
-
+        {  
             LeftDatabase = new DatabaseHandler(ConnStringLeft, DbType);
             RightDatabase = new DatabaseHandler(ConnStringRight, DbType);
+            
+            var mainTestNode = CreateTestNode(new List<TestResult>(), ObjectType.Root, $"Root node.\nLeft DB: {LeftDatabase.DatabaseName}\nRight DB: {RightDatabase.DatabaseName}");
 
-                //Test Database Collation
-                TestCollation(mainTestNode.Results);
+            //Test Database Collation
+            TestCollation(mainTestNode.Results);
             
                 //Test Tables
                 var tablesTestNode = TestTables();
