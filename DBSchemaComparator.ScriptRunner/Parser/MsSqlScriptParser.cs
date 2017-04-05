@@ -49,22 +49,32 @@ namespace DBSchemaComparator.ScriptRunner.Parser
             var parsed = Regex.Split(script, "GO");
             //Remove comments
             Predicate<string> filter = FindComments;
+            Predicate<string> filterEmpty = FindWhiteSpaces;
 
             var results = Array.FindAll(parsed, filter);
             var remains = parsed.Except(results).ToArray();
-            if (remains.Last() == string.Empty)
+            var results2 = Array.FindAll(remains, filterEmpty);
+            var remains2 = remains.Except(results2).ToArray();
+
+            if (remains2.Last() == string.Empty)
             {
-                remains = remains.Take(remains.Length - 1).ToArray();
+                remains2 = remains2.Take(remains2.Length - 1).ToArray();
             }            
-            return remains;
+            return remains2;
         }
 
         private static bool FindComments(string obj)
         {
-            var result = Regex.IsMatch(obj, "^(\n)*/\\*\\*\\*\\*\\*\\*");
+            var result = Regex.IsMatch(obj, "^(\n)*(/\\*)+");
             return result;
         }
 
+        private static bool FindWhiteSpaces(string obj)
+        {
+            var result = Regex.IsMatch(obj, "^(\\s)+$");
+
+            return result;
+        }
         
     }
 }
