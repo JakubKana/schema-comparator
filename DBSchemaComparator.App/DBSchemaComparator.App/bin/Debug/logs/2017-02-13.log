@@ -1,8 +1,0 @@
-2017-02-13 14:18:58.5250|8-|INFO|Creating settings object|DBSchemaComparator.Domain.Infrastructure.Settings
-2017-02-13 14:38:07.6809|9-|INFO|Starting a Schema comparator application.|DBSchemaComparator.App.Program
-2017-02-13 14:38:07.7029|9-|INFO|Creating settings object|DBSchemaComparator.Domain.Infrastructure.Settings
-2017-02-13 14:38:07.7029|9-|TRACE|Retrieving connectionString = Data Source=123.456.789.456; Initial Catalog=Name; user ID =username; password=something;connection timeout=30|DBSchemaComparator.Domain.Infrastructure.Settings
-2017-02-13 14:38:48.7397|9-|INFO|Starting a Schema comparator application.|DBSchemaComparator.App.Program
-2017-02-13 14:38:48.7657|9-|INFO|Creating settings object|DBSchemaComparator.Domain.Infrastructure.Settings
-2017-02-13 14:38:48.7687|9-|TRACE|Retrieving connectionString = Data Source=123.456.789.456; Initial Catalog=Name; user ID =username; password=something;connection timeout=30|DBSchemaComparator.Domain.Infrastructure.Settings
-2017-02-13 14:38:48.7687|9-|DEBUG|Retrieved connection string Data Source=123.456.789.456; Initial Catalog=Name; user ID =username; password=something;connection timeout=30|DBSchemaComparator.App.Program
