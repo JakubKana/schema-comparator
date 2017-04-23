@@ -1,0 +1,1721 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestNodes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://alef.com/db-comparator/test">
+    <NodeType>Root</NodeType>
+    <Description>Root node</Description>
+    <Nodes>
+        <TestNodes>
+            <NodeType>TablesTests</NodeType>
+            <Description>Set of tests for tables</Description>
+            <Nodes>
+                <TestNodes>
+                    <NodeType>Table</NodeType>
+                    <Description>Test for Table Users</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Table</ObjectType>
+                            <TestedObjectName>Users</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing table L: Users R: missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Table</NodeType>
+                    <Description>Test for Table Cars2</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Table</ObjectType>
+                            <TestedObjectName>Cars2</TestedObjectName>
+                            <ErrorType>LmissingRpresent</ErrorType>
+                            <Description>Testing table L: missing R: Cars2</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Table</NodeType>
+                    <Description>Test for Table Product</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Table</ObjectType>
+                            <TestedObjectName>Product</TestedObjectName>
+                            <ErrorType>LmissingRpresent</ErrorType>
+                            <Description>Testing table L: missing R: Product</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Table</NodeType>
+                    <Description>Test for Table PersoN</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Table</ObjectType>
+                            <TestedObjectName>PersoN</TestedObjectName>
+                            <ErrorType>LmissingRpresent</ErrorType>
+                            <Description>Testing table L: missing R: PersoN</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Table</NodeType>
+                    <Description>Test for Table CarPerson</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Table</ObjectType>
+                            <TestedObjectName>CarPerson</TestedObjectName>
+                            <ErrorType>LmissingRpresent</ErrorType>
+                            <Description>Testing table L: missing R: CarPerson</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+            </Nodes>
+            <ResultLevel>Error</ResultLevel>
+        </TestNodes>
+        <TestNodes>
+            <NodeType>StoredProceduresTests</NodeType>
+            <Description>Set of tests for stored procedures</Description>
+            <Nodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Delete_company_with_its_persons</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Delete_company_with_its_persons</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Delete_company_with_its_persons
+                                R: missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Delete_companyContacts</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Delete_companyContacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Delete_companyContacts R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Delete_contacts2</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Delete_contacts2</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Delete_contacts2 R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Delete_directory</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Delete_directory</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Delete_directory R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Delete_person_note_contact</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Delete_person_note_contact</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Delete_person_note_contact R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: DeleteEntireDirectory</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>DeleteEntireDirectory</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: DeleteEntireDirectory R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Get_complete_directory_list</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Get_complete_directory_list</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Get_complete_directory_list R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Get_Contact_ID_by_Company_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Get_Contact_ID_by_Company_ID</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Get_Contact_ID_by_Company_ID R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Get_Contact_ID_by_Person_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Get_Contact_ID_by_Person_ID</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Get_Contact_ID_by_Person_ID R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Get_directory_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Get_directory_ID</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Get_directory_ID R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Get_directory_list</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Get_directory_list</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Get_directory_list R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Get_local_directory_list</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Get_local_directory_list</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Get_local_directory_list R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: getCallerName</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>getCallerName</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: getCallerName R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Import</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Import</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Import R: missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Insert_companies_contacts</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Insert_companies_contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Insert_companies_contacts R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Insert_Company_Notes</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Insert_Company_Notes</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Insert_Company_Notes R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Insert_directory</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Insert_directory</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Insert_directory R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Insert_persons_contacts</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Insert_persons_contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Insert_persons_contacts R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Insert_Persons_Notes</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Insert_Persons_Notes</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Insert_Persons_Notes R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Searching_companies_contacts</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Searching_companies_contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Searching_companies_contacts R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Searching_persons_contacts</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Searching_persons_contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Searching_persons_contacts R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Select_Company_Contacts</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Select_Company_Contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Select_Company_Contacts R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Select_Person_Contacts</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Select_Person_Contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Select_Person_Contacts R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Update_companies_notes</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Update_companies_notes</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Update_companies_notes R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Update_contacts</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Update_contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Update_contacts R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: Update_persons_notes</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Update_persons_notes</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing Stored Procedure L: Update_persons_notes R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP: TestingProcedure</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>TestingProcedure</TestedObjectName>
+                            <ErrorType>LmissingRpresent</ErrorType>
+                            <Description>Testing Stored Procedure L: missing R:
+                                TestingProcedure</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>StoredProcedure</NodeType>
+                    <Description>Test for SP Companies_contact_by_Company_ID</Description>
+                    <Nodes>
+                        <TestNodes>
+                            <NodeType>StoredProcedure</NodeType>
+                            <Description>Test for SP Content</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>StoredProcedure</ObjectType>
+                                    <TestedObjectName>Companies_contact_by_Company_ID</TestedObjectName>
+                                    <ErrorType>NotMatch</ErrorType>
+                                    <Description>Testing content of SP L:
+                                        Companies_contact_by_Company_ID create procedure
+                                        [dbo].[Companies_contact_by_Company_ID] @Company_ID int as
+                                        select * from Companies_contact_view where Company_ID =
+                                        @Company_ID R: Companies_contact_by_Company_ID create
+                                        procedure[dbo].[Companies_contact_by_Company_ID] @Company_ID
+                                        int as select * from Companies_contact_view where Company_ID
+                                        = @Company_ID</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                    </Nodes>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>StoredProcedure</ObjectType>
+                            <TestedObjectName>Reference object
+                                Companies_contact_by_Company_ID</TestedObjectName>
+                            <ErrorType>LpresentRpresent</ErrorType>
+                            <Description>Testing Stored Procedure L: Companies_contact_by_Company_ID
+                                R: Companies_contact_by_Company_ID</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+            </Nodes>
+            <ResultLevel>Error</ResultLevel>
+        </TestNodes>
+        <TestNodes>
+            <NodeType>FunctionsTests</NodeType>
+            <Description>Set of tests for functions</Description>
+            <Nodes>
+                <TestNodes>
+                    <NodeType>Function</NodeType>
+                    <Description>Test for Function: LUDACRIS</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Function</ObjectType>
+                            <TestedObjectName>LUDACRIS</TestedObjectName>
+                            <ErrorType>LmissingRpresent</ErrorType>
+                            <Description>Testing Function L: missing R: LUDACRIS</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+            </Nodes>
+            <ResultLevel>Error</ResultLevel>
+        </TestNodes>
+        <TestNodes>
+            <NodeType>IndexTests</NodeType>
+            <Description>Set of tests for indexes</Description>
+            <Nodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_Companies applied on
+                        Companies.Company_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_Companies</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: PK_Companies R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name Address_Index applied on Companies.Address</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>Address_Index</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: Address_Index R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name DIC_Index applied on Companies.DIC</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>DIC_Index</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: DIC_Index R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name ICO_Index applied on Companies.ICO</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>ICO_Index</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: ICO_Index R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Companies applied on
+                        Companies.Company_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Companies</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Companies R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name Name_Index applied on Companies.Name</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>Name_Index</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: Name_Index R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Company_contacts applied on
+                        Company_contacts.Company_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Company_contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Company_contacts R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Company_contacts_1 applied on
+                        Company_contacts.Contact_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Company_contacts_1</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Company_contacts_1 R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Company_notes applied on
+                        Company_notes.Company_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Company_notes</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Company_notes R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Company_notes_1 applied on
+                        Company_notes.Note_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Company_notes_1</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Company_notes_1 R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Contact_directories applied on
+                        Contact_directories.Contact_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Contact_directories</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Contact_directories R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Contact_directories_1 applied on
+                        Contact_directories.Directory_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Contact_directories_1</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Contact_directories_1 R:
+                                misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_Contact_types applied on
+                        Contact_types.Contact_type_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_Contact_types</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: PK_Contact_types R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_Contacts applied on Contacts.Contact_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_Contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: PK_Contacts R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name Contact_Index applied on Contacts.Contact</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>Contact_Index</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: Contact_Index R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Contacts applied on
+                        Contacts.Contact_type_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Contacts R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_Directories applied on
+                        Directories.Directory_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_Directories</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: PK_Directories R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_Notes applied on Notes.Note_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_Notes</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: PK_Notes R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Person_contacts applied on
+                        Person_contacts.Person_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Person_contacts</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Person_contacts R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Person_contacts_1 applied on
+                        Person_contacts.Contact_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Person_contacts_1</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Person_contacts_1 R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Person_notes applied on
+                        Person_notes.Person_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Person_notes</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Person_notes R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Person_notes_1 applied on
+                        Person_notes.Note_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Person_notes_1</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Person_notes_1 R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_Persons applied on Persons.Person_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_Persons</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: PK_Persons R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Persons applied on Persons.Company_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Persons</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Persons R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name IX_Persons_1 applied on Persons.Person_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>IX_Persons_1</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: IX_Persons_1 R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name Person_Department_Index applied on
+                        Persons.Department</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>Person_Department_Index</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: Person_Department_Index R:
+                                misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name Person_Name_Index applied on Persons.Name</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>Person_Name_Index</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: Person_Name_Index R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name Person_Position_Index applied on
+                        Persons.POSITION</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>Person_Position_Index</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: Person_Position_Index R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name Person_Surname_Index applied on
+                        Persons.Surname</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>Person_Surname_Index</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: Person_Surname_Index R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_Users applied on Users.User_ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_Users</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: PK_Users R: misssing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_Cars2 applied on Cars2.ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_Cars2</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: missing R: PK_Cars2</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_Cars# applied on Cars2.Name</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_Cars#</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: missing R: PK_Cars#</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_Cars# applied on Cars2.Price</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_Cars#</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: missing R: PK_Cars#</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK__PersoN__3214EC2730709C0A applied on
+                        PersoN.ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK__PersoN__3214EC2730709C0A</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: missing R:
+                                PK__PersoN__3214EC2730709C0A</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>Index</NodeType>
+                    <Description>Index Name PK_CarPerson applied on CarPerson.ID</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>Index</ObjectType>
+                            <TestedObjectName>PK_CarPerson</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Indexes L: missing R: PK_CarPerson</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+            </Nodes>
+            <ResultLevel>Error</ResultLevel>
+        </TestNodes>
+        <TestNodes>
+            <NodeType>ViewsTests</NodeType>
+            <Description>Set of tests for views</Description>
+            <Nodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: Companies_contact_view</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Companies_contact_view</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Companies_contact_view R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: Companies_contacts_notes_view</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Companies_contacts_notes_view</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Companies_contacts_notes_view R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View:
+                        Companies_contacts_notes_view_restricted</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Companies_contacts_notes_view_restricted</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Companies_contacts_notes_view_restricted R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: Company_notes_view</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Company_notes_view</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Company_notes_view R: missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: Company_notes_view_restricted</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Company_notes_view_restricted</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Company_notes_view_restricted R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: Identification_contacts_view</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Identification_contacts_view</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Identification_contacts_view R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: Persons_companies_contacts_notes_view</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Persons_companies_contacts_notes_view</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Persons_companies_contacts_notes_view R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View:
+                        Persons_companies_contacts_notes_view_restricted</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Persons_companies_contacts_notes_view_restricted</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L:
+                                Persons_companies_contacts_notes_view_restricted R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: Persons_searching_view</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Persons_searching_view</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Persons_searching_view R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: Select_companies_notes_view</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Select_companies_notes_view</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Select_companies_notes_view R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: Select_person_contacts_view_restricted</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Select_person_contacts_view_restricted</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Select_person_contacts_view_restricted R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: Select_persons_notes_view</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>Select_persons_notes_view</TestedObjectName>
+                            <ErrorType>LpresentRmissing</ErrorType>
+                            <Description>Testing View L: Select_persons_notes_view R:
+                                missing</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>View</NodeType>
+                    <Description>Test for View: View_Cars</Description>
+                    <Nodes/>
+                    <Results>
+                        <TestResult>
+                            <ObjectType>View</ObjectType>
+                            <TestedObjectName>View_Cars</TestedObjectName>
+                            <ErrorType>LmissingRpresent</ErrorType>
+                            <Description>Testing View L: missing R: View_Cars</Description>
+                        </TestResult>
+                    </Results>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+            </Nodes>
+            <ResultLevel>Error</ResultLevel>
+        </TestNodes>
+        <TestNodes>
+            <NodeType>IntegrityConstraintsTests</NodeType>
+            <Description>Set of tests for integrity constraints</Description>
+            <Nodes>
+                <TestNodes>
+                    <NodeType>PrimaryKeysTests</NodeType>
+                    <Description>Set of tests for primary keys.</Description>
+                    <Nodes>
+                        <TestNodes>
+                            <NodeType>PrimaryKey</NodeType>
+                            <Description>PrimaryKey Name PK_Companies applied on
+                                Companies.Company_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>PrimaryKey</ObjectType>
+                                    <TestedObjectName>PK_Companies</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Primary Keys L: PK_Companies R:
+                                        misssing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>PrimaryKey</NodeType>
+                            <Description>PrimaryKey Name PK_Contact_types applied on
+                                Contact_types.Contact_type_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>PrimaryKey</ObjectType>
+                                    <TestedObjectName>PK_Contact_types</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Primary Keys L: PK_Contact_types R:
+                                        misssing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>PrimaryKey</NodeType>
+                            <Description>PrimaryKey Name PK_Contacts applied on
+                                Contacts.Contact_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>PrimaryKey</ObjectType>
+                                    <TestedObjectName>PK_Contacts</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Primary Keys L: PK_Contacts R:
+                                        misssing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>PrimaryKey</NodeType>
+                            <Description>PrimaryKey Name PK_Directories applied on
+                                Directories.Directory_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>PrimaryKey</ObjectType>
+                                    <TestedObjectName>PK_Directories</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Primary Keys L: PK_Directories R:
+                                        misssing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>PrimaryKey</NodeType>
+                            <Description>PrimaryKey Name PK_Notes applied on
+                                Notes.Note_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>PrimaryKey</ObjectType>
+                                    <TestedObjectName>PK_Notes</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Primary Keys L: PK_Notes R: misssing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>PrimaryKey</NodeType>
+                            <Description>PrimaryKey Name PK_Persons applied on
+                                Persons.Person_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>PrimaryKey</ObjectType>
+                                    <TestedObjectName>PK_Persons</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Primary Keys L: PK_Persons R:
+                                        misssing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>PrimaryKey</NodeType>
+                            <Description>PrimaryKey Name PK_Users applied on
+                                Users.User_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>PrimaryKey</ObjectType>
+                                    <TestedObjectName>PK_Users</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Primary Keys L: PK_Users R: misssing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>PrimaryKeysTests</NodeType>
+                            <Description>Primary Key R: PK_Cars2 applied on Cars2.ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>PrimaryKey</ObjectType>
+                                    <TestedObjectName>PK_Cars2</TestedObjectName>
+                                    <ErrorType>LmissingRpresent</ErrorType>
+                                    <Description>Primary Keys L: misssing R: PK_Cars2</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>PrimaryKeysTests</NodeType>
+                            <Description>Primary Key R: PK__PersoN__3214EC2730709C0A applied on
+                                PersoN.ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>PrimaryKey</ObjectType>
+                                    <TestedObjectName>PK__PersoN__3214EC2730709C0A</TestedObjectName>
+                                    <ErrorType>LmissingRpresent</ErrorType>
+                                    <Description>Primary Keys L: misssing R:
+                                        PK__PersoN__3214EC2730709C0A</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>PrimaryKeysTests</NodeType>
+                            <Description>Primary Key R: PK_CarPerson applied on
+                                CarPerson.ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>PrimaryKey</ObjectType>
+                                    <TestedObjectName>PK_CarPerson</TestedObjectName>
+                                    <ErrorType>LmissingRpresent</ErrorType>
+                                    <Description>Primary Keys L: misssing R:
+                                        PK_CarPerson</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                    </Nodes>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>ForeignKeysTests</NodeType>
+                    <Description>Set of tests for foreign keys.</Description>
+                    <Nodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint:
+                                FK_Company_contacts_Companies within table:
+                                Company_contacts.Company_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Company_contacts_Companies</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Company_contacts_Companies R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint: FK_Company_notes_Companies
+                                within table: Company_notes.Company_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Company_notes_Companies</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Company_notes_Companies R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint: FK_Persons_Companies
+                                within table: Persons.Company_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Persons_Companies</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Persons_Companies R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint: FK_Contacts_Contact_types
+                                within table: Contacts.Contact_type_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Contacts_Contact_types</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Contacts_Contact_types R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint:
+                                FK_Company_contacts_Contacts within table:
+                                Company_contacts.Contact_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Company_contacts_Contacts</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Company_contacts_Contacts R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint:
+                                FK_Contact_directories_Contacts within table:
+                                Contact_directories.Contact_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Contact_directories_Contacts</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Contact_directories_Contacts R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint:
+                                FK_Person_contacts_Contacts within table:
+                                Person_contacts.Contact_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Person_contacts_Contacts</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Person_contacts_Contacts R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint:
+                                FK_Contact_directories_Directories within table:
+                                Contact_directories.Directory_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Contact_directories_Directories</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Contact_directories_Directories R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint: FK_Company_notes_Notes
+                                within table: Company_notes.Note_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Company_notes_Notes</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Company_notes_Notes R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint: FK_Person_notes_Notes
+                                within table: Person_notes.Note_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Person_notes_Notes</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Person_notes_Notes R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint: FK_Person_contacts_Persons
+                                within table: Person_contacts.Person_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Person_contacts_Persons</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Person_contacts_Persons R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint: FK_Person_notes_Persons
+                                within table: Person_notes.Person_ID</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_Person_notes_Persons</TestedObjectName>
+                                    <ErrorType>LpresentRmissing</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_Person_notes_Persons R: missing</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                        <TestNodes>
+                            <NodeType>ForeignKey</NodeType>
+                            <Description>Test for Foreign Key Constraint: FK_CarPerson_PersoN within
+                                table: CarPerson on column: PersonId</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_CarPerson_PersoN</TestedObjectName>
+                                    <ErrorType>LpresentRpresent</ErrorType>
+                                    <Description>Testing Foreign Key Constraint L:
+                                        FK_CarPerson_PersoN within Table: CarPerson R:
+                                        FK_CarPerson_PersoN within Table: CarPerson</Description>
+                                </TestResult>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_CarPerson_PersoN.PersonId</TestedObjectName>
+                                    <ErrorType>IsMatch</ErrorType>
+                                    <Description>Applied Column L: PersonId R: PersonId
+                                        matches.</Description>
+                                </TestResult>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_CarPerson_PersoN.PersoN</TestedObjectName>
+                                    <ErrorType>IsMatch</ErrorType>
+                                    <Description>Referenced Table L: PersoN R: PersoN
+                                        matches.</Description>
+                                </TestResult>
+                                <TestResult>
+                                    <ObjectType>ForeignKey</ObjectType>
+                                    <TestedObjectName>FK_CarPerson_PersoN.ID</TestedObjectName>
+                                    <ErrorType>IsMatch</ErrorType>
+                                    <Description>Referenced Column L: ID R: ID
+                                        matches.</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Success</ResultLevel>
+                        </TestNodes>
+                    </Nodes>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+                <TestNodes>
+                    <NodeType>CheckTests</NodeType>
+                    <Description>Set of tests for check constraints</Description>
+                    <Nodes>
+                        <TestNodes>
+                            <NodeType>Check</NodeType>
+                            <Description>Test for Check Constraint: CK_PersoN within table:
+                                PersoN</Description>
+                            <Nodes/>
+                            <Results>
+                                <TestResult>
+                                    <ObjectType>Check</ObjectType>
+                                    <TestedObjectName>CK_PersoN</TestedObjectName>
+                                    <ErrorType>LmissingRpresent</ErrorType>
+                                    <Description>Testing Check Constraint L: missing R:
+                                        CK_PersoN</Description>
+                                </TestResult>
+                            </Results>
+                            <ResultLevel>Error</ResultLevel>
+                        </TestNodes>
+                    </Nodes>
+                    <ResultLevel>Error</ResultLevel>
+                </TestNodes>
+            </Nodes>
+            <ResultLevel>Error</ResultLevel>
+        </TestNodes>
+    </Nodes>
+    <Results>
+        <TestResult>
+            <ObjectType>DatabaseCollation</ObjectType>
+            <TestedObjectName>Czech_CI_AS</TestedObjectName>
+            <ErrorType>IsMatch</ErrorType>
+            <Description>Test for Database Collation L: Czech_CI_AS R: Czech_CI_AS</Description>
+        </TestResult>
+    </Results>
+    <ResultLevel>None</ResultLevel>
+</TestNodes>
