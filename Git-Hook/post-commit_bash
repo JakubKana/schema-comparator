@@ -1,0 +1,184 @@
+#!/bin/sh
+#### [Functions declaration] ####
+unset $GIT_DIR
+function checkFileExists {
+CREATE=$(find . -iname $1)
+CREATEPATH=$(readlink -f $CREATE)
+if [ ! -f $CREATEPATH ] 
+then
+    echo "File $CREATEPATH not found!" >> $REPOPATH/$LOGNAME
+	return 0 
+else
+	echo "File $CREATEPATH found!" >> $REPOPATH/$LOGNAME
+	return 1
+fi
+}
+  
+function getFilePath {
+	FILE=$(find . -iname $1)
+	FILEPATH=$(readlink -f $FILE)
+	return $FILEPATH
+}
+function getConnStrByIndex {
+	CREATE=$(find . -iname $1)
+	CREATEPATH=$(readlink -f $CREATE)
+}
+
+REPOPATH=$(git rev-parse --show-toplevel)
+
+#Customize this part for repository purposes!
+LOGNAME="log.txt"
+TEMPFIRST="temp-first"
+TEMPLAST="temp-last"
+
+CREATESCRIPT="Create.sql"
+UPDATESCRIPT="update.sql"
+
+FIRSTCREATESCRIPT="Create1.sql"
+
+RESULTFOLDER="$REPOPATH/Result"
+CONNSTR="connstrings.txt"
+DBTYPE="mssql"
+#Customize this part for repository purposes!
+
+FIRSTHASH=$(git log --diff-filter=A -- '*build/$FIRSTCREATESCRIPT' | egrep -o '[0-9a-f]{5,40}')
+
+REPOURL=$(git config --get remote.origin.url)
+
+#echo $COMMITHASH >> $REPOPATH/$LOGNAME
+#echo $REPOURL >> $REPOPATH/$LOGNAME
+
+#echo $REPOPATH >> $REPOPATH/$LOGNAME
+#echo $FIRSTHASH >> $REPOPATH/$LOGNAME
+
+#### [Step 1a] ####
+# Clone repository to temporary folder and reset hard to current commit
+git clone $REPOPATH/.git $TEMPFIRST
+cd $TEMPFIRST
+git reset --hard $FIRSTHASH
+FIRSTCREATETEST=$(checkFileExists $FIRSTCREATESCRIPT)
+
+#### [Step 1b] ####
+# Clone repository to temporary folder and reset hard to current commit
+cd ..
+git clone $REPOPATH/.git $TEMPLAST
+cd $TEMPLAST
+git reset --hard $COMMITHASH
+
+#### [Step 2] ####
+#Test if all necessary files are availible
+
+CREATETEST=$(checkFileExists $CREATESCRIPT)
+UPDATETEST=$(checkFileExists $UPDATESCRIPT)
+CONNSTRINGTEST=$(checkFileExists $CONNSTR)
+
+if $FIRSTCREATETEST && $CREATETEST && $UPDATETEST && $CONNSTRINGTEST; then
+
+cd $REPOPATH/$TEMPFIRST
+
+FIRSTFILEPATH=$(readlink -f $(find . -iname $CREATESCRIPT))
+
+cd $REPOPATH/$TEMPLAST
+
+CREATEPATH=$(readlink -f $(find . -iname $CREATESCRIPT))
+UPDATEPATH=$(readlink -f $(find . -iname $UPDATESCRIPT))
+CONNSTRPATH=$(readlink -f $(find . -iname $CONNSTR))
+
+#echo $FIRSTFILEPATH >> $REPOPATH/$LOGNAME
+#echo $CREATEPATH >> $REPOPATH/$LOGNAME
+#echo $UPDATEPATH >> $REPOPATH/$LOGNAME
+#echo $CONNSTRPATH >> $REPOPATH/$LOGNAME
+
+#CONNVAR=$(cat $CONNSTRPATH)
+#echo $CONNVAR >> $REPOPATH/$LOGNAME
+
+#Read
+declare -a ARRAY
+exec 10<&0
+exec < $CONNSTRPATH
+let count=0
+
+while read LINE; do
+   ARRAY[$count]=$LINE
+   ((count++))
+done
+
+echo Number of elements: ${#ARRAY[@]} >> $REPOPATH/$LOGNAME
+
+#echo array's content
+#echo ${ARRAY[@]} >> $REPOPATH/$LOGNAME
+#echo "Connection Strings" >> $REPOPATH/$LOGNAME
+#echo ${ARRAY[0]} >> $REPOPATH/$LOGNAME
+#echo ${ARRAY[1]} >> $REPOPATH/$LOGNAME
+#echo ${ARRAY[2]} >> $REPOPATH/$LOGNAME
+
+
+#### [Step 3] ####
+#Run scripts
+cd $REPOPATH
+cd ..
+cd Compiled/ScriptRunner
+
+#echo "CREATE Path: $CREATEPATH" >> $REPOPATH/$LOGNAME
+#echo "DB Type: $DBTYPE" >> $REPOPATH/$LOGNAME
+#echo "PWD: $(PWD)" >> $REPOPATH/$LOGNAME
+
+FIRSTCREATEPATH=$(echo "$FIRSTFILEPATH" | sed -e 's/^\///' -e 's/\//\\/g' -e 's/^./\0:/')
+LASTCREATEPATH=$(echo "$CREATEPATH" | sed -e 's/^\///' -e 's/\//\\/g' -e 's/^./\0:/')
+UPDATECREATEPATH=$(echo "$UPDATEPATH" | sed -e 's/^\///' -e 's/\//\\/g' -e 's/^./\0:/')
+
+echo "Executing Create Script"
+echo "Create DB ConnStr1: ${ARRAY[0]}" >> $REPOPATH/$LOGNAME
+echo "Update DB ConnStr2: ${ARRAY[1]}" >> $REPOPATH/$LOGNAME
+echo "Develop DB ConnStr3: ${ARRAY[2]}" >> $REPOPATH/$LOGNAME
+echo "DBType: $DBTYPE" >> $REPOPATH/$LOGNAME
+echo "First create Path: $FIRSTCREATEPATH" >> $REPOPATH/$LOGNAME
+echo "Last create Path: $LASTCREATEPATH" >> $REPOPATH/$LOGNAME
+echo "Update create Path: $UPDATECREATEPATH" >> $REPOPATH/$LOGNAME
+echo "Result: $RESULTFOLDER" >> $REPOPATH/$LOGNAME
+
+./DBSchemaComparator.ScriptRunner.exe "${ARRAY[0]}" "$DBTYPE" "$LASTCREATEPATH" "$RESULTFOLDER"
+EXITSTATUS1=$?
+./DBSchemaComparator.ScriptRunner.exe "${ARRAY[1]}" "$DBTYPE" "$FIRSTCREATEPATH" "$RESULTFOLDER"
+EXITSTATUS2=$?
+./DBSchemaComparator.ScriptRunner.exe "${ARRAY[1]}" "$DBTYPE" "$UPDATECREATEPATH" "$RESULTFOLDER"
+EXITSTATUS3=$?
+
+echo "Exit status 1: $EXITSTATUS1" >> $REPOPATH/$LOGNAME
+echo "Exit status 2: $EXITSTATUS2" >> $REPOPATH/$LOGNAME
+echo "Exit status 3: $EXITSTATUS3" >> $REPOPATH/$LOGNAME
+cd ..
+cd SchemaComparator
+
+if [ $EXITSTATUS1 -ne "0" ] || [ $EXITSTATUS2 -ne "0" ] || [ $EXITSTATUS3 -ne "0" ]; then
+
+echo "Scripts deploy failed!" >> $REPOPATH/$LOGNAME
+
+else
+
+./DBSchemaComparator.App.exe "${ARRAY[0]}" "${ARRAY[1]}" "$RESULTFOLDER" "$DBTYPE"
+EXITSTATUS4=$?
+./DBSchemaComparator.App.exe "${ARRAY[0]}" "${ARRAY[2]}" "$RESULTFOLDER" "$DBTYPE"
+EXITSTATUS5=$?
+
+echo "Exit status 4: $EXITSTATUS4" >> $REPOPATH/$LOGNAME
+echo "Exit status 5: $EXITSTATUS5" >> $REPOPATH/$LOGNAME
+
+if [ $EXITSTATUS4 -eq "0" ] && [ $EXITSTATUS5 -eq "0" ]; then
+echo "Comparison of databases successful!" >> $REPOPATH/$LOGNAME
+else
+echo "Comparison of databases failed!" >> $REPOPATH/$LOGNAME
+fi
+fi
+fi
+
+cd ..
+cd ScriptRunner
+
+#Drop temporary databases
+#./DBSchemaComparator.ScriptRunner.exe "${ARRAY[0]}" "$DBTYPE" "DELETE" "$RESULTFOLDER"
+#./DBSchemaComparator.ScriptRunner.exe "${ARRAY[1]}" "$DBTYPE" "DELETE" "$RESULTFOLDER"
+#Remove temporary repository folder
+#cd $REPOPATH
+#rm -R $TEMPFIRST
+#rm -R $TEMPLAST

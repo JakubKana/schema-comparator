@@ -1,0 +1,192 @@
+#!/usr/bin/env python
+
+import git
+import errno, os, stat, shutil
+import csv
+import subprocess
+import logging
+
+def get_git_root(path):
+    git_repo = git.Repo(path, search_parent_directories=True)
+    git_root = git_repo.git.rev_parse("--show-toplevel")
+    return git_root
+
+def file_exists(list):
+    if len(list) == 0:
+        return False
+    else:
+        return True
+
+def folder_exists(path):
+    return os.path.isdir(path)
+
+def find_all(name, path):
+    result = []
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            result.append(os.path.join(root, name))
+    return result
+
+def remove_readonly(func, path, excinfo):
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+readme = get_git_root(os.getcwd()) + "/README.txt"
+
+with open(readme, 'a') as log_file:
+    log_file.write("test append\n")
+
+# Customize this part for repository purposes!
+repo_path = get_git_root(os.getcwd())
+
+logname = "log.txt"
+temp_first = "temp-first"
+temp_last = "temp-last"
+
+schema_comparator_folder="Schema-comparator"
+
+create_script = "Create.sql"
+update_script = "Update.sql"
+
+first_create_script = "Create.sql"
+result_folder = os.path.join(get_git_root(os.getcwd()),"Result")
+
+conn_str = "ConnStrings.txt"
+db_type = "mssql"
+
+# Customize this part for repository purposes!
+
+
+
+logger = logging.getLogger('test-schemaComparator')
+hdlr = logging.FileHandler(os.path.join(result_folder, logname))
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr)
+logger.setLevel(logging.INFO)
+
+logger.info("===============[Start Script]===============")
+
+#### [Step 1a] ####
+# Clone repository to temporary folder and reset hard to current commit
+
+main_gitpath = os.path.join(repo_path, ".git")
+
+logger.info("Main git path: {}".format(main_gitpath))
+g = git.Git(repo_path)
+first_hash = g.execute(["git", "log", "--pretty=format:%H", "--diff-filter=A", "--", "*/" + first_create_script])
+commit_hash = g.execute(["git", "rev-parse", "HEAD"])
+logger.info("First Create Script Hash:{}".format(first_hash))
+logger.info("Current Commit Hash:{}".format(commit_hash))
+
+temp_first_path = os.path.join(repo_path, temp_first)
+logger.info("Temp first path: {}".format(temp_first_path))
+
+if not folder_exists(temp_first_path):
+    git.Repo.clone_from(main_gitpath, temp_first_path)
+    os.chdir(os.path.join(repo_path, temp_first))
+    g_temp = git.Git(os.path.join(repo_path, temp_first))
+    g_temp.execute(["git", "reset", "--hard", first_hash])
+else:
+    logger.info("Repo {} already exists.".format(temp_first))
+    temp_first_dir = os.path.join(repo_path,temp_first)
+    os.chdir(temp_first_dir)
+    logger.info("Changing dir to {}.".format(temp_first_dir))
+
+
+first_create_filepath = find_all(first_create_script, os.getcwd())[0]
+
+first_create_test = file_exists(first_create_filepath)
+temp_last_path = os.path.join(repo_path, temp_last)
+logger.info("Temp Last path: {}".format(temp_last_path))
+
+if not folder_exists(temp_last_path):
+    git.Repo.clone_from(main_gitpath, temp_last_path)
+    os.chdir(temp_last_path)
+    g_temp_1 = git.Git(os.path.join(repo_path, temp_last))
+    g_temp_1.execute(["git", "reset", "--hard", commit_hash])
+else:
+    logger.info("Repo {} already exists.".format(temp_last_path))
+    os.chdir(temp_last_path)
+
+create_script_filepath = find_all(create_script, os.getcwd())[0]
+create_test = file_exists(create_script_filepath)
+
+update_script_filepath = find_all(update_script, os.getcwd())[0]
+update_test = file_exists(update_script_filepath)
+
+connection_str_filepath = find_all(conn_str, os.getcwd())[0]
+connection_str_test = file_exists(connection_str_filepath)
+
+logger.info("First Create Script path: {}\nCreate Script path: {}\n Update Script path: {}\n Connection String path: {}"
+            .format(first_create_filepath, create_script_filepath, update_script_filepath, connection_str_filepath))
+
+logger.info("First_create_test: {first_test}\nCreate_test:{create_test}\nUpdate test:{update_test}\nConnection test:{conn_str_test}".format(
+    first_test=first_create_test, create_test=create_test, update_test=update_test, conn_str_test=connection_str_test))
+
+conn_str_arr = ()
+
+if first_create_script and create_script and update_script and connection_str_test:
+
+    with open(connection_str_filepath, 'r') as conn_str_file:
+        reader = csv.reader(conn_str_file, delimiter='|')
+        conn_str_arr = list(reader)[0]
+
+    logger.info("Input: Connection Strings - {}".format(conn_str_arr))
+
+    #### [Step 3] ####
+    # Run scripts
+    os.chdir(os.path.join(repo_path))
+    os.chdir(os.path.dirname(os.getcwd()))
+    os.chdir(os.path.join(schema_comparator_folder, "ScriptRunner"))
+
+    logger.info("Changing dir to {}".format(os.getcwd()))
+    try:
+
+        exit_status_1 = subprocess.call(["DBSchemaComparator.ScriptRunner.exe", conn_str_arr[0], db_type, os.path.normpath(first_create_filepath), os.path.normpath(result_folder)])
+        exit_status_2 = subprocess.call(["DBSchemaComparator.ScriptRunner.exe", conn_str_arr[1], db_type, os.path.normpath(create_script_filepath), os.path.normpath(result_folder)])
+        exit_status_3 = subprocess.call(["DBSchemaComparator.ScriptRunner.exe", conn_str_arr[0], db_type, os.path.normpath(update_script_filepath), os.path.normpath(result_folder)])
+       
+    except Exception as e:
+        logger.exception(e)
+
+    os.chdir(os.path.dirname(os.getcwd()))
+    os.chdir(os.path.join("SchemaComparator"))
+    logger.info("Changing dir to {}".format(os.getcwd()))
+    if exit_status_1 != 0 or exit_status_2 != 0 or exit_status_3 != 0:
+        logger.info("Script deployment failed!")
+    else:
+        try:
+            exit_status_4 = subprocess.call(
+            ["DBSchemaComparator.App.exe", conn_str_arr[0], conn_str_arr[1], db_type, os.path.normpath(result_folder)])
+            exit_status_5 = subprocess.call(
+            ["DBSchemaComparator.App.exe", conn_str_arr[0], conn_str_arr[2], db_type, os.path.normpath(result_folder)])
+        except Exception as e:
+            logger.exception(e)
+        if exit_status_4 != 0 and exit_status_5 != 0:
+            logger.warning("Comparison of databases failed!")
+            logger.warning("Exit status {} of 0 and 1: {} {}".format(exit_status_4, conn_str_arr[0], conn_str_arr[1]))
+            logger.warning("Exit status {} of 0 and 2: {} {}".format(exit_status_5, conn_str_arr[0], conn_str_arr[2]))
+        else:
+            logger.info("Comparison of databases successful!")
+
+
+# Clean up temporary folders
+logger.info("Clean up")
+try:
+    os.chdir(os.path.join(repo_path))
+    os.chdir(os.path.dirname(os.getcwd()))
+    os.chdir(os.path.join(schema_comparator_folder, "ScriptRunner"))
+    clean_result_1 = subprocess.call(["DBSchemaComparator.ScriptRunner.exe", conn_str_arr[0], db_type, "DELETE", os.path.normpath(result_folder)])
+    clean_result_2 = subprocess.call(["DBSchemaComparator.ScriptRunner.exe", conn_str_arr[1], db_type, "DELETE", os.path.normpath(result_folder)])
+except Exception as e:
+    logger.exception(e)
+
+os.chdir(repo_path)
+logger.info("Changing dir to {}".format(os.getcwd()))
+
+shutil.rmtree(temp_first_path, onerror=remove_readonly)
+shutil.rmtree(temp_last_path, onerror=remove_readonly)
+
+logger.info("Removing {} and {}".format(temp_first_path, temp_last_path))
+logger.info("End of a script!")

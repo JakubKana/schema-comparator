@@ -1,0 +1,5 @@
+#!/bin/sh
+#git --git-dir=. --work-tree=$PWD/.. reset --hard
+unset GIT_DIR
+
+python hooks/post-receive.py

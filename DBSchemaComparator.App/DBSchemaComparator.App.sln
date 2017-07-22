@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBSchemaComparator.Domain",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBSchemaComparator.ScriptRunner", "..\DBSchemaComparator.ScriptRunner\DBSchemaComparator.ScriptRunner.csproj", "{92B4A07A-A1BB-4CD2-A963-DE2AA7BEC1ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBSchemaComparator.UnitTest", "..\DBSchemaComparator.UnitTest\DBSchemaComparator.UnitTest\DBSchemaComparator.UnitTest.csproj", "{60009F0A-3398-43B9-874D-57C48C9F4FD6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{92B4A07A-A1BB-4CD2-A963-DE2AA7BEC1ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92B4A07A-A1BB-4CD2-A963-DE2AA7BEC1ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92B4A07A-A1BB-4CD2-A963-DE2AA7BEC1ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{60009F0A-3398-43B9-874D-57C48C9F4FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{60009F0A-3398-43B9-874D-57C48C9F4FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{60009F0A-3398-43B9-874D-57C48C9F4FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{60009F0A-3398-43B9-874D-57C48C9F4FD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

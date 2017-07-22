@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using DBSchemaComparator.App.Comparator;
 using DBSchemaComparator.Domain.Database;
 using DBSchemaComparator.Domain.Infrastructure;
@@ -8,6 +12,7 @@ using DBSchemaComparator.Domain.Models.General;
 using DBSchemaComparator.Domain.Models.Test;
 using DBSchemaComparator.ScriptRunner.Parser;
 using NLog;
+using PetaPoco;
 
 namespace DBSchemaComparator.ScriptRunner.Deployment
 {
